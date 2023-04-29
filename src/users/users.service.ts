@@ -17,9 +17,13 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto): Promise<UserWithoutPassword> {
     return this.excludePassword(
-      await this.prismaService.user.create({
-        data: createUserDto,
-      }),
+      await this.prismaService.user
+        .create({
+          data: createUserDto,
+        })
+        .catch((e) => {
+          throw e;
+        }),
     );
   }
 
@@ -48,10 +52,14 @@ export class UsersService {
     updateUserDto: UpdateUserDto,
   ): Promise<UserWithoutPassword> {
     return this.excludePassword(
-      await this.prismaService.user.update({
-        where: { id },
-        data: updateUserDto,
-      }),
+      await this.prismaService.user
+        .update({
+          where: { id },
+          data: updateUserDto,
+        })
+        .catch((e) => {
+          throw e;
+        }),
     );
   }
 }
