@@ -1,0 +1,52 @@
+{
+    "env": {
+        "browser": true,
+        "es2021": true
+    },
+    "extends": [
+        "plugin:react/recommended",
+        "standard-with-typescript",
+        "plugin:react/jsx-runtime"
+    ],
+    "overrides": [],
+    "parserOptions": {
+        "project": "./tsconfig.json",
+        "ecmaVersion": "latest",
+        "sourceType": "module"
+    },
+    "rules": {
+        "indent": [
+            "off",
+            2,
+            {
+                "SwitchCase": 1,
+                "ignoredNodes": [
+                    "ConditionalExpression"
+                ]
+            }
+        ],
+        "semi": "off",
+        "@typescript-eslint/semi": "off",
+        "@typescript-eslint/member-delimiter-style": "off",
+        "@typescript-eslint/type-annotation-spacing": "off",
+        "@typescript-eslint/no-misused-promises": [
+            "error",
+            {
+                "checksVoidReturn": false
+            }
+        ],
+        "@typescript-eslint/space-before-function-paren": "off",
+        "@typescript-eslint/indent": "off",
+        "multiline-ternary": "off",
+        "@typescript-eslint/restrict-template-expressions": "off",
+        "react/jsx-curly-brace-presence": [
+            "error",
+            {
+                "props": "never",
+                "children": "never"
+            }
+        ],
+        "comma-dangle": "off",
+        "@typescript-eslint/comma-dangle": "off"
+    }
+}
