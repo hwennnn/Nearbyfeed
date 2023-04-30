@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { type User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 
@@ -9,7 +9,10 @@ import { type UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly logger: Logger,
+  ) {}
 
   excludePassword(user: User): UserWithoutPassword {
     return exclude(user, ['password']);
@@ -22,6 +25,12 @@ export class UsersService {
           data: createUserDto,
         })
         .catch((e) => {
+          this.logger.error(
+            'Failed to create user',
+            e instanceof Error ? e.stack : undefined,
+            UsersService.name,
+          );
+
           throw e;
         }),
     );
@@ -42,6 +51,12 @@ export class UsersService {
           },
         })
         .catch((e) => {
+          this.logger.error(
+            `Failed to find user with id ${id}`,
+            e instanceof Error ? e.stack : undefined,
+            UsersService.name,
+          );
+
           throw e;
         }),
     );
@@ -58,6 +73,11 @@ export class UsersService {
           data: updateUserDto,
         })
         .catch((e) => {
+          this.logger.error(
+            'Failed to update user',
+            e instanceof Error ? e.stack : undefined,
+            UsersService.name,
+          );
           throw e;
         }),
     );

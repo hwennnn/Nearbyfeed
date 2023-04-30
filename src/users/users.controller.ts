@@ -1,15 +1,7 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Patch,
-  Post,
-  UseFilters,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 
 import { type UserWithoutPassword } from 'src/users/entities/userWithoutPassword';
-import { BadRequestExceptionFilter, hashPassword } from 'src/utils';
+import { hashPassword } from 'src/utils';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
@@ -19,7 +11,6 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  @UseFilters(BadRequestExceptionFilter)
   async create(
     @Body() createUserDto: CreateUserDto,
   ): Promise<UserWithoutPassword> {
@@ -32,19 +23,16 @@ export class UsersController {
   }
 
   @Get()
-  @UseFilters(BadRequestExceptionFilter)
   async findAll(): Promise<UserWithoutPassword[]> {
     return await this.usersService.findAll();
   }
 
   @Get(':id')
-  @UseFilters(BadRequestExceptionFilter)
   async findOne(@Param('id') id: string): Promise<UserWithoutPassword> {
     return await this.usersService.findOne(+id);
   }
 
   @Patch(':id')
-  @UseFilters(BadRequestExceptionFilter)
   async update(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,

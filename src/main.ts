@@ -1,6 +1,7 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import helmet from 'helmet';
+import { BadRequestExceptionFilter } from 'src/utils';
 import { AppModule } from './app.module';
 
 async function bootstrap(): Promise<void> {
@@ -9,6 +10,7 @@ async function bootstrap(): Promise<void> {
   app.useGlobalPipes(
     new ValidationPipe({ whitelist: true, forbidUnknownValues: false }),
   );
+  app.useGlobalFilters(new BadRequestExceptionFilter());
   app.enableCors();
 
   await app.listen(3000);
