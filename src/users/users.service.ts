@@ -14,7 +14,7 @@ export class UsersService {
     private readonly logger: Logger,
   ) {}
 
-  excludePassword(user: User): UserWithoutPassword {
+  private excludePassword(user: User): UserWithoutPassword {
     return exclude(user, ['password']);
   }
 
