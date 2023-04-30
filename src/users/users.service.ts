@@ -1,11 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { type User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { type CreateUserDto, type UpdateUserDto } from 'src/users/dto';
 
 import { type UserWithoutPassword } from 'src/users/entities/userWithoutPassword';
 import { exclude } from 'src/utils';
-import { type CreateUserDto } from './dto/create-user.dto';
-import { type UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {

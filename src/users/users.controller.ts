@@ -1,9 +1,8 @@
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 
+import { CreateUserDto, UpdateUserDto } from 'src/users/dto';
 import { type UserWithoutPassword } from 'src/users/entities/userWithoutPassword';
 import { hashPassword } from 'src/utils';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
 
 @Controller('users')
