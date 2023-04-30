@@ -1,25 +1,12 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch } from '@nestjs/common';
 
-import { CreateUserDto, UpdateUserDto } from 'src/users/dto';
+import { UpdateUserDto } from 'src/users/dto';
 import { type UserWithoutPassword } from 'src/users/entities/userWithoutPassword';
-import { hashPassword } from 'src/utils';
 import { UsersService } from './users.service';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
-
-  @Post()
-  async create(
-    @Body() createUserDto: CreateUserDto,
-  ): Promise<UserWithoutPassword> {
-    const data = {
-      ...createUserDto,
-      password: await hashPassword(createUserDto.password),
-    };
-
-    return await this.usersService.create(data);
-  }
 
   @Get()
   async findAll(): Promise<UserWithoutPassword[]> {
