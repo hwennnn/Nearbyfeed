@@ -61,6 +61,16 @@ export class UsersService {
     );
   }
 
+  async isUserExistByEmail(email: string): Promise<boolean> {
+    return (
+      (await this.prismaService.user.findUnique({
+        where: {
+          email,
+        },
+      })) !== null
+    );
+  }
+
   async update(
     id: number,
     updateUserDto: UpdateUserDto,
