@@ -9,6 +9,8 @@ import { type Request, type Response } from 'express';
 @Catch()
 export class BadRequestExceptionFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost): void {
+    console.log('BadRequestExceptionFilter', exception);
+
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
