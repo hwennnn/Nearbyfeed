@@ -2,11 +2,11 @@ import bcrypt from 'bcrypt';
 
 const saltRounds = 10;
 
-export async function hash(plainText: string): Promise<string> {
+export async function hashData(plainText: string): Promise<string> {
   const salt = await bcrypt.genSalt(saltRounds);
-  const hashed = await bcrypt.hash(plainText, salt);
+  const hash = await bcrypt.hash(plainText, salt);
 
-  return hashed;
+  return hash;
 }
 
 export async function compareHash(

@@ -10,7 +10,7 @@ import { type AuthToken, type TokenPayload } from 'src/entities';
 import { RedisService } from 'src/redis/redis.service';
 import { type CreateUserDto } from 'src/users/dto';
 import { UsersService } from 'src/users/users.service';
-import { compareHash, hash } from 'src/utils';
+import { compareHash, hashData } from 'src/utils';
 import { v4 as uuidV4 } from 'uuid';
 
 @Injectable()
@@ -34,7 +34,7 @@ export class AuthService {
 
     const data = {
       ...createUserDto,
-      password: await hash(createUserDto.password),
+      password: await hashData(createUserDto.password),
     };
 
     const user = await this.usersService.create(data);
@@ -97,7 +97,7 @@ export class AuthService {
       throw e;
     });
 
-    const hashedRefreshToken = await hash(refreshToken);
+    const hashedRefreshToken = await hashData(refreshToken);
 
     await this.redisService.set(
       sessionId,
