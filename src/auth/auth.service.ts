@@ -10,7 +10,7 @@ import { type AuthToken, type TokenPayload } from 'src/entities';
 import { RedisService } from 'src/redis/redis.service';
 import { type CreateUserDto } from 'src/users/dto';
 import { UsersService } from 'src/users/users.service';
-import { hashPassword } from 'src/utils';
+import { compareHash, hash } from 'src/utils';
 import { v4 as uuidV4 } from 'uuid';
 
 @Injectable()
@@ -34,7 +34,7 @@ export class AuthService {
 
     const data = {
       ...createUserDto,
-      password: await hashPassword(createUserDto.password),
+      password: await hash(createUserDto.password),
     };
 
     const user = await this.usersService.create(data);
@@ -56,7 +56,10 @@ export class AuthService {
 
     const storedRefreshToken = await this.redisService.get<string>(sessionId);
 
-    if (storedRefreshToken === null || refreshToken !== storedRefreshToken) {
+    if (
+      storedRefreshToken === null ||
+      !(await compareHash(refreshToken, storedRefreshToken))
+    ) {
       throw new UnauthorizedException('Invalid refresh token');
     }
 
@@ -94,8 +97,13 @@ export class AuthService {
       throw e;
     });
 
-    // TODO: encrypt the refresh token
-    await this.redisService.set(sessionId, refreshToken, 30 * 24 * 60 * 60);
+    const hashedRefreshToken = await hash(refreshToken);
+
+    await this.redisService.set(
+      sessionId,
+      hashedRefreshToken,
+      30 * 24 * 60 * 60,
+    );
 
     return {
       accessToken,
