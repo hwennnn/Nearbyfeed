@@ -1,5 +1,7 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
+import { AuthDto } from 'src/auth/dto/auth.dto';
+import JwtAuthGuard from 'src/auth/guards/jwt-auth.guard';
 import JwtRefreshGuard from 'src/auth/guards/jwt-refresh.guard';
 import { type AuthToken } from 'src/entities';
 import { CreateUserDto } from 'src/users/dto';
@@ -14,6 +16,19 @@ export class AuthController {
     const tokens = await this.authService.register(createUserDto);
 
     return tokens;
+  }
+
+  @Post('login')
+  async login(@Body() authDto: AuthDto): Promise<AuthToken> {
+    const tokens = await this.authService.login(authDto);
+
+    return tokens;
+  }
+
+  @Get('logout')
+  @UseGuards(JwtAuthGuard)
+  async logout(@GetUser('sessionId') sessionId: string): Promise<void> {
+    await this.authService.logout(sessionId);
   }
 
   @Post('refresh-token')

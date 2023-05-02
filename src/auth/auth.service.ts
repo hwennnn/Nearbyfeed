@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { type AuthDto } from 'src/auth/dto/auth.dto';
 import { type AuthToken, type TokenPayload } from 'src/entities';
 import { RedisService } from 'src/redis/redis.service';
 import { type CreateUserDto } from 'src/users/dto';
@@ -44,9 +45,32 @@ export class AuthService {
     return tokens;
   }
 
-  async login(): Promise<void> {}
+  async login(authDto: AuthDto): Promise<AuthToken> {
+    const user = await this.usersService.findOneByEmail(authDto.email);
 
-  async logout(): Promise<void> {}
+    if (
+      user === null ||
+      !(await compareHash(authDto.password, user.password))
+    ) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    const tokens = await this.getTokens(user.id.toString(), user.email);
+
+    return tokens;
+  }
+
+  async logout(sessionId: string): Promise<void> {
+    await this.redisService.delete(sessionId).catch((e) => {
+      this.logger.error(
+        'Failed to remove refresh token',
+        e instanceof Error ? e.stack : undefined,
+        AuthService.name,
+      );
+
+      throw e;
+    });
+  }
 
   async refreshAccessToken(
     refreshToken: string,

@@ -3,7 +3,6 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { type TokenPayload } from 'src/entities';
-import { type UserWithoutPassword } from 'src/users/entities/userWithoutPassword';
 import { UsersService } from 'src/users/users.service';
 
 @Injectable()
@@ -18,9 +17,12 @@ export class JwtAuthStrategy extends PassportStrategy(Strategy, 'jwt') {
     });
   }
 
-  async validate(payload: TokenPayload): Promise<UserWithoutPassword | null> {
+  async validate(payload: TokenPayload): Promise<any> {
     const userId = payload.sub;
 
-    return await this.usersService.findOne(parseInt(userId));
+    return {
+      ...(await this.usersService.findOne(parseInt(userId))),
+      sessionId: payload.sessionId,
+    };
   }
 }
