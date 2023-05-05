@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { type AuthDto } from 'src/auth/dto';
+import { type AuthDto, type ResetPasswordDto } from 'src/auth/dto';
 import { type AuthToken, type TokenPayload } from 'src/entities';
 import { MailService } from 'src/mail/mail.service';
 import { RedisService } from 'src/redis/redis.service';
@@ -151,18 +151,18 @@ export class AuthService {
     });
   }
 
-  async sendResetEmail(email: string): Promise<void> {
+  async sendResetPasswordEmail(email: string): Promise<void> {
     const user = await this.usersService.findOneByEmail(email);
 
     if (user === null) {
-      throw new BadRequestException('Email does not exist');
+      throw new UnauthorizedException('Email does not exist');
     }
 
     const resetPasswordId = uuidV4();
 
     await this.redisService.set(
       `reset-password/${resetPasswordId}`,
-      resetPasswordId,
+      user.email,
       1 * 24 * 60 * 60, // valid for 1 day
     );
 
@@ -171,5 +171,33 @@ export class AuthService {
       user.username,
       resetPasswordId,
     );
+  }
+
+  async resetPassword(resetPasswordDto: ResetPasswordDto): Promise<void> {
+    const key = `reset-password/${resetPasswordDto.token}`;
+    const storedEmail = await this.redisService.get<string>(key);
+
+    if (storedEmail === null) {
+      throw new UnauthorizedException('Token not valid');
+    }
+
+    const user = await this.usersService.findOneByEmail(storedEmail);
+
+    if (user === null) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    if (await compareHash(resetPasswordDto.newPassword, user.password)) {
+      throw new BadRequestException(
+        'New password cannot be the same as the old password.',
+      );
+    }
+
+    await this.usersService.updatePassword(
+      user.id,
+      await hashData(resetPasswordDto.newPassword),
+    );
+
+    await this.redisService.delete(key);
   }
 }

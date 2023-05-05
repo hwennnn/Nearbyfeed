@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post, Put, UseGuards } from '@nestjs/common';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
-import { AuthDto, ForgotPasswordDto } from 'src/auth/dto';
+import { AuthDto, ForgotPasswordDto, ResetPasswordDto } from 'src/auth/dto';
 import JwtAuthGuard from 'src/auth/guards/jwt-auth.guard';
 import JwtRefreshGuard from 'src/auth/guards/jwt-refresh.guard';
 import { type AuthToken } from 'src/entities';
@@ -45,9 +45,13 @@ export class AuthController {
   ): Promise<void> {
     const email = forgotPasswordDto.email;
 
-    await this.authService.sendResetEmail(email);
+    await this.authService.sendResetPasswordEmail(email);
   }
 
   @Put('reset-password')
-  async resetPassword(): Promise<void> {}
+  async resetPassword(
+    @Body() resetPasswordDto: ResetPasswordDto,
+  ): Promise<void> {
+    await this.authService.resetPassword(resetPasswordDto);
+  }
 }

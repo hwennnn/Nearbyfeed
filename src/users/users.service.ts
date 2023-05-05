@@ -101,4 +101,27 @@ export class UsersService {
         }),
     );
   }
+
+  async updatePassword(
+    id: number,
+    password: string,
+  ): Promise<UserWithoutPassword> {
+    return this.excludePassword(
+      await this.prismaService.user
+        .update({
+          where: { id },
+          data: {
+            password,
+          },
+        })
+        .catch((e) => {
+          this.logger.error(
+            `Failed to update password for user ${id}`,
+            e instanceof Error ? e.stack : undefined,
+            UsersService.name,
+          );
+          throw e;
+        }),
+    );
+  }
 }
