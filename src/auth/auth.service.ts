@@ -6,8 +6,9 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { type AuthDto } from 'src/auth/dto/auth.dto';
+import { type AuthDto } from 'src/auth/dto';
 import { type AuthToken, type TokenPayload } from 'src/entities';
+import { MailService } from 'src/mail/mail.service';
 import { RedisService } from 'src/redis/redis.service';
 import { type CreateUserDto } from 'src/users/dto';
 import { UsersService } from 'src/users/users.service';
@@ -22,6 +23,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     private readonly redisService: RedisService,
+    private readonly mailService: MailService,
   ) {}
 
   async register(createUserDto: CreateUserDto): Promise<AuthToken> {
@@ -147,5 +149,15 @@ export class AuthService {
       secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
       expiresIn: '30d',
     });
+  }
+
+  async sendResetEmail(email: string): Promise<void> {
+    const user = await this.usersService.findOneByEmail(email);
+
+    if (user === null) {
+      throw new BadRequestException('Email does not exist');
+    }
+
+    await this.mailService.sendResetPasswordEmail(user.email, user.username);
   }
 }
