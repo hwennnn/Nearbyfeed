@@ -158,6 +158,18 @@ export class AuthService {
       throw new BadRequestException('Email does not exist');
     }
 
-    await this.mailService.sendResetPasswordEmail(user.email, user.username);
+    const resetPasswordId = uuidV4();
+
+    await this.redisService.set(
+      `reset-password/${resetPasswordId}`,
+      resetPasswordId,
+      1 * 24 * 60 * 60, // valid for 1 day
+    );
+
+    await this.mailService.sendResetPasswordEmail(
+      user.email,
+      user.username,
+      resetPasswordId,
+    );
   }
 }

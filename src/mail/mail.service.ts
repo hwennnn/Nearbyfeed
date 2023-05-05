@@ -8,7 +8,11 @@ export class MailService {
     private readonly logger: Logger,
   ) {}
 
-  async sendResetPasswordEmail(email: string, username: string): Promise<void> {
+  async sendResetPasswordEmail(
+    email: string,
+    username: string,
+    resetId: string,
+  ): Promise<void> {
     await this.mailerService
       .sendMail({
         to: email, // list of receivers
@@ -16,7 +20,7 @@ export class MailService {
         template: './reset-password',
         context: {
           username,
-          resetEmailLink: 'http://localhost:3000/reset-email',
+          resetEmailLink: 'http://localhost:3000/reset-password/' + resetId, // link to redirect the user to client to reset password
         },
       })
       .then(() => {
