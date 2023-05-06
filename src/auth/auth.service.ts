@@ -70,7 +70,7 @@ export class AuthService {
         AuthService.name,
       );
 
-      throw e;
+      throw new UnauthorizedException('Invalid credentials');
     });
   }
 
@@ -120,7 +120,8 @@ export class AuthService {
         e instanceof Error ? e.stack : undefined,
         AuthService.name,
       );
-      throw e;
+
+      throw new BadRequestException('Failed to generate tokens');
     });
 
     const hashedRefreshToken = await hashData(refreshToken);

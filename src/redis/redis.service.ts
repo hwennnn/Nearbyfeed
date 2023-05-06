@@ -1,4 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Redis from 'ioredis';
 
@@ -23,7 +27,7 @@ export class RedisService {
         RedisService.name,
       );
 
-      throw e;
+      throw new InternalServerErrorException();
     });
   }
 

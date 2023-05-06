@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { type User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { type CreateUserDto, type UpdateUserDto } from 'src/users/dto';
@@ -30,15 +30,23 @@ export class UsersService {
             UsersService.name,
           );
 
-          throw e;
+          throw new BadRequestException('Failed to create user');
         }),
     );
   }
 
   async findAll(): Promise<UserWithoutPassword[]> {
-    return (await this.prismaService.user.findMany({})).map((user) =>
-      this.excludePassword(user),
-    );
+    return (
+      await this.prismaService.user.findMany({}).catch((e) => {
+        this.logger.error(
+          'Failed to find users',
+          e instanceof Error ? e.stack : undefined,
+          UsersService.name,
+        );
+
+        throw new BadRequestException('Failed to find users');
+      })
+    ).map((user) => this.excludePassword(user));
   }
 
   async findOne(id: number): Promise<UserWithoutPassword> {
@@ -56,17 +64,27 @@ export class UsersService {
             UsersService.name,
           );
 
-          throw e;
+          throw new BadRequestException('Failed to find user');
         }),
     );
   }
 
   async findOneByEmail(email: string): Promise<User | null> {
-    const user = await this.prismaService.user.findUnique({
-      where: {
-        email,
-      },
-    });
+    const user = await this.prismaService.user
+      .findUnique({
+        where: {
+          email,
+        },
+      })
+      .catch((e) => {
+        this.logger.error(
+          `Failed to find user with email ${email}`,
+          e instanceof Error ? e.stack : undefined,
+          UsersService.name,
+        );
+
+        throw new BadRequestException('Failed to find user by this email');
+      });
 
     return user !== null ? user : null;
   }
@@ -97,7 +115,8 @@ export class UsersService {
             e instanceof Error ? e.stack : undefined,
             UsersService.name,
           );
-          throw e;
+
+          throw new BadRequestException('Failed to update user');
         }),
     );
   }
@@ -120,7 +139,8 @@ export class UsersService {
             e instanceof Error ? e.stack : undefined,
             UsersService.name,
           );
-          throw e;
+
+          throw new BadRequestException('Failed to update user');
         }),
     );
   }

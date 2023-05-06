@@ -1,5 +1,5 @@
 import { MailerService } from '@nestjs-modules/mailer';
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 
 @Injectable()
 export class MailService {
@@ -32,7 +32,8 @@ export class MailService {
           e instanceof Error ? e.stack : undefined,
           MailService.name,
         );
-        throw e;
+
+        throw new BadRequestException('Failed to send reset password email');
       });
   }
 }
