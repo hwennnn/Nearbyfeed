@@ -5,12 +5,13 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { type Post as PostEntity } from '@prisma/client';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import JwtAuthGuard from 'src/auth/guards/jwt-auth.guard';
-import { UpdatePostDto } from 'src/posts/dto';
+import { GetPostDto, UpdatePostDto } from 'src/posts/dto';
 import { CreatePostDto } from 'src/posts/dto/create-post.dto';
 import { PostsService } from './posts.service';
 
@@ -28,8 +29,12 @@ export class PostsController {
   }
 
   @Get()
-  async findAll(): Promise<PostEntity[]> {
-    return await this.postsService.findAll();
+  async findAll(@Query() getPostDto: GetPostDto): Promise<PostEntity[]> {
+    return await this.postsService.findNearby(
+      +getPostDto.latitude,
+      +getPostDto.longitude,
+      +getPostDto.distance,
+    );
   }
 
   @Patch(':id')

@@ -31,16 +31,36 @@ export class PostsService {
     return post;
   }
 
-  async findAll(): Promise<Post[]> {
-    return await this.prismaService.post.findMany({}).catch((e) => {
-      this.logger.error(
-        'Failed to find all posts',
-        e instanceof Error ? e.stack : undefined,
-        PostsService.name,
-      );
+  async findNearby(
+    latitude: number,
+    longitude: number,
+    distance: number,
+  ): Promise<Post[]> {
+    const degreesPerMeter = 1 / 111320; // 1 degree is approximately 111320 meters
+    const degreesPerDistance = distance * degreesPerMeter;
 
-      throw new BadRequestException('Failed to find all posts');
-    });
+    return await this.prismaService.post
+      .findMany({
+        where: {
+          latitude: {
+            lte: latitude + degreesPerDistance,
+            gte: latitude - degreesPerDistance,
+          },
+          longitude: {
+            lte: longitude + degreesPerDistance,
+            gte: longitude - degreesPerDistance,
+          },
+        },
+      })
+      .catch((e) => {
+        this.logger.error(
+          'Failed to find posts',
+          e instanceof Error ? e.stack : undefined,
+          PostsService.name,
+        );
+
+        throw new BadRequestException('Failed to find posts');
+      });
   }
 
   async update(id: number, updatePostDto: UpdatePostDto): Promise<Post> {
