@@ -1,15 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { type TokenPayload } from 'src/entities';
-import { UsersService } from 'src/users/users.service';
+import { RedisService } from 'src/redis/redis.service';
 
 @Injectable()
 export class JwtAuthStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(
     configService: ConfigService,
-    private readonly usersService: UsersService,
+    private readonly redisService: RedisService,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -18,6 +18,14 @@ export class JwtAuthStrategy extends PassportStrategy(Strategy, 'jwt') {
   }
 
   async validate(payload: TokenPayload): Promise<any> {
+    const storedRefreshToken = await this.redisService.get<string>(
+      payload.sessionId,
+    );
+
+    if (storedRefreshToken === null) {
+      throw new UnauthorizedException('Invalid token');
+    }
+
     return {
       userId: payload.sub,
       email: payload.email,
