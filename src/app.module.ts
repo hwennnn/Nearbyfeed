@@ -6,6 +6,9 @@ import { PrismaModule } from 'src/prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { RedisModule } from './redis/redis.module';
 import { UsersModule } from './users/users.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { ImagesController } from './images/images.controller';
+import { ImagesModule } from './images/images.module';
 
 @Module({
   imports: [
@@ -18,6 +21,9 @@ import { UsersModule } from './users/users.module';
     RedisModule,
     MailModule,
     PostsModule,
+    CloudinaryModule,
+    ImagesModule,
   ],
+  controllers: [ImagesController],
 })
 export class AppModule {}
