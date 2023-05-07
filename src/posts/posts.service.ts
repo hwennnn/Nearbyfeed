@@ -11,8 +11,18 @@ export class PostsService {
     private readonly logger: Logger,
   ) {}
 
-  async create(createPostDto: CreatePostDto, authorId: number): Promise<Post> {
-    const data = { ...createPostDto, authorId };
+  async create(
+    createPostDto: CreatePostDto,
+    authorId: number,
+    image?: string,
+  ): Promise<Post> {
+    const data = {
+      ...createPostDto,
+      authorId,
+      image,
+      latitude: +createPostDto.latitude,
+      longitude: +createPostDto.longitude,
+    };
 
     const post = await this.prismaService.post
       .create({

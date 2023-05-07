@@ -1,7 +1,6 @@
 import {
   IsLatitude,
   IsLongitude,
-  IsNumber,
   IsString,
   MaxLength,
   MinLength,
@@ -19,10 +18,8 @@ export class CreatePostDto {
   content: string;
 
   @IsLatitude()
-  @IsNumber()
   latitude: number;
 
   @IsLongitude()
-  @IsNumber()
   longitude: number;
 }

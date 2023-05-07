@@ -6,26 +6,42 @@ import {
   Patch,
   Post,
   Query,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { type Post as PostEntity } from '@prisma/client';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import JwtAuthGuard from 'src/auth/guards/jwt-auth.guard';
+import { imageUploadOptions } from 'src/images/constants';
+import { ImagesService } from 'src/images/images.service';
 import { GetPostDto, UpdatePostDto } from 'src/posts/dto';
 import { CreatePostDto } from 'src/posts/dto/create-post.dto';
 import { PostsService } from './posts.service';
 
 @Controller('posts')
 export class PostsController {
-  constructor(private readonly postsService: PostsService) {}
+  constructor(
+    private readonly postsService: PostsService,
+    private readonly imagesService: ImagesService,
+  ) {}
 
   @Post()
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FileInterceptor('image', imageUploadOptions))
   async create(
     @Body() createPostDto: CreatePostDto,
     @GetUser('userId') userId: string,
+    @UploadedFile() file: Express.Multer.File,
   ): Promise<PostEntity> {
-    return await this.postsService.create(createPostDto, +userId);
+    let image: string | undefined;
+
+    if (file !== undefined) {
+      image = await this.imagesService.uploadImage(file);
+    }
+
+    return await this.postsService.create(createPostDto, +userId, image);
   }
 
   @Get()
