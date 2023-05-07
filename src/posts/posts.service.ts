@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { type Post } from '@prisma/client';
+import { FilterService } from 'src/filter/filter.service';
 import { type CreatePostDto, type UpdatePostDto } from 'src/posts/dto';
 
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -9,6 +10,7 @@ export class PostsService {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly logger: Logger,
+    private readonly filterService: FilterService,
   ) {}
 
   async create(
@@ -22,6 +24,8 @@ export class PostsService {
       image,
       latitude: +createPostDto.latitude,
       longitude: +createPostDto.longitude,
+      title: this.filterService.filterText(createPostDto.title),
+      content: this.filterService.filterText(createPostDto.content),
     };
 
     const post = await this.prismaService.post
@@ -74,10 +78,22 @@ export class PostsService {
   }
 
   async update(id: number, updatePostDto: UpdatePostDto): Promise<Post> {
+    const data = {
+      ...updatePostDto,
+    };
+
+    if (updatePostDto.title !== undefined) {
+      data.title = this.filterService.filterText(updatePostDto.title);
+    }
+
+    if (updatePostDto.content !== undefined) {
+      data.content = this.filterService.filterText(updatePostDto.content);
+    }
+
     return await this.prismaService.post
       .update({
         where: { id },
-        data: updatePostDto,
+        data,
       })
       .catch((e) => {
         this.logger.error(

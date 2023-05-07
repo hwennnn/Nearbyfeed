@@ -4,12 +4,13 @@ import { MailModule } from 'src/mail/mail.module';
 import { PostsModule } from 'src/posts/posts.module';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
-import { RedisModule } from './redis/redis.module';
-import { UsersModule } from './users/users.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { CommentsModule } from './comments/comments.module';
+import { FilterModule } from './filter/filter.module';
 import { ImagesController } from './images/images.controller';
 import { ImagesModule } from './images/images.module';
-import { CommentsModule } from './comments/comments.module';
+import { RedisModule } from './redis/redis.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { CommentsModule } from './comments/comments.module';
     CloudinaryModule,
     ImagesModule,
     CommentsModule,
+    FilterModule,
   ],
   controllers: [ImagesController],
 })
