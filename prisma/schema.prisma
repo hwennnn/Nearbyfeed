@@ -52,6 +52,7 @@ model Comment {
   content   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  isDeleted Boolean  @default(false)
   post      Post     @relation(fields: [postId], references: [id])
   postId    Int
   author    User     @relation(fields: [authorId], references: [id])
