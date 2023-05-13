@@ -133,7 +133,7 @@ export class PostsService {
       },
     });
 
-    let incrementValue = 0;
+    let incrementValue = value;
 
     // If the user has already voted on the post
     if (updoot !== null) {
