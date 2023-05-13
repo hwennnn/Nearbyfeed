@@ -1,6 +1,7 @@
 import {
   IsLatitude,
   IsLongitude,
+  IsOptional,
   IsString,
   MaxLength,
   MinLength,
@@ -12,6 +13,7 @@ export class CreatePostDto {
   @MaxLength(25)
   title: string;
 
+  @IsOptional()
   @IsString()
   @MinLength(15)
   @MaxLength(100)

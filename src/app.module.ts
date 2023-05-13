@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { GeocodingModule } from 'src/geocoding/geocoding.module';
 import { MailModule } from 'src/mail/mail.module';
 import { PostsModule } from 'src/posts/posts.module';
 import { PrismaModule } from 'src/prisma/prisma.module';
@@ -27,6 +28,7 @@ import { UsersModule } from './users/users.module';
     ImagesModule,
     CommentsModule,
     FilterModule,
+    GeocodingModule,
   ],
   controllers: [ImagesController],
 })

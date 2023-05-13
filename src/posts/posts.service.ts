@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { type Post } from '@prisma/client';
 import { FilterService } from 'src/filter/filter.service';
+import { GeocodingService } from 'src/geocoding/geocoding.service';
 import { type CreatePostDto, type UpdatePostDto } from 'src/posts/dto';
 
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -11,6 +12,7 @@ export class PostsService {
     private readonly prismaService: PrismaService,
     private readonly logger: Logger,
     private readonly filterService: FilterService,
+    private readonly geocodingService: GeocodingService,
   ) {}
 
   async create(
@@ -18,6 +20,11 @@ export class PostsService {
     authorId: number,
     image?: string,
   ): Promise<Post> {
+    const geolocationName = await this.geocodingService.getLocationName(
+      +createPostDto.latitude,
+      +createPostDto.longitude,
+    );
+
     const data = {
       ...createPostDto,
       authorId,
@@ -25,7 +32,12 @@ export class PostsService {
       latitude: +createPostDto.latitude,
       longitude: +createPostDto.longitude,
       title: this.filterService.filterText(createPostDto.title),
-      content: this.filterService.filterText(createPostDto.content),
+      content:
+        createPostDto.content !== undefined
+          ? this.filterService.filterText(createPostDto.content)
+          : null,
+      locationName: geolocationName?.locationName,
+      fullLocationName: geolocationName?.displayName,
     };
 
     const post = await this.prismaService.post
