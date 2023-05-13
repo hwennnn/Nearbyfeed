@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-import { type Post } from '@prisma/client';
+import { type Post, type Updoot } from '@prisma/client';
 import { FilterService } from 'src/filter/filter.service';
 import { GeocodingService } from 'src/geocoding/geocoding.service';
 import { type CreatePostDto, type UpdatePostDto } from 'src/posts/dto';
@@ -116,5 +116,110 @@ export class PostsService {
 
         throw new BadRequestException('Failed to update post');
       });
+  }
+
+  async vote(
+    userId: number,
+    postId: number,
+    value: number,
+  ): Promise<{
+    updoot: Updoot;
+    post: Post;
+  }> {
+    const updoot = await this.prismaService.updoot.findFirst({
+      where: {
+        userId,
+        postId,
+      },
+    });
+
+    let result: [Updoot, Post];
+
+    if (updoot === null) {
+      result = await this.prismaService.$transaction([
+        this.prismaService.updoot.create({
+          data: {
+            postId,
+            userId,
+            value,
+          },
+        }),
+        this.prismaService.post.update({
+          data: {
+            points: {
+              increment: value,
+            },
+          },
+          where: {
+            id: postId,
+          },
+        }),
+      ]);
+
+      console.log(result);
+    } else if (updoot.value !== value) {
+      const newValue = updoot.value === 0 ? value : value * 2;
+
+      result = await this.prismaService.$transaction([
+        this.prismaService.updoot.update({
+          data: {
+            value,
+          },
+          where: {
+            postId_userId: {
+              postId,
+              userId,
+            },
+          },
+        }),
+        this.prismaService.post.update({
+          data: {
+            points: {
+              increment: newValue,
+            },
+          },
+          where: {
+            id: postId,
+          },
+        }),
+      ]);
+
+      console.log(result);
+    } else {
+      // updoot.value === value
+      // cancel the vote if the updoot value is the same as given value
+      // reset the updoot value to 0
+      result = await this.prismaService.$transaction([
+        this.prismaService.updoot.update({
+          data: {
+            value: 0,
+          },
+          where: {
+            postId_userId: {
+              postId,
+              userId,
+            },
+          },
+        }),
+        this.prismaService.post.update({
+          data: {
+            points: {
+              // inverse the value
+              increment: -value,
+            },
+          },
+          where: {
+            id: postId,
+          },
+        }),
+      ]);
+
+      console.log(result);
+    }
+
+    return {
+      updoot: result[0],
+      post: result[1],
+    };
   }
 }

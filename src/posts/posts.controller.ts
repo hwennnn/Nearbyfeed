@@ -5,19 +5,21 @@ import {
   Param,
   Patch,
   Post,
+  Put,
   Query,
   UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { type Post as PostEntity } from '@prisma/client';
+import { type Post as PostEntity, type Updoot } from '@prisma/client';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import JwtAuthGuard from 'src/auth/guards/jwt-auth.guard';
 import { imageUploadOptions } from 'src/images/constants';
 import { ImagesService } from 'src/images/images.service';
 import { GetPostDto, UpdatePostDto } from 'src/posts/dto';
 import { CreatePostDto } from 'src/posts/dto/create-post.dto';
+import { UpdootDto } from 'src/posts/dto/updoot.dto';
 import { PostsService } from './posts.service';
 
 @Controller('posts')
@@ -60,5 +62,18 @@ export class PostsController {
     @Body() updatePostDto: UpdatePostDto,
   ): Promise<PostEntity> {
     return await this.postsService.update(+id, updatePostDto);
+  }
+
+  @Put(':id/vote')
+  @UseGuards(JwtAuthGuard)
+  async vote(
+    @GetUser('userId') userId: string,
+    @Param('id') postId: string,
+    @Body() updootDto: UpdootDto,
+  ): Promise<{
+    updoot: Updoot;
+    post: PostEntity;
+  }> {
+    return await this.postsService.vote(+userId, +postId, updootDto.value);
   }
 }

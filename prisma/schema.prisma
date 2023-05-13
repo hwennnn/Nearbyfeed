@@ -18,8 +18,8 @@ model User {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   posts     Post[]
-  Comment   Comment[]
-  Like      Like[]
+  comments  Comment[]
+  updoots   Updoot[]
 }
 
 model Post {
@@ -31,14 +31,15 @@ model Post {
   locationName     String?
   fullLocationName String?
   image            String?
+  points           Int           @default(0)
   flagged          Boolean       @default(false)
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
   author           User          @relation(fields: [authorId], references: [id])
   authorId         Int
-  FlaggedPost      FlaggedPost[]
-  Comment          Comment[]
-  Like             Like[]
+  flaggedPosts     FlaggedPost[]
+  comments         Comment[]
+  updoots          Updoot[]
 }
 
 model FlaggedPost {
@@ -61,11 +62,15 @@ model Comment {
   authorId  Int
 }
 
-model Like {
-  id        Int      @id @default(autoincrement())
+model Updoot {
+  id        Int      @default(autoincrement())
+  value     Int
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   post      Post     @relation(fields: [postId], references: [id])
   postId    Int
   user      User     @relation(fields: [userId], references: [id])
   userId    Int
+
+  @@id([postId, userId])
 }
