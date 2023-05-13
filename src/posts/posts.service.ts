@@ -133,12 +133,39 @@ export class PostsService {
       },
     });
 
-    let result: [Updoot, Post];
+    let incrementValue = 0;
 
-    if (updoot === null) {
-      result = await this.prismaService.$transaction([
-        this.prismaService.updoot.create({
-          data: {
+    // If the user has already voted on the post
+    if (updoot !== null) {
+      // If the user's vote is the same as the current vote
+      if (updoot.value === value) {
+        // nothing changed
+        incrementValue = 0;
+      } else {
+        // If the user is changing their vote
+        if (updoot.value !== 0 && value === 0) {
+          // If the previous vote was not 0 and the new vote is 0, set the increment value to the inverse of the previous vote
+          incrementValue = -updoot.value;
+        } else {
+          // If the previous vote was 0 or the new vote is not 0, set the increment value to the new vote multiplied by 2
+          incrementValue = updoot.value === 0 ? value : value * 2;
+        }
+      }
+    }
+
+    const [resultUpdoot, resultPost] = await this.prismaService
+      .$transaction([
+        this.prismaService.updoot.upsert({
+          where: {
+            postId_userId: {
+              postId,
+              userId,
+            },
+          },
+          update: {
+            value,
+          },
+          create: {
             postId,
             userId,
             value,
@@ -147,79 +174,29 @@ export class PostsService {
         this.prismaService.post.update({
           data: {
             points: {
-              increment: value,
+              increment: incrementValue,
             },
           },
           where: {
             id: postId,
           },
         }),
-      ]);
+      ])
+      .catch((e) => {
+        this.logger.error(
+          'Failed to updoot',
+          e instanceof Error ? e.stack : undefined,
+          PostsService.name,
+        );
 
-      console.log(result);
-    } else if (updoot.value !== value) {
-      const newValue = updoot.value === 0 ? value : value * 2;
+        throw new BadRequestException('Failed to updoot');
+      });
 
-      result = await this.prismaService.$transaction([
-        this.prismaService.updoot.update({
-          data: {
-            value,
-          },
-          where: {
-            postId_userId: {
-              postId,
-              userId,
-            },
-          },
-        }),
-        this.prismaService.post.update({
-          data: {
-            points: {
-              increment: newValue,
-            },
-          },
-          where: {
-            id: postId,
-          },
-        }),
-      ]);
-
-      console.log(result);
-    } else {
-      // updoot.value === value
-      // cancel the vote if the updoot value is the same as given value
-      // reset the updoot value to 0
-      result = await this.prismaService.$transaction([
-        this.prismaService.updoot.update({
-          data: {
-            value: 0,
-          },
-          where: {
-            postId_userId: {
-              postId,
-              userId,
-            },
-          },
-        }),
-        this.prismaService.post.update({
-          data: {
-            points: {
-              // inverse the value
-              increment: -value,
-            },
-          },
-          where: {
-            id: postId,
-          },
-        }),
-      ]);
-
-      console.log(result);
-    }
+    console.log(resultUpdoot, resultPost);
 
     return {
-      updoot: result[0],
-      post: result[1],
+      updoot: resultUpdoot,
+      post: resultPost,
     };
   }
 }
