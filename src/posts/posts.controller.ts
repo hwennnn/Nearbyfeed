@@ -54,12 +54,14 @@ export class PostsController {
   async findAll(
     @Query() getPostDto: GetPostDto,
     @GetUser() user: TokenUser | null,
-  ): Promise<PostWithUpdoot[]> {
+  ): Promise<{ posts: PostWithUpdoot[]; hasMore: boolean }> {
     const parsedDto: GetPostDto = {
       latitude: +getPostDto.latitude,
       longitude: +getPostDto.longitude,
       distance: +getPostDto.distance,
       userId: user?.userId,
+      cursor: getPostDto.cursor,
+      take: getPostDto.take !== undefined ? +getPostDto.take : undefined,
     };
 
     return await this.postsService.findNearby(parsedDto);

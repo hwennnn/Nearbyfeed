@@ -62,9 +62,14 @@ export class PostsService {
     return post;
   }
 
-  async findNearby(dto: GetPostDto): Promise<PostWithUpdoot[]> {
+  async findNearby(dto: GetPostDto): Promise<{
+    posts: PostWithUpdoot[];
+    hasMore: boolean;
+  }> {
     const degreesPerMeter = 1 / 111320; // 1 degree is approximately 111320 meters
     const degreesPerDistance = dto.distance * degreesPerMeter;
+
+    const limit = dto.take ?? 15;
 
     const selectUpdoots =
       dto.userId !== undefined
@@ -75,8 +80,21 @@ export class PostsService {
           }
         : false;
 
-    return await this.prismaService.post
+    let postCursor: { id: number } | undefined;
+    if (dto.cursor !== undefined) {
+      postCursor = {
+        id: +dto.cursor,
+      };
+    }
+
+    // in order to skip the cursor
+    const skip = postCursor !== undefined ? 1 : undefined;
+
+    const posts = await this.prismaService.post
       .findMany({
+        take: limit + 1,
+        skip,
+        cursor: postCursor,
         where: {
           latitude: {
             lte: dto.latitude + degreesPerDistance,
@@ -103,6 +121,9 @@ export class PostsService {
           authorId: true,
           updoots: selectUpdoots,
         },
+        orderBy: {
+          createdAt: 'desc',
+        },
       })
       .catch((e) => {
         this.logger.error(
@@ -113,6 +134,16 @@ export class PostsService {
 
         throw new BadRequestException('Failed to find posts');
       });
+
+    const hasMore = posts.length === limit + 1;
+    if (hasMore) {
+      posts.pop();
+    }
+
+    return {
+      posts,
+      hasMore,
+    };
   }
 
   async update(id: number, updatePostDto: UpdatePostDto): Promise<Post> {
@@ -217,8 +248,6 @@ export class PostsService {
 
         throw new BadRequestException('Failed to updoot');
       });
-
-    console.log(resultUpdoot, resultPost);
 
     return {
       updoot: resultUpdoot,
