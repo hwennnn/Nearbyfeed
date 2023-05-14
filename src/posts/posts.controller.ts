@@ -14,12 +14,15 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { type Post as PostEntity, type Updoot } from '@prisma/client';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
+import { type TokenUser } from 'src/auth/entities';
 import JwtAuthGuard from 'src/auth/guards/jwt-auth.guard';
+import { OptionalJwtAuthGuard } from 'src/auth/guards/optional-jwt-auth.guard';
 import { imageUploadOptions } from 'src/images/constants';
 import { ImagesService } from 'src/images/images.service';
 import { GetPostDto, UpdatePostDto } from 'src/posts/dto';
 import { CreatePostDto } from 'src/posts/dto/create-post.dto';
 import { UpdootDto } from 'src/posts/dto/updoot.dto';
+import { type PostWithUpdoot } from 'src/posts/entities';
 import { PostsService } from './posts.service';
 
 @Controller('posts')
@@ -47,12 +50,19 @@ export class PostsController {
   }
 
   @Get()
-  async findAll(@Query() getPostDto: GetPostDto): Promise<PostEntity[]> {
-    return await this.postsService.findNearby(
-      +getPostDto.latitude,
-      +getPostDto.longitude,
-      +getPostDto.distance,
-    );
+  @UseGuards(OptionalJwtAuthGuard)
+  async findAll(
+    @Query() getPostDto: GetPostDto,
+    @GetUser() user: TokenUser | null,
+  ): Promise<PostWithUpdoot[]> {
+    const parsedDto: GetPostDto = {
+      latitude: +getPostDto.latitude,
+      longitude: +getPostDto.longitude,
+      distance: +getPostDto.distance,
+      userId: user?.userId,
+    };
+
+    return await this.postsService.findNearby(parsedDto);
   }
 
   @Patch(':id')

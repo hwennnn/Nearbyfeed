@@ -1,9 +1,9 @@
 import { Body, Controller, Get, Post, Put, UseGuards } from '@nestjs/common';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import { AuthDto, ForgotPasswordDto, ResetPasswordDto } from 'src/auth/dto';
+import { type AuthToken } from 'src/auth/entities';
 import JwtAuthGuard from 'src/auth/guards/jwt-auth.guard';
 import JwtRefreshGuard from 'src/auth/guards/jwt-refresh.guard';
-import { type AuthToken } from 'src/entities';
 import { CreateUserDto } from 'src/users/dto';
 import { AuthService } from './auth.service';
 

@@ -2,7 +2,12 @@ import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { type Post, type Updoot } from '@prisma/client';
 import { FilterService } from 'src/filter/filter.service';
 import { GeocodingService } from 'src/geocoding/geocoding.service';
-import { type CreatePostDto, type UpdatePostDto } from 'src/posts/dto';
+import {
+  type CreatePostDto,
+  type GetPostDto,
+  type UpdatePostDto,
+} from 'src/posts/dto';
+import { type PostWithUpdoot } from 'src/posts/entities';
 
 import { PrismaService } from 'src/prisma/prisma.service';
 
@@ -57,25 +62,46 @@ export class PostsService {
     return post;
   }
 
-  async findNearby(
-    latitude: number,
-    longitude: number,
-    distance: number,
-  ): Promise<Post[]> {
+  async findNearby(dto: GetPostDto): Promise<PostWithUpdoot[]> {
     const degreesPerMeter = 1 / 111320; // 1 degree is approximately 111320 meters
-    const degreesPerDistance = distance * degreesPerMeter;
+    const degreesPerDistance = dto.distance * degreesPerMeter;
+
+    const selectUpdoots =
+      dto.userId !== undefined
+        ? {
+            where: {
+              userId: +dto.userId,
+            },
+          }
+        : false;
 
     return await this.prismaService.post
       .findMany({
         where: {
           latitude: {
-            lte: latitude + degreesPerDistance,
-            gte: latitude - degreesPerDistance,
+            lte: dto.latitude + degreesPerDistance,
+            gte: dto.latitude - degreesPerDistance,
           },
           longitude: {
-            lte: longitude + degreesPerDistance,
-            gte: longitude - degreesPerDistance,
+            lte: dto.longitude + degreesPerDistance,
+            gte: dto.longitude - degreesPerDistance,
           },
+        },
+        select: {
+          id: true,
+          title: true,
+          content: true,
+          latitude: true,
+          longitude: true,
+          locationName: true,
+          fullLocationName: true,
+          image: true,
+          points: true,
+          flagged: true,
+          createdAt: true,
+          updatedAt: true,
+          authorId: true,
+          updoots: selectUpdoots,
         },
       })
       .catch((e) => {

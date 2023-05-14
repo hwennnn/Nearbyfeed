@@ -7,7 +7,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { type AuthDto, type ResetPasswordDto } from 'src/auth/dto';
-import { type AuthToken, type TokenPayload } from 'src/entities';
+import { type AuthToken, type TokenPayload } from 'src/auth/entities';
 import { MailService } from 'src/mail/mail.service';
 import { RedisService } from 'src/redis/redis.service';
 import { type CreateUserDto } from 'src/users/dto';

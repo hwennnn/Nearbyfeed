@@ -9,4 +9,6 @@ export class GetPostDto {
 
   @IsNumberString()
   distance: number;
+
+  userId?: string;
 }

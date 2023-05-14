@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { type TokenPayload } from 'src/entities';
+import { type TokenPayload, type TokenUser } from 'src/auth/entities';
 import { RedisService } from 'src/redis/redis.service';
 
 @Injectable()
@@ -17,7 +17,7 @@ export class JwtAuthStrategy extends PassportStrategy(Strategy, 'jwt') {
     });
   }
 
-  async validate(payload: TokenPayload): Promise<any> {
+  async validate(payload: TokenPayload): Promise<TokenUser> {
     const storedRefreshToken = await this.redisService.get<string>(
       payload.sessionId,
     );
