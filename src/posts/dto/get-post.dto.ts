@@ -1,4 +1,10 @@
-import { IsLatitude, IsLongitude, IsNumberString } from 'class-validator';
+import {
+  IsLatitude,
+  IsLongitude,
+  IsNumberString,
+  Validate,
+} from 'class-validator';
+import { ValidDistanceRangeValue } from 'src/posts/decorators';
 
 export class GetPostDto {
   @IsLatitude()
@@ -8,6 +14,7 @@ export class GetPostDto {
   longitude: number;
 
   @IsNumberString()
+  @Validate(ValidDistanceRangeValue)
   distance: number;
 
   userId?: string;
