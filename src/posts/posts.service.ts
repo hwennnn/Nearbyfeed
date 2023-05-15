@@ -5,6 +5,7 @@ import { GeocodingService } from 'src/geocoding/geocoding.service';
 import {
   type CreateCommentDto,
   type CreatePostDto,
+  type GetCommentDto,
   type GetPostDto,
   type UpdateCommentDto,
   type UpdatePostDto,
@@ -284,13 +285,31 @@ export class PostsService {
     return comment;
   }
 
-  async findComments(id: number): Promise<Comment[]> {
-    return await this.prismaService.comment
+  async findComments(
+    id: number,
+    dto: GetCommentDto,
+  ): Promise<{ comments: Comment[]; hasMore: boolean }> {
+    const limit = dto.take ?? 15;
+
+    let cursor: { id: number } | undefined;
+    if (dto.cursor !== undefined) {
+      cursor = {
+        id: +dto.cursor,
+      };
+    }
+
+    // in order to skip the cursor
+    const skip = cursor !== undefined ? 1 : undefined;
+
+    const comments = await this.prismaService.comment
       .findMany({
         where: {
           postId: id,
           isDeleted: false,
         },
+        cursor,
+        take: limit + 1,
+        skip,
         orderBy: {
           createdAt: 'desc',
         },
@@ -304,6 +323,16 @@ export class PostsService {
 
         throw new BadRequestException('Failed to find comments');
       });
+
+    const hasMore = comments.length === limit + 1;
+    if (hasMore) {
+      comments.pop();
+    }
+
+    return {
+      comments,
+      hasMore,
+    };
   }
 
   async updateComment(

@@ -25,6 +25,7 @@ import { imageUploadOptions } from 'src/images/constants';
 import { ImagesService } from 'src/images/images.service';
 import {
   CreateCommentDto,
+  GetCommentDto,
   GetPostDto,
   UpdateCommentDto,
   UpdatePostDto,
@@ -113,8 +114,16 @@ export class PostsController {
   }
 
   @Get(':id/comments')
-  async findComments(@Param('id') postId: string): Promise<Comment[]> {
-    return await this.postsService.findComments(+postId);
+  async findComments(
+    @Param('id') postId: string,
+    @Query() getCommentDto: GetCommentDto,
+  ): Promise<{ comments: Comment[]; hasMore: boolean }> {
+    const parsedDto: GetCommentDto = {
+      cursor: getCommentDto.cursor,
+      take: getCommentDto.take !== undefined ? +getCommentDto.take : undefined,
+    };
+
+    return await this.postsService.findComments(+postId, parsedDto);
   }
 
   @Patch(':postId/comments/:id')
