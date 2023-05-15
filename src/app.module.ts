@@ -6,7 +6,7 @@ import { PostsModule } from 'src/posts/posts.module';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
-import { CommentsModule } from './comments/comments.module';
+
 import { FilterModule } from './filter/filter.module';
 import { ImagesController } from './images/images.controller';
 import { ImagesModule } from './images/images.module';
@@ -26,7 +26,6 @@ import { UsersModule } from './users/users.module';
     PostsModule,
     CloudinaryModule,
     ImagesModule,
-    CommentsModule,
     FilterModule,
     GeocodingModule,
   ],

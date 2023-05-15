@@ -1,10 +1,12 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-import { type Post, type Updoot } from '@prisma/client';
+import { type Comment, type Post, type Updoot } from '@prisma/client';
 import { FilterService } from 'src/filter/filter.service';
 import { GeocodingService } from 'src/geocoding/geocoding.service';
 import {
+  type CreateCommentDto,
   type CreatePostDto,
   type GetPostDto,
+  type UpdateCommentDto,
   type UpdatePostDto,
 } from 'src/posts/dto';
 import { type PostWithUpdoot } from 'src/posts/entities';
@@ -20,7 +22,7 @@ export class PostsService {
     private readonly geocodingService: GeocodingService,
   ) {}
 
-  async create(
+  async createPost(
     createPostDto: CreatePostDto,
     authorId: number,
     image?: string,
@@ -62,7 +64,7 @@ export class PostsService {
     return post;
   }
 
-  async findNearby(dto: GetPostDto): Promise<{
+  async findNearbyPosts(dto: GetPostDto): Promise<{
     posts: PostWithUpdoot[];
     hasMore: boolean;
   }> {
@@ -146,7 +148,7 @@ export class PostsService {
     };
   }
 
-  async update(id: number, updatePostDto: UpdatePostDto): Promise<Post> {
+  async updatePost(id: number, updatePostDto: UpdatePostDto): Promise<Post> {
     const data = {
       ...updatePostDto,
     };
@@ -175,7 +177,7 @@ export class PostsService {
       });
   }
 
-  async vote(
+  async votePost(
     userId: number,
     postId: number,
     value: number,
@@ -253,5 +255,80 @@ export class PostsService {
       updoot: resultUpdoot,
       post: resultPost,
     };
+  }
+
+  async createComment(
+    createCommentDto: CreateCommentDto,
+    postId: number,
+    authorId: number,
+  ): Promise<Comment> {
+    const data = {
+      ...createCommentDto,
+      postId,
+      authorId,
+      content: this.filterService.filterText(createCommentDto.content),
+    };
+
+    const comment = await this.prismaService.comment
+      .create({ data })
+      .catch((e) => {
+        this.logger.error(
+          'Failed to create comment',
+          e instanceof Error ? e.stack : undefined,
+          PostsService.name,
+        );
+
+        throw new BadRequestException('Failed to create comment');
+      });
+
+    return comment;
+  }
+
+  async findComments(id: number): Promise<Comment[]> {
+    return await this.prismaService.comment
+      .findMany({
+        where: {
+          postId: id,
+          isDeleted: false,
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+      })
+      .catch((e) => {
+        this.logger.error(
+          `Failed to find comments for post ${id}`,
+          e instanceof Error ? e.stack : undefined,
+          PostsService.name,
+        );
+
+        throw new BadRequestException('Failed to find comments');
+      });
+  }
+
+  async updateComment(
+    commentId: number,
+    updateCommentDto: UpdateCommentDto,
+  ): Promise<Comment> {
+    const data = { ...updateCommentDto };
+
+    if (updateCommentDto.content !== undefined) {
+      data.content = this.filterService.filterText(updateCommentDto.content);
+    }
+
+    return await this.prismaService.comment
+      .update({
+        where: { id: commentId },
+        data,
+      })
+      .catch((e) => {
+        this.logger.error(
+          `Failed to update comment ${commentId}`,
+          e instanceof Error ? e.stack : undefined,
+          PostsService.name,
+        );
+
+        throw new BadRequestException('Failed to update comment');
+      });
   }
 }

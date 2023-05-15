@@ -12,14 +12,23 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { type Post as PostEntity, type Updoot } from '@prisma/client';
+import {
+  type Comment,
+  type Post as PostEntity,
+  type Updoot,
+} from '@prisma/client';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import { type TokenUser } from 'src/auth/entities';
 import JwtAuthGuard from 'src/auth/guards/jwt-auth.guard';
 import { OptionalJwtAuthGuard } from 'src/auth/guards/optional-jwt-auth.guard';
 import { imageUploadOptions } from 'src/images/constants';
 import { ImagesService } from 'src/images/images.service';
-import { GetPostDto, UpdatePostDto } from 'src/posts/dto';
+import {
+  CreateCommentDto,
+  GetPostDto,
+  UpdateCommentDto,
+  UpdatePostDto,
+} from 'src/posts/dto';
 import { CreatePostDto } from 'src/posts/dto/create-post.dto';
 import { UpdootDto } from 'src/posts/dto/updoot.dto';
 import { type PostWithUpdoot } from 'src/posts/entities';
@@ -46,7 +55,7 @@ export class PostsController {
       image = await this.imagesService.uploadImage(file);
     }
 
-    return await this.postsService.create(createPostDto, +userId, image);
+    return await this.postsService.createPost(createPostDto, +userId, image);
   }
 
   @Get()
@@ -64,21 +73,21 @@ export class PostsController {
       take: getPostDto.take !== undefined ? +getPostDto.take : undefined,
     };
 
-    return await this.postsService.findNearby(parsedDto);
+    return await this.postsService.findNearbyPosts(parsedDto);
   }
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
-  async update(
-    @Param('id') id: string,
+  async updatePost(
+    @Param('id') postId: string,
     @Body() updatePostDto: UpdatePostDto,
   ): Promise<PostEntity> {
-    return await this.postsService.update(+id, updatePostDto);
+    return await this.postsService.updatePost(+postId, updatePostDto);
   }
 
   @Put(':id/vote')
   @UseGuards(JwtAuthGuard)
-  async vote(
+  async votePost(
     @GetUser('userId') userId: string,
     @Param('id') postId: string,
     @Body() updootDto: UpdootDto,
@@ -86,6 +95,34 @@ export class PostsController {
     updoot: Updoot;
     post: PostEntity;
   }> {
-    return await this.postsService.vote(+userId, +postId, updootDto.value);
+    return await this.postsService.votePost(+userId, +postId, updootDto.value);
+  }
+
+  @Post(':id/comments')
+  @UseGuards(JwtAuthGuard)
+  async createComment(
+    @Body() createCommentDto: CreateCommentDto,
+    @GetUser('userId') userId: string,
+    @Param('id') postId: string,
+  ): Promise<Comment> {
+    return await this.postsService.createComment(
+      createCommentDto,
+      +postId,
+      +userId,
+    );
+  }
+
+  @Get(':id/comments')
+  async findComments(@Param('id') postId: string): Promise<Comment[]> {
+    return await this.postsService.findComments(+postId);
+  }
+
+  @Patch(':postId/comments/:id')
+  @UseGuards(JwtAuthGuard)
+  async updateComment(
+    @Param('id') commentId: string,
+    @Body() updateCommentDto: UpdateCommentDto,
+  ): Promise<Comment> {
+    return await this.postsService.updateComment(+commentId, updateCommentDto);
   }
 }
