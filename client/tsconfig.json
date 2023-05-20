@@ -4,11 +4,17 @@
     "strict": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "@env": ["./src/core/env.js"]
+      "@/*": [
+        "./src/*"
+      ],
+      "@env": [
+        "./src/core/env.js"
+      ]
     },
     "esModuleInterop": true,
-    "checkJs": true
+    "checkJs": true,
+    "strictPropertyInitialization": false,
+    "experimentalDecorators": true
   },
   "exclude": [
     "node_modules",

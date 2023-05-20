@@ -1,8 +1,9 @@
 import { create } from 'zustand';
 
+import type { TokenType } from '@/core/auth/utils';
+import { getTokens, removeTokens, setTokens } from '@/core/auth/utils';
+
 import { createSelectors } from '../utils';
-import type { TokenType } from './utils';
-import { getToken, removeToken, setToken } from './utils';
 
 interface AuthState {
   token: TokenType | null;
@@ -16,16 +17,16 @@ const _useAuth = create<AuthState>((set, get) => ({
   status: 'idle',
   token: null,
   signIn: (token) => {
-    setToken(token);
+    setTokens(token);
     set({ status: 'signIn', token });
   },
   signOut: () => {
-    removeToken();
+    removeTokens();
     set({ status: 'signOut', token: null });
   },
   hydrate: () => {
     try {
-      const userToken = getToken();
+      const userToken = getTokens();
       if (userToken !== null) {
         get().signIn(userToken);
       } else {
@@ -34,6 +35,7 @@ const _useAuth = create<AuthState>((set, get) => ({
     } catch (e) {
       // catch error here
       // Maybe sign_out user!
+      signOut();
     }
   },
 }));
