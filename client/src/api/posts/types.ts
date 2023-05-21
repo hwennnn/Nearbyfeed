@@ -1,6 +1,15 @@
 export type Post = {
-  userId: number;
   id: number;
   title: string;
-  body: string;
+  content: string | null;
+  latitude: number;
+  longitude: number;
+  locationName: string | null;
+  fullLocationName: string | null;
+  image: string | null;
+  points: number;
+  flagged: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  authorId: number;
 };

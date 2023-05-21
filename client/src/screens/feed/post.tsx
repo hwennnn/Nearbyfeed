@@ -31,7 +31,7 @@ export const Post = () => {
   return (
     <View className="flex-1 ">
       <Text variant="h2">{data.title}</Text>
-      <Text variant="md">{data.body} </Text>
+      <Text variant="md">{data.content} </Text>
     </View>
   );
 };

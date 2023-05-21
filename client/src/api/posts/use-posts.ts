@@ -1,19 +1,50 @@
 import type { AxiosError } from 'axios';
-import { createQuery } from 'react-query-kit';
+import { createInfiniteQuery } from 'react-query-kit';
 
 import { client } from '../common';
 import type { Post } from './types';
 
-type Response = Post[];
-type Variables = void; // as react-query-kit is strongly typed, we need to specify the type of the variables as void in case we don't need them
+type Response = {
+  posts: Post[];
+  hasMore: boolean;
+};
+type Variables = {
+  latitude: number | null;
+  longitude: number | null;
+  distance: number;
+  cursor?: string;
+  take?: number;
+};
 
-export const usePosts = createQuery<Response, Variables, AxiosError>(
-  'posts', // we recommend using  endpoint base url as primaryKey
-  async ({ queryKey: [primaryKey] }) => {
+export const usePosts = createInfiniteQuery<Response, Variables, AxiosError>(
+  'posts', // we recommend using endpoint base url as primaryKey
+  async ({ queryKey: [primaryKey, variables], pageParam }) => {
     // in case if variables is needed, we can use destructuring to get it from queryKey array like this: ({ queryKey: [primaryKey, variables] })
     // primaryKey is 'posts' in this case
 
-    const response = await client.get(`${primaryKey}`);
-    return response.data.posts;
+    const cursor = pageParam !== undefined ? pageParam.toString() : pageParam;
+
+    const response = await client
+      .get(`${primaryKey}`, {
+        params: {
+          ...variables,
+          cursor,
+        },
+      })
+      .catch((error) => {
+        return Promise.reject(error);
+      });
+
+    return response.data;
+  },
+  {
+    getNextPageParam: (lastPage, _) => {
+      if (!lastPage.hasMore) return undefined;
+
+      const { posts } = lastPage;
+      const lastPost = posts[posts.length - 1];
+
+      return lastPost.id;
+    },
   }
 );

@@ -1,16 +1,60 @@
 import { useNavigation } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { RefreshControl } from 'react-native';
 
 import type { Post } from '@/api';
 import { usePosts } from '@/api';
-import { EmptyList, Text, View } from '@/ui';
+import { Button, EmptyList, Text, View } from '@/ui';
+import { retrieveCurrentPosition } from '@/utils/geolocation-utils';
 
 import { Card } from './card';
 
 export const Feed = () => {
-  const { data, isLoading, isError } = usePosts();
+  const [longitude, setLongitude] = useState<number | null>(null);
+  const [latitude, setLatitude] = useState<number | null>(null);
+  const [distance, setDistance] = useState(200);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const {
+    data,
+    isLoading,
+    isError,
+    refetch,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = usePosts({
+    variables: {
+      distance,
+      latitude,
+      longitude,
+      take: 15,
+    },
+    enabled: latitude !== null && longitude !== null,
+  });
+
   const { navigate } = useNavigation();
+
+  const updateLocation = async (): Promise<void> => {
+    const location = await retrieveCurrentPosition();
+
+    if (location !== null) {
+      setLatitude(location.latitude);
+      setLongitude(location.longitude);
+    }
+  };
+
+  useEffect(() => {
+    updateLocation();
+  }, []);
+
+  const handleRefresh = async () => {
+    await updateLocation();
+    refetch();
+
+    setRefreshing(false);
+  };
 
   const renderItem = React.useCallback(
     ({ item }: { item: Post }) => (
@@ -26,15 +70,29 @@ export const Feed = () => {
       </View>
     );
   }
+
+  const allPosts = data?.pages.flatMap((page) => page.posts) ?? [];
+
   return (
     <View className="flex-1 ">
       <FlashList
-        data={data}
+        data={allPosts}
         renderItem={renderItem}
         keyExtractor={(_, index) => `item-${index}`}
         ListEmptyComponent={<EmptyList isLoading={isLoading} />}
         estimatedItemSize={300}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+        }
       />
+
+      {hasNextPage && (
+        <Button
+          label="Load more"
+          onPress={() => fetchNextPage()}
+          disabled={isFetchingNextPage}
+        />
+      )}
     </View>
   );
 };

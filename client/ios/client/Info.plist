@@ -35,6 +35,8 @@
         </array>
       </dict>
     </array>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>This app requires access to your location to provide accurate service recommendations based on your current location.</string>
     <key>CFBundleVersion</key>
     <string>1</string>
     <key>LSRequiresIPhoneOS</key>

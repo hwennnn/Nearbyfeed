@@ -10,7 +10,11 @@ type Response = Post;
 export const usePost = createQuery<Response, Variables, AxiosError>(
   'posts',
   async ({ queryKey: [primaryKey, variables] }) => {
-    const response = await client.get(`${primaryKey}/${variables.id}`);
+    const response = await client
+      .get(`${primaryKey}/${variables.id}`)
+      .catch((error) => {
+        return Promise.reject(error);
+      });
     return response.data;
   }
 );

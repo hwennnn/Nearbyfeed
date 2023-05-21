@@ -97,12 +97,18 @@ dependencies:
   react-native-flash-message:
     specifier: ^0.4.0
     version: 0.4.0(prop-types@15.8.1)(react-native@0.71.8)(react@18.2.0)
+  react-native-geolocation-service:
+    specifier: ^5.3.1
+    version: 5.3.1
   react-native-gesture-handler:
     specifier: ~2.9.0
     version: 2.9.0(react-native@0.71.8)(react@18.2.0)
   react-native-mmkv:
     specifier: 2.6.3
     version: 2.6.3(react-native@0.71.8)(react@18.2.0)
+  react-native-permissions:
+    specifier: ^3.8.0
+    version: 3.8.0(react-native@0.71.8)(react@18.2.0)
   react-native-reanimated:
     specifier: ~2.14.4
     version: 2.14.4(@babel/core@7.21.0)(react-native@0.71.8)(react@18.2.0)
@@ -225,6 +231,9 @@ devDependencies:
   np:
     specifier: ^7.6.3
     version: 7.6.3
+  pod-install:
+    specifier: 0.1.38
+    version: 0.1.38
   prettier:
     specifier: ^2.8.4
     version: 2.8.4
@@ -9966,7 +9975,6 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       find-up: 5.0.0
-    dev: true
 
   /pkg-up@3.1.0:
     resolution: {integrity: sha512-nDywThFk1i4BQK4twPQ6TA4RT8bDY96yeuCVBWL3ePARCiEKDRSrNGbFIgUJpLp+XeIR65v8ra7WuJOFUBtkMA==}
@@ -10002,6 +10010,11 @@ packages:
     resolution: {integrity: sha512-40QW5YalBNfQo5yRYmiw7Yz6TKKVr3h6970B2YE+3fQpsWcrbj1PzJgxeJ19DRQjhMbKPIuMY8rFaXc8moolVw==}
     engines: {node: '>=10.13.0'}
     dev: false
+
+  /pod-install@0.1.38:
+    resolution: {integrity: sha512-NeDWGigjJRriOIKBOvpW2/tK2tYLfyUT7ia6C6L+oarCAhBNP+IGODWdU+GEAqvfsseqOApcFclpXAJTL0UPzA==}
+    hasBin: true
+    dev: true
 
   /posix-character-classes@0.1.1:
     resolution: {integrity: sha512-xTgYBc3fuo7Yt7JbiuFxSYGToMoz8fLoE6TC9Wx1P/u+LfeThMOAqmuyECnlBaaJb+u1m9hHiXUEtwW4OzfUJg==}
@@ -10407,6 +10420,10 @@ packages:
       react-native-iphone-screen-helper: 2.0.3(react-native@0.71.8)
     dev: false
 
+  /react-native-geolocation-service@5.3.1:
+    resolution: {integrity: sha512-LTXPtPNmrdhx+yeWG47sAaCgQc3nG1z+HLLHlhK/5YfOgfLcAb9HAkhREPjQKPZOUx8pKZMIpdGFUGfJYtimXQ==}
+    dev: false
+
   /react-native-gesture-handler@2.9.0(react-native@0.71.8)(react@18.2.0):
     resolution: {integrity: sha512-a0BcH3Qb1tgVqUutc6d3VuWQkI1AM3+fJx8dkxzZs9t06qA27QgURYFoklpabuWpsUTzuKRpxleykp25E8m7tg==}
     peerDependencies:
@@ -10439,6 +10456,22 @@ packages:
       react: '*'
       react-native: '>=0.71.0'
     dependencies:
+      react: 18.2.0
+      react-native: 0.71.8(@babel/core@7.21.0)(@babel/preset-env@7.20.2)(react@18.2.0)
+    dev: false
+
+  /react-native-permissions@3.8.0(react-native@0.71.8)(react@18.2.0):
+    resolution: {integrity: sha512-BfZ7ksgdpGchHZH8M/kxCGZbWeACANbnPmb3hNjVOMDQusc4PWlPpobX3eBqYMSKbpi7bMECeV9BVU4QuwAf9A==}
+    peerDependencies:
+      react: '>=16.13.1'
+      react-native: '>=0.63.3'
+      react-native-windows: '>=0.62.0'
+    peerDependenciesMeta:
+      react-native-windows:
+        optional: true
+    dependencies:
+      picocolors: 1.0.0
+      pkg-dir: 5.0.0
       react: 18.2.0
       react-native: 0.71.8(@babel/core@7.21.0)(@babel/preset-env@7.20.2)(react@18.2.0)
     dev: false

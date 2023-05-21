@@ -7,11 +7,15 @@ import type { Post } from './types';
 type Variables = { title: string; body: string; userId: number };
 type Response = Post;
 
-export const useAddPost = createMutation<Response, Variables, AxiosError>(
-  async (variables) =>
+export const useAddPost = createMutation<Response, Variables, AxiosError>({
+  mutationFn: async (variables) =>
     client({
-      url: 'posts/add',
+      url: 'posts',
       method: 'POST',
       data: variables,
-    }).then((response) => response.data)
-);
+    })
+      .then((response) => response.data)
+      .catch((error) => {
+        return Promise.reject(error);
+      }),
+});
