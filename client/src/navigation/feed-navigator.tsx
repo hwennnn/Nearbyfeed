@@ -2,12 +2,13 @@ import { useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
 
+import type { Post as PostEntitiy } from '@/api';
 import { AddPost, Feed, Post } from '@/screens';
 import { Pressable, Text } from '@/ui';
 
 export type FeedStackParamList = {
   Feed: undefined;
-  Post: { id: number };
+  Post: { post: PostEntitiy };
   AddPost: undefined;
 };
 

@@ -13,3 +13,13 @@ export type Post = {
   updatedAt: Date;
   authorId: number;
 };
+
+export type Comment = {
+  id: number;
+  content: string;
+  createdAt: Date;
+  updatedAt: Date;
+  isDeleted: boolean;
+  postId: number;
+  authorId: number;
+};
