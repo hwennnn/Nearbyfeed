@@ -5,7 +5,7 @@ import { RefreshControl } from 'react-native';
 
 import type { Post } from '@/api';
 import { usePosts } from '@/api';
-import { Button, EmptyList, Text, View } from '@/ui';
+import { EmptyList, Text, View } from '@/ui';
 import { retrieveCurrentPosition } from '@/utils/geolocation-utils';
 
 import { Card } from './card';
@@ -73,6 +73,12 @@ export const Feed = () => {
 
   const allPosts = data?.pages.flatMap((page) => page.posts) ?? [];
 
+  const handleEndReached = () => {
+    if (!isFetchingNextPage && hasNextPage) {
+      fetchNextPage();
+    }
+  };
+
   return (
     <View className="flex-1 ">
       <FlashList
@@ -84,15 +90,9 @@ export const Feed = () => {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
         }
+        onEndReached={handleEndReached}
+        onEndReachedThreshold={0.1}
       />
-
-      {hasNextPage && (
-        <Button
-          label="Load more"
-          onPress={() => fetchNextPage()}
-          disabled={isFetchingNextPage}
-        />
-      )}
     </View>
   );
 };
