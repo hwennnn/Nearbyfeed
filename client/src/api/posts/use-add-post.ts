@@ -4,7 +4,12 @@ import { createMutation } from 'react-query-kit';
 import { client } from '../common';
 import type { Post } from './types';
 
-type Variables = { title: string; body: string; userId: number };
+type Variables = {
+  title: string;
+  content: string;
+  latitude: number;
+  longitude: number;
+};
 type Response = Post;
 
 export const useAddPost = createMutation<Response, Variables, AxiosError>({

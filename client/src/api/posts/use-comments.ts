@@ -22,10 +22,7 @@ export const useComments = createInfiniteQuery<Response, Variables, AxiosError>(
     // primaryKey is 'posts' in this case
 
     const cursor = pageParam !== undefined ? pageParam.toString() : pageParam;
-    console.log({
-      ...variables,
-      cursor,
-    });
+
     const response = await client
       .get(`posts/${variables.postId}/${primaryKey}`, {
         params: {
