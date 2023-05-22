@@ -8,6 +8,33 @@ export class MailService {
     private readonly logger: Logger,
   ) {}
 
+  async sendVerificationEmail(
+    email: string,
+    username: string,
+    verificationId: string,
+  ): Promise<void> {
+    const verifyEmailLink =
+      'http://localhost:3000/auth/verify-email/' + verificationId;
+
+    await this.mailerService
+      .sendMail({
+        to: email,
+        subject: 'Verify Your Email',
+        template: './verify-email',
+        context: {
+          username,
+          verifyEmailLink,
+        },
+      })
+      .catch((error) => {
+        this.logger.error(
+          'Failed to send verification email to ' + email,
+          error,
+        );
+        throw new BadRequestException('Failed to send verification email');
+      });
+  }
+
   async sendResetPasswordEmail(
     email: string,
     username: string,

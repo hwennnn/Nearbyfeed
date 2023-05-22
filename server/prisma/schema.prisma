@@ -10,6 +10,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model PendingUser {
+  id        String   @id @default(uuid())
+  username  String
+  email     String
+  password  String
+  createdAt DateTime @default(now())
+}
+
 model User {
   id        Int       @id @default(autoincrement())
   username  String

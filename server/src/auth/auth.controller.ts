@@ -1,10 +1,21 @@
-import { Body, Controller, Get, Post, Put, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
+import { Response } from 'express';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import { AuthDto, ForgotPasswordDto, ResetPasswordDto } from 'src/auth/dto';
 import { type AuthToken } from 'src/auth/entities';
 import JwtAuthGuard from 'src/auth/guards/jwt-auth.guard';
 import JwtRefreshGuard from 'src/auth/guards/jwt-refresh.guard';
 import { CreateUserDto } from 'src/users/dto';
+import { type PendingUserWithoutPassword } from 'src/users/entities';
 import { AuthService } from './auth.service';
 
 @Controller('auth')
@@ -12,10 +23,12 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
-  async register(@Body() createUserDto: CreateUserDto): Promise<AuthToken> {
-    const tokens = await this.authService.register(createUserDto);
+  async register(
+    @Body() createUserDto: CreateUserDto,
+  ): Promise<PendingUserWithoutPassword> {
+    const pendingUser = await this.authService.register(createUserDto);
 
-    return tokens;
+    return pendingUser;
   }
 
   @Post('login')
@@ -29,6 +42,19 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   async logout(@GetUser('sessionId') sessionId: string): Promise<void> {
     await this.authService.logout(sessionId);
+  }
+
+  @Get('verify-email/:id')
+  async verifyEmail(
+    @Param('id') id: string,
+    @Res() res: Response,
+  ): Promise<void> {
+    const user = await this.authService.verifyEmail(id);
+
+    res.sendStatus(200);
+
+    // TODO: implement deep linking to redirect user back to login page
+    // res.redirect('https://www.google.com');
   }
 
   @Post('refresh-token')

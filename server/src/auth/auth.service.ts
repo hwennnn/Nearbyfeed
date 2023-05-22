@@ -11,8 +11,13 @@ import { type AuthToken, type TokenPayload } from 'src/auth/entities';
 import { MailService } from 'src/mail/mail.service';
 import { RedisService } from 'src/redis/redis.service';
 import { type CreateUserDto } from 'src/users/dto';
+import {
+  type PendingUserWithoutPassword,
+  type UserWithoutPassword,
+} from 'src/users/entities';
+
 import { UsersService } from 'src/users/users.service';
-import { compareHash, hashData } from 'src/utils';
+import { compareHash, dayInMs, hashData } from 'src/utils';
 import { v4 as uuidV4 } from 'uuid';
 
 @Injectable()
@@ -26,13 +31,17 @@ export class AuthService {
     private readonly mailService: MailService,
   ) {}
 
-  async register(createUserDto: CreateUserDto): Promise<AuthToken> {
+  async register(
+    createUserDto: CreateUserDto,
+  ): Promise<PendingUserWithoutPassword> {
     const userExists = await this.usersService.isUserExistByEmail(
       createUserDto.email,
     );
 
     if (userExists) {
-      throw new BadRequestException('User already exists');
+      throw new BadRequestException(
+        'Email is already in use. Please use another email.',
+      );
     }
 
     const data = {
@@ -40,11 +49,15 @@ export class AuthService {
       password: await hashData(createUserDto.password),
     };
 
-    const user = await this.usersService.create(data);
+    const pendingUser = await this.usersService.createPendingUser(data);
 
-    const tokens = await this.getTokens(user.id.toString(), user.email);
+    await this.mailService.sendVerificationEmail(
+      pendingUser.email,
+      pendingUser.username,
+      pendingUser.id,
+    );
 
-    return tokens;
+    return pendingUser;
   }
 
   async login(authDto: AuthDto): Promise<AuthToken> {
@@ -72,6 +85,44 @@ export class AuthService {
 
       throw new UnauthorizedException('Invalid credentials');
     });
+  }
+
+  async verifyEmail(id: string): Promise<UserWithoutPassword> {
+    const pendingUser = await this.usersService.findPendingUser(id);
+
+    if (pendingUser === null) {
+      throw new BadRequestException('Invalid email verification link');
+    }
+
+    const now = new Date();
+    const hasExpired =
+      now.getTime() - pendingUser.createdAt.getTime() > dayInMs;
+
+    if (hasExpired) {
+      throw new BadRequestException(
+        'The verification link has already expired',
+      );
+    }
+
+    const userExists = await this.usersService.isUserExistByEmail(
+      pendingUser.email,
+    );
+
+    if (userExists) {
+      throw new BadRequestException(
+        'Email is already in use. Please use another email.',
+      );
+    }
+
+    const createUserDto: CreateUserDto = {
+      email: pendingUser.email,
+      username: pendingUser.username,
+      password: pendingUser.password,
+    };
+    const user = await this.usersService.createUser(createUserDto);
+    await this.usersService.deletePendingUser(id);
+
+    return user;
   }
 
   async refreshAccessToken(

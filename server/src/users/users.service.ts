@@ -1,9 +1,12 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-import { type User } from '@prisma/client';
+import { type PendingUser, type User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { type CreateUserDto, type UpdateUserDto } from 'src/users/dto';
 
-import { type UserWithoutPassword } from 'src/users/entities/userWithoutPassword';
+import {
+  type PendingUserWithoutPassword,
+  type UserWithoutPassword,
+} from 'src/users/entities';
 import { exclude } from 'src/utils';
 
 @Injectable()
@@ -13,12 +16,38 @@ export class UsersService {
     private readonly logger: Logger,
   ) {}
 
-  private excludePassword(user: User): UserWithoutPassword {
+  private excludePasswordFromUser(user: User): UserWithoutPassword {
     return exclude(user, ['password']);
   }
 
-  async create(createUserDto: CreateUserDto): Promise<UserWithoutPassword> {
-    return this.excludePassword(
+  private excludePasswordFromPendingUser(
+    pendingUser: PendingUser,
+  ): PendingUserWithoutPassword {
+    return exclude(pendingUser, ['password']);
+  }
+
+  async createPendingUser(
+    createUserDto: CreateUserDto,
+  ): Promise<PendingUserWithoutPassword> {
+    return this.excludePasswordFromPendingUser(
+      await this.prismaService.pendingUser
+        .create({
+          data: createUserDto,
+        })
+        .catch((e) => {
+          this.logger.error(
+            'Failed to create user',
+            e instanceof Error ? e.stack : undefined,
+            UsersService.name,
+          );
+
+          throw new BadRequestException('Failed to create user');
+        }),
+    );
+  }
+
+  async createUser(createUserDto: CreateUserDto): Promise<UserWithoutPassword> {
+    return this.excludePasswordFromUser(
       await this.prismaService.user
         .create({
           data: createUserDto,
@@ -46,11 +75,47 @@ export class UsersService {
 
         throw new BadRequestException('Failed to find users');
       })
-    ).map((user) => this.excludePassword(user));
+    ).map((user) => this.excludePasswordFromUser(user));
+  }
+
+  async findPendingUser(id: string): Promise<PendingUser | null> {
+    return this.prismaService.pendingUser
+      .findUnique({
+        where: {
+          id,
+        },
+      })
+      .catch((e) => {
+        this.logger.error(
+          `Failed to find pending user with id ${id}`,
+          e instanceof Error ? e.stack : undefined,
+          UsersService.name,
+        );
+
+        throw new BadRequestException('Failed to find user');
+      });
+  }
+
+  async deletePendingUser(id: string): Promise<void> {
+    await this.prismaService.pendingUser
+      .delete({
+        where: {
+          id,
+        },
+      })
+      .catch((e) => {
+        this.logger.error(
+          `Failed to delete pending user with id ${id}`,
+          e instanceof Error ? e.stack : undefined,
+          UsersService.name,
+        );
+
+        throw new BadRequestException('Failed to delete pending user');
+      });
   }
 
   async findOne(id: number): Promise<UserWithoutPassword> {
-    return this.excludePassword(
+    return this.excludePasswordFromUser(
       await this.prismaService.user
         .findUniqueOrThrow({
           where: {
@@ -103,7 +168,7 @@ export class UsersService {
     id: number,
     updateUserDto: UpdateUserDto,
   ): Promise<UserWithoutPassword> {
-    return this.excludePassword(
+    return this.excludePasswordFromUser(
       await this.prismaService.user
         .update({
           where: { id },
@@ -125,7 +190,7 @@ export class UsersService {
     id: number,
     password: string,
   ): Promise<UserWithoutPassword> {
-    return this.excludePassword(
+    return this.excludePasswordFromUser(
       await this.prismaService.user
         .update({
           where: { id },
