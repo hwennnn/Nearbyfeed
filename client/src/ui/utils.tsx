@@ -1,6 +1,14 @@
 import type { AxiosError } from 'axios';
 import { showMessage } from 'react-native-flash-message';
 
+export const showSuccessMessage = (message: string) => {
+  showMessage({
+    message,
+    type: 'success',
+    duration: 4000,
+  });
+};
+
 // for onError react queries and mutations
 export const showError = (error: AxiosError) => {
   console.log(JSON.stringify(error?.response?.data));

@@ -201,7 +201,7 @@ export class AuthService {
   private async generateAccessToken(payload: any): Promise<string> {
     return await this.jwtService.signAsync(payload, {
       secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
-      expiresIn: '5d',
+      expiresIn: '15m',
     });
   }
 
@@ -216,7 +216,7 @@ export class AuthService {
     const user = await this.usersService.findOneByEmail(email);
 
     if (user === null) {
-      throw new UnauthorizedException('Email does not exist');
+      return;
     }
 
     const resetPasswordId = uuidV4();
@@ -224,7 +224,7 @@ export class AuthService {
     await this.redisService.set(
       `reset-password/${resetPasswordId}`,
       user.email,
-      1 * 24 * 60 * 60, // valid for 1 day
+      dayInMs, // valid for 1 day
     );
 
     await this.mailService.sendResetPasswordEmail(
@@ -239,7 +239,7 @@ export class AuthService {
     const storedEmail = await this.redisService.get<string>(key);
 
     if (storedEmail === null) {
-      throw new UnauthorizedException('Token not valid');
+      throw new UnauthorizedException('Token is not valid or already expired');
     }
 
     const user = await this.usersService.findOneByEmail(storedEmail);

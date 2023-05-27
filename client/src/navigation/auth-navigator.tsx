@@ -2,6 +2,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
 
 import { Login, Register } from '@/screens';
+import { ForgotPasswordScreen } from '@/screens/forgot-password';
+import { ResetPasswordScreen } from '@/screens/forgot-password/reset-password';
 import ValidateEmailScreen from '@/screens/validate-email';
 
 export type AuthStackParamList = {
@@ -12,6 +14,10 @@ export type AuthStackParamList = {
       };
   Register: undefined;
   ValidateEmail: { email: string };
+  ForgotPassword: undefined;
+  ResetPassword: {
+    token: string;
+  };
 };
 
 const Stack = createNativeStackNavigator<AuthStackParamList>();
@@ -36,6 +42,20 @@ export const AuthNavigator = () => {
       <Stack.Screen
         name="ValidateEmail"
         component={ValidateEmailScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="ForgotPassword"
+        component={ForgotPasswordScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="ResetPassword"
+        component={ResetPasswordScreen}
         options={{
           headerShown: false,
         }}

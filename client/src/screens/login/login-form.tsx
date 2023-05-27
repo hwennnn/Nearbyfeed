@@ -53,6 +53,12 @@ export const LoginForm = ({
     setBannerVisible(false);
   };
 
+  const navToForgotPassword = () => {
+    navigate('Auth', {
+      screen: 'ForgotPassword',
+    });
+  };
+
   return (
     <SafeAreaView className="flex-1">
       <View className="flex-1 justify-center px-4">
@@ -74,9 +80,7 @@ export const LoginForm = ({
         )}
 
         {typeof error === 'string' && (
-          <Text testID="form-title" className="pb-4 text-red-600">
-            {error}
-          </Text>
+          <Text className="pb-4 text-red-600">{error}</Text>
         )}
 
         <ControlledInput
@@ -85,6 +89,7 @@ export const LoginForm = ({
           name="email"
           label="Email"
         />
+
         <ControlledInput
           testID="password-input"
           control={control}
@@ -93,6 +98,15 @@ export const LoginForm = ({
           placeholder="********"
           secureTextEntry={true}
         />
+
+        <Text
+          className="pb-1 text-primary-400"
+          variant="sm"
+          onPress={navToForgotPassword}
+        >
+          Forgot password?
+        </Text>
+
         <Button
           loading={isLoading}
           testID="login-button"

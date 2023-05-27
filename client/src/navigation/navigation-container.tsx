@@ -19,6 +19,9 @@ const AuthLinking: LinkingOptions<RootStackParamList> = {
           Login: {
             path: 'login/:verifyEmail',
           },
+          ResetPassword: {
+            path: 'reset-password/:token',
+          },
         },
       },
     },
