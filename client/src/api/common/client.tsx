@@ -7,7 +7,7 @@ import {
   getAccessToken,
   getRefreshToken,
   isRefreshingTokenRequired,
-  setTokens,
+  setAccessToken,
 } from '@/core/auth/utils';
 
 const client = axios.create({
@@ -18,25 +18,24 @@ const client = axios.create({
 const refreshAuthToken = async (): Promise<void> => {
   console.log('refreshing token...');
 
-  const oldRefreshToken = getRefreshToken();
+  const refreshToken = getRefreshToken();
 
-  if (oldRefreshToken === null) return;
+  if (refreshToken === null) return;
 
   const response = await axios.post(
-    `${Env.API_URL}/auth/refresh_token`,
+    `${Env.API_URL}/auth/refresh-token`,
+    {},
     {
-      refreshToken: oldRefreshToken,
-    },
-    { headers: { 'Content-Type': 'application/json' } }
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${refreshToken}`,
+      },
+    }
   );
   const tokens = response.data;
   const access = tokens.accessToken;
-  const refresh = tokens.refreshToken;
 
-  setTokens({
-    access,
-    refresh,
-  });
+  setAccessToken(access);
 };
 
 client.interceptors.request.use(

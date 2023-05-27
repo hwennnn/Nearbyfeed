@@ -201,7 +201,7 @@ export class AuthService {
   private async generateAccessToken(payload: any): Promise<string> {
     return await this.jwtService.signAsync(payload, {
       secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
-      expiresIn: '15m',
+      expiresIn: '5m',
     });
   }
 
