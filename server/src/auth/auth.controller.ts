@@ -77,6 +77,19 @@ export class AuthController {
     await this.authService.sendResetPasswordEmail(email);
   }
 
+  @Get('reset-password/:token')
+  async resetPasswordProxy(
+    @Param('token') token: string,
+    @Res() res: Response,
+  ): Promise<void> {
+    await this.authService.checkResetPasswordToken(token);
+
+    const deepLink = (await this.configService.get('APP_DEEP_LINK')) as string;
+    const resetEmailLink = deepLink + 'reset-password/' + token;
+
+    res.redirect(resetEmailLink);
+  }
+
   @Put('reset-password')
   async resetPassword(
     @Body() resetPasswordDto: ResetPasswordDto,

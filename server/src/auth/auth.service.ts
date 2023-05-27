@@ -261,4 +261,19 @@ export class AuthService {
 
     await this.redisService.delete(key);
   }
+
+  async checkResetPasswordToken(token: string): Promise<void> {
+    const key = `reset-password/${token}`;
+    const storedEmail = await this.redisService.get<string>(key);
+
+    if (storedEmail === null) {
+      throw new UnauthorizedException('Token is not valid or already expired');
+    }
+
+    const user = await this.usersService.findOneByEmail(storedEmail);
+
+    if (user === null) {
+      throw new UnauthorizedException('User not found');
+    }
+  }
 }

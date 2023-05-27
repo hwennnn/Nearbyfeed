@@ -1,12 +1,10 @@
 import { MailerService } from '@nestjs-modules/mailer';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class MailService {
   constructor(
     private readonly mailerService: MailerService,
-    private readonly configService: ConfigService,
     private readonly logger: Logger,
   ) {}
 
@@ -42,8 +40,8 @@ export class MailService {
     username: string,
     resetId: string,
   ): Promise<void> {
-    const deepLink = (await this.configService.get('APP_DEEP_LINK')) as string;
-    const resetEmailLink = deepLink + 'reset-password/' + resetId;
+    const resetEmailLink =
+      'http://localhost:3000/auth/reset-password/' + resetId;
 
     await this.mailerService
       .sendMail({
