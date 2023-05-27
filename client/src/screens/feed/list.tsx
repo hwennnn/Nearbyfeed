@@ -5,6 +5,7 @@ import { RefreshControl } from 'react-native';
 
 import type { Post } from '@/api';
 import { usePosts } from '@/api';
+import type { FeedNavigatorProp } from '@/navigation/feed-navigator';
 import { EmptyList, Text, View } from '@/ui';
 import { retrieveCurrentPosition } from '@/utils/geolocation-utils';
 
@@ -34,7 +35,7 @@ export const Feed = () => {
     enabled: latitude !== null && longitude !== null,
   });
 
-  const { navigate } = useNavigation();
+  const { navigate } = useNavigation<FeedNavigatorProp>();
 
   const updateLocation = async (): Promise<void> => {
     const location = await retrieveCurrentPosition();
@@ -58,12 +59,7 @@ export const Feed = () => {
 
   const renderItem = React.useCallback(
     ({ item }: { item: Post }) => (
-      <Card
-        {...item}
-        onPress={() =>
-          navigate('App', { screen: 'Post', params: { post: item } })
-        }
-      />
+      <Card {...item} onPress={() => navigate('Post', { post: item })} />
     ),
     [navigate]
   );

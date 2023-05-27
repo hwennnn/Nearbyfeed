@@ -1,4 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
 
@@ -15,30 +16,31 @@ export type FeedStackParamList = {
 const Stack = createNativeStackNavigator<FeedStackParamList>();
 
 const GoToAddPost = () => {
-  const { navigate } = useNavigation();
+  const { navigate } = useNavigation<FeedNavigatorProp>();
+
   return (
-    <Pressable
-      onPress={() => navigate('App', { screen: 'AddPost' })}
-      className="p-2"
-    >
+    <Pressable onPress={() => navigate('AddPost')} className="p-2">
       <Text className="text-primary-300">Create</Text>
     </Pressable>
   );
 };
 
+type Props = NativeStackScreenProps<FeedStackParamList>;
+export type FeedNavigatorProp = Props['navigation'];
+
 export const FeedNavigator = () => {
   return (
     <Stack.Navigator>
-      <Stack.Group
-        screenOptions={{
+      <Stack.Screen
+        name="Feed"
+        component={Feed}
+        options={{
           // eslint-disable-next-line react/no-unstable-nested-components
           headerRight: () => <GoToAddPost />,
         }}
-      >
-        <Stack.Screen name="Feed" component={Feed} />
-        <Stack.Screen name="Post" component={Post} />
-      </Stack.Group>
+      />
 
+      <Stack.Screen name="Post" component={Post} />
       <Stack.Screen name="AddPost" component={AddPost} />
     </Stack.Navigator>
   );

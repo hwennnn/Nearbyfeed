@@ -41,9 +41,7 @@ export const Root = () => {
           {status === 'signOut' ? (
             <Stack.Screen name="Auth" component={AuthNavigator} />
           ) : (
-            <>
-              <Stack.Screen name="App" component={TabNavigator} />
-            </>
+            <Stack.Screen name="App" component={TabNavigator} />
           )}
         </Stack.Group>
       )}
