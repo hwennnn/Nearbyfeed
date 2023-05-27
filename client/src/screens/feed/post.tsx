@@ -1,12 +1,15 @@
+import type { RouteProp } from '@react-navigation/native';
 import { useRoute } from '@react-navigation/native';
 import * as React from 'react';
 
-import type { RouteProp } from '@/navigation/types';
+import type { FeedStackParamList } from '@/navigation/feed-navigator';
 import { CommentList } from '@/screens/feed/comment-list';
 import { Text, View } from '@/ui';
 
+type Props = RouteProp<FeedStackParamList, 'Post'>;
+
 export const Post = () => {
-  const { params } = useRoute<RouteProp<'Post'>>();
+  const { params } = useRoute<Props>();
   const { post } = params;
 
   return (

@@ -58,7 +58,12 @@ export const Feed = () => {
 
   const renderItem = React.useCallback(
     ({ item }: { item: Post }) => (
-      <Card {...item} onPress={() => navigate('Post', { post: item })} />
+      <Card
+        {...item}
+        onPress={() =>
+          navigate('App', { screen: 'Post', params: { post: item } })
+        }
+      />
     ),
     [navigate]
   );

@@ -93,7 +93,7 @@ export const RegisterForm = ({
       <View className="flex-row">
         <Text className="">Already have an account? </Text>
 
-        <Pressable onPress={() => navigate('Login')}>
+        <Pressable onPress={() => navigate('Auth', { screen: 'Login' })}>
           <Text className="text-primary-400">Login</Text>
         </Pressable>
       </View>

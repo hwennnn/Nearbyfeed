@@ -73,7 +73,7 @@ export const LoginForm = ({
       <View className="flex-row">
         <Text className="">Do not have an account? </Text>
 
-        <Pressable onPress={() => navigate('Register')}>
+        <Pressable onPress={() => navigate('Auth', { screen: 'Register' })}>
           <Text className="text-primary-400">Register now</Text>
         </Pressable>
       </View>

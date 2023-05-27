@@ -17,7 +17,10 @@ const Stack = createNativeStackNavigator<FeedStackParamList>();
 const GoToAddPost = () => {
   const { navigate } = useNavigation();
   return (
-    <Pressable onPress={() => navigate('AddPost')} className="p-2">
+    <Pressable
+      onPress={() => navigate('App', { screen: 'AddPost' })}
+      className="p-2"
+    >
       <Text className="text-primary-300">Create</Text>
     </Pressable>
   );

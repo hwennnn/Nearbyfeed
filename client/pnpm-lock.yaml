@@ -49,6 +49,9 @@ dependencies:
   expo-image:
     specifier: ~1.2.3
     version: 1.2.3(expo@48.0.15)
+  expo-linking:
+    specifier: ~4.0.1
+    version: 4.0.1(expo@48.0.15)
   expo-localization:
     specifier: ~14.1.1
     version: 14.1.1(expo@48.0.15)
@@ -3145,6 +3148,10 @@ packages:
     resolution: {integrity: sha512-JCB8C6SnDoQf0cNycqd/35A7MjcnK+ZTqE7judS6o7utxUCg6imJg3QK2qzHKszlTjcj2cn+NwMB2i96ubpj7w==}
     dev: true
 
+  /@types/qs@6.9.7:
+    resolution: {integrity: sha512-FGa1F62FT09qcrueBA6qYTrJPVDzah9a+493+o2PCXsesWHIn27G98TsSMs3WPNbZIEj4+VJf6saSFpvD+3Zsw==}
+    dev: false
+
   /@types/react-native@0.71.3:
     resolution: {integrity: sha512-0Uqw1YZ0qbVla0MMWFTANFm6W8KYWNvGQmYfucdecbXivLMcQ2v4PovuYFKr7bE6Bc5nDCUEaga962Y8gcDF7A==}
     dependencies:
@@ -5903,6 +5910,19 @@ packages:
       expo: '*'
     dependencies:
       expo: 48.0.15(@babel/core@7.21.0)
+    dev: false
+
+  /expo-linking@4.0.1(expo@48.0.15):
+    resolution: {integrity: sha512-geRMmKLhtaCigptRzOGW8ZZJKGl47gyu0KFtQOtGf26ELxyt/AietgQjyzF24i7cVD08TnWUJDHgWZkpRHTa7g==}
+    dependencies:
+      '@types/qs': 6.9.7
+      expo-constants: 14.2.1(expo@48.0.15)
+      invariant: 2.2.4
+      qs: 6.11.0
+      url-parse: 1.5.10
+    transitivePeerDependencies:
+      - expo
+      - supports-color
     dev: false
 
   /expo-localization@14.1.1(expo@48.0.15):

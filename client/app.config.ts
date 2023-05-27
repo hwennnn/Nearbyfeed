@@ -6,7 +6,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: Env.NAME,
   description: `${Env.NAME} Mobile App`,
-  slug: 'obytesapp',
+  slug: 'nearbyfeed',
   version: Env.VERSION.toString(),
   orientation: 'portrait',
   icon: `${withEnvSuffix('./assets/icon')}.png`,
@@ -41,4 +41,5 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   extra: {
     ...ClientEnv,
   },
+  scheme: 'nearbyfeed',
 });
