@@ -62,6 +62,15 @@ export class AuthService {
 
   async login(authDto: AuthDto): Promise<AuthToken> {
     const user = await this.usersService.findOneByEmail(authDto.email);
+    const hasPendingUser = await this.usersService.findPendingUsersWithEmail(
+      authDto.email,
+    );
+
+    if (user === null && hasPendingUser) {
+      throw new UnauthorizedException(
+        'Please verify your email address before proceeding. You are unable to log in with unverified credentials',
+      );
+    }
 
     if (
       user === null ||

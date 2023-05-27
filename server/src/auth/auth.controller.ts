@@ -8,6 +8,7 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import { AuthDto, ForgotPasswordDto, ResetPasswordDto } from 'src/auth/dto';
@@ -20,7 +21,10 @@ import { AuthService } from './auth.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly configService: ConfigService,
+  ) {}
 
   @Post('register')
   async register(
@@ -50,11 +54,10 @@ export class AuthController {
     @Res() res: Response,
   ): Promise<void> {
     const user = await this.authService.verifyEmail(id);
+    console.log('verify email', user);
 
-    res.sendStatus(200);
-
-    // TODO: implement deep linking to redirect user back to login page
-    // res.redirect('https://www.google.com');
+    const deepLink = (await this.configService.get('APP_DEEP_LINK')) as string;
+    res.redirect(deepLink + 'login/success');
   }
 
   @Post('refresh-token')

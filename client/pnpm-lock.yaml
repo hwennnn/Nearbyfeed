@@ -25,6 +25,9 @@ dependencies:
   '@tanstack/react-query':
     specifier: ^4.26.1
     version: 4.26.1(react-dom@18.2.0)(react-native@0.71.8)(react@18.2.0)
+  '@types/react-native-vector-icons':
+    specifier: ^6.4.13
+    version: 6.4.13
   axios:
     specifier: ^1.3.4
     version: 1.3.4
@@ -97,6 +100,9 @@ dependencies:
   react-native:
     specifier: 0.71.8
     version: 0.71.8(@babel/core@7.21.0)(@babel/preset-env@7.20.2)(react@18.2.0)
+  react-native-email-link:
+    specifier: ^1.14.5
+    version: 1.14.5(react-native@0.71.8)(react@18.2.0)
   react-native-flash-message:
     specifier: ^0.4.0
     version: 0.4.0(prop-types@15.8.1)(react-native@0.71.8)(react@18.2.0)
@@ -124,6 +130,9 @@ dependencies:
   react-native-svg:
     specifier: 13.4.0
     version: 13.4.0(react-native@0.71.8)(react@18.2.0)
+  react-native-vector-icons:
+    specifier: ^9.2.0
+    version: 9.2.0
   react-native-web:
     specifier: ~0.18.7
     version: 0.18.10(react-dom@18.2.0)(react@18.2.0)
@@ -3146,10 +3155,22 @@ packages:
 
   /@types/prop-types@15.7.5:
     resolution: {integrity: sha512-JCB8C6SnDoQf0cNycqd/35A7MjcnK+ZTqE7judS6o7utxUCg6imJg3QK2qzHKszlTjcj2cn+NwMB2i96ubpj7w==}
-    dev: true
 
   /@types/qs@6.9.7:
     resolution: {integrity: sha512-FGa1F62FT09qcrueBA6qYTrJPVDzah9a+493+o2PCXsesWHIn27G98TsSMs3WPNbZIEj4+VJf6saSFpvD+3Zsw==}
+    dev: false
+
+  /@types/react-native-vector-icons@6.4.13:
+    resolution: {integrity: sha512-1PqFoKuXTSzMHwGMAr+REdYJBQAbe9xrww3ecZR0FsHcD1K+vGS/rxuAriL4rsI6+p69sZQjDzpEVAbDQcjSwA==}
+    dependencies:
+      '@types/react': 18.0.28
+      '@types/react-native': 0.70.14
+    dev: false
+
+  /@types/react-native@0.70.14:
+    resolution: {integrity: sha512-Kwc+BYBrnDqvacNxKp1UtcZJnJJnTih2NYmi/ieAKlHdxEPN6sYMwmIwgHdoLHggvml6bf3DYRaH2jt+gzaLjw==}
+    dependencies:
+      '@types/react': 18.0.28
     dev: false
 
   /@types/react-native@0.71.3:
@@ -3170,7 +3191,6 @@ packages:
       '@types/prop-types': 15.7.5
       '@types/scheduler': 0.16.2
       csstype: 3.1.1
-    dev: true
 
   /@types/responselike@1.0.0:
     resolution: {integrity: sha512-85Y2BjiufFzaMIlvJDvTTB8Fxl2xfLo4HgmHzVBz08w4wDePCTjYw66PdrolO0kzli3yam/YCgRufyo1DdQVTA==}
@@ -3180,7 +3200,6 @@ packages:
 
   /@types/scheduler@0.16.2:
     resolution: {integrity: sha512-hppQEBDmlwhFAXKJX2KnWLYu5yMfi91yazPb2l+lbJiwW+wdo1gNeRA+3RgNSO39WYX2euey41KEwnqesU2Jew==}
-    dev: true
 
   /@types/semver@7.3.13:
     resolution: {integrity: sha512-21cFJr9z3g5dW8B0CVI9g2O9beqaThGQ6ZFBqHfwhzLDKUxaqTIy3vnfah/UPkfOiF2pLq+tGz+W8RyCskuslw==}
@@ -4448,6 +4467,14 @@ packages:
       strip-ansi: 6.0.1
       wrap-ansi: 6.2.0
 
+  /cliui@7.0.4:
+    resolution: {integrity: sha512-OcRE68cOsVMXp1Yvonl/fzkQOyjLSu/8bhPDfQt0e0/Eb283TKP20Fs2MqoPsr9SwA595rRCA+QMzYc9nBP+JQ==}
+    dependencies:
+      string-width: 4.2.3
+      strip-ansi: 6.0.1
+      wrap-ansi: 7.0.0
+    dev: false
+
   /cliui@8.0.1:
     resolution: {integrity: sha512-BSeNnyus75C4//NQ9gQt1/csTXyo/8Sb+afLAkzAptFuMsod9HFokGNudZpi/oQV73hnVK+sR+5PVRMd+Dr7YQ==}
     engines: {node: '>=12'}
@@ -4860,7 +4887,6 @@ packages:
 
   /csstype@3.1.1:
     resolution: {integrity: sha512-DJR/VvkAvSZW9bTouZue2sSxDwdTN92uHjqeKVm+0dAqdfNykRzQ95tay8aXMBAAPpUiq4Qcug2L7neoRh2Egw==}
-    dev: true
 
   /dag-map@1.0.2:
     resolution: {integrity: sha512-+LSAiGFwQ9dRnRdOeaj7g47ZFJcOUPukAP8J3A3fuZ1g9Y44BG+P1sgApjLXTQPOzC4+7S9Wr8kXsfpINM4jpw==}
@@ -10427,6 +10453,16 @@ packages:
       - '@babel/preset-env'
       - supports-color
 
+  /react-native-email-link@1.14.5(react-native@0.71.8)(react@18.2.0):
+    resolution: {integrity: sha512-TNi9OeGcJlw6FXl1dWAKEBGJEgKPBfsiB3v8GaHqqCtzmWnKE+8y1Wfhaaloh37OJb2vqp1cwDpW5m6PiTXazA==}
+    peerDependencies:
+      react: '>=16.8.0'
+      react-native: '>=0.40.0'
+    dependencies:
+      react: 18.2.0
+      react-native: 0.71.8(@babel/core@7.21.0)(@babel/preset-env@7.20.2)(react@18.2.0)
+    dev: false
+
   /react-native-flash-message@0.4.0(prop-types@15.8.1)(react-native@0.71.8)(react@18.2.0):
     resolution: {integrity: sha512-ZCVnQj+82cQnWqBtkIVPxMEJxwzWqq8WQcIulUqc9UiCdvWQJRLN0Pe0PvzFs/l/GM2ek6zXSck7LJzUq8pahQ==}
     peerDependencies:
@@ -10549,6 +10585,14 @@ packages:
       css-tree: 1.1.3
       react: 18.2.0
       react-native: 0.71.8(@babel/core@7.21.0)(@babel/preset-env@7.20.2)(react@18.2.0)
+    dev: false
+
+  /react-native-vector-icons@9.2.0:
+    resolution: {integrity: sha512-wKYLaFuQST/chH3AJRjmOLoLy3JEs1JR6zMNgTaemFpNoXs0ztRnTxcxFD9xhX7cJe1/zoN5BpQYe7kL0m5yyA==}
+    hasBin: true
+    dependencies:
+      prop-types: 15.8.1
+      yargs: 16.2.0
     dev: false
 
   /react-native-web@0.18.10(react-dom@18.2.0)(react@18.2.0):
@@ -12645,7 +12689,6 @@ packages:
   /yargs-parser@20.2.9:
     resolution: {integrity: sha512-y11nGElTIV+CT3Zv9t7VKl+Q3hTQoT9a1Qzezhhl6Rp21gJ/IVTW7Z3y9EWXhuUBC2Shnf+DX0antecpAwSP8w==}
     engines: {node: '>=10'}
-    dev: true
 
   /yargs-parser@21.1.1:
     resolution: {integrity: sha512-tVpsJW7DdjecAiFpbIB1e3qxIQsE6NoPc5/eTdrbbIC4h0LVsWhnoa3g+m2HclBIujHzsxZ4VJVA+GUuc2/LBw==}
@@ -12666,6 +12709,19 @@ packages:
       which-module: 2.0.0
       y18n: 4.0.3
       yargs-parser: 18.1.3
+
+  /yargs@16.2.0:
+    resolution: {integrity: sha512-D1mvvtDG0L5ft/jGWkLpG1+m0eQxOfaBvTNELraWj22wSVUMWxZUvYgJYcKh6jGGIkJFhH4IZPQhR4TKpc8mBw==}
+    engines: {node: '>=10'}
+    dependencies:
+      cliui: 7.0.4
+      escalade: 3.1.1
+      get-caller-file: 2.0.5
+      require-directory: 2.1.1
+      string-width: 4.2.3
+      y18n: 5.0.8
+      yargs-parser: 20.2.9
+    dev: false
 
   /yargs@17.7.1:
     resolution: {integrity: sha512-cwiTb08Xuv5fqF4AovYacTFNxk62th7LKJ6BL9IGUpTJrWoU7/7WdQGTP2SjKf1dUNBGzDd28p/Yfs/GI6JrLw==}

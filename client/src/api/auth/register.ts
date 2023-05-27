@@ -4,7 +4,12 @@ import { createMutation } from 'react-query-kit';
 import { client } from '../common';
 
 type Variables = { username: string; email: string; password: string };
-type Response = { accessToken: string; refreshToken: string };
+type Response = {
+  id: string;
+  username: string;
+  email: string;
+  createdAt: Date;
+};
 
 export const useRegister = createMutation<Response, Variables, AxiosError>(
   async (variables) =>

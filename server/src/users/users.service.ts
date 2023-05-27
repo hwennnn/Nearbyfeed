@@ -7,7 +7,7 @@ import {
   type PendingUserWithoutPassword,
   type UserWithoutPassword,
 } from 'src/users/entities';
-import { exclude } from 'src/utils';
+import { dayInMs, exclude } from 'src/utils';
 
 @Injectable()
 export class UsersService {
@@ -78,8 +78,31 @@ export class UsersService {
     ).map((user) => this.excludePasswordFromUser(user));
   }
 
+  async findPendingUsersWithEmail(email: string): Promise<boolean> {
+    const pendingUser = await this.prismaService.pendingUser
+      .findFirst({
+        where: {
+          email,
+          createdAt: {
+            gte: new Date(new Date().getTime() - dayInMs),
+          },
+        },
+      })
+      .catch((e) => {
+        this.logger.error(
+          `Failed to find pending users with ${email}`,
+          e instanceof Error ? e.stack : undefined,
+          UsersService.name,
+        );
+
+        throw new BadRequestException('Failed to find user');
+      });
+
+    return pendingUser !== null;
+  }
+
   async findPendingUser(id: string): Promise<PendingUser | null> {
-    return this.prismaService.pendingUser
+    return await this.prismaService.pendingUser
       .findUnique({
         where: {
           id,

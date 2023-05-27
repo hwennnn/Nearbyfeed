@@ -16,7 +16,9 @@ const AuthLinking: LinkingOptions<RootStackParamList> = {
     screens: {
       Auth: {
         screens: {
-          Login: 'login',
+          Login: {
+            path: 'login/:verifyEmail',
+          },
         },
       },
     },
@@ -36,6 +38,17 @@ export const NavigationContainer = ({
 }) => {
   const isLoggedIn = useAuth.use.status() === 'signIn';
   const theme = useThemeConfig();
+  const url = Linking.useURL();
+
+  if (url) {
+    const { hostname, path, queryParams, scheme } = Linking.parse(url);
+
+    console.log(
+      `Linked to app ${scheme} with hostname: ${hostname}, path: ${path} and data: ${JSON.stringify(
+        queryParams
+      )}`
+    );
+  }
 
   return (
     <SafeAreaProvider>
