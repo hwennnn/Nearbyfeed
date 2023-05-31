@@ -1,4 +1,5 @@
 import type { AxiosError } from 'axios';
+import type * as ImagePicker from 'expo-image-picker';
 import { createMutation } from 'react-query-kit';
 
 import { usePostKeys } from '@/core/posts';
@@ -8,9 +9,10 @@ import type { Post } from './types';
 
 type Variables = {
   title: string;
-  content: string | null;
+  content?: string;
   latitude: number;
   longitude: number;
+  image: ImagePicker.ImagePickerAsset | null;
 };
 type Response = Post;
 type PostsResponse = {
@@ -32,16 +34,34 @@ export const useAddPost = createMutation<
   AxiosError,
   Context
 >({
-  mutationFn: async (variables) =>
-    client({
+  mutationFn: async (variables) => {
+    const formData = new FormData();
+    if (variables.image !== null) {
+      formData.append('image', {
+        uri: variables.image.uri,
+        type: 'image',
+        name: variables.image.fileName ?? 'photo.jpg',
+      } as any);
+    }
+
+    formData.append('title', variables.title);
+    if (variables.content) {
+      formData.append('content', variables.content);
+    }
+    formData.append('latitude', variables.latitude.toString());
+    formData.append('longitude', variables.longitude.toString());
+
+    const response = await client({
       url: 'posts',
       method: 'POST',
-      data: variables,
-    })
-      .then((response) => response.data)
-      .catch((error) => {
-        return Promise.reject(error);
-      }),
+      data: formData,
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }).catch((error) => {
+      return Promise.reject(error);
+    });
+
+    return response.data;
+  },
   onMutate: async (newPost) => {
     const queryKey = ['posts', usePostKeys.getState().postsQueryKey];
 

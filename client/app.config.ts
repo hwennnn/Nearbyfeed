@@ -37,6 +37,13 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   plugins: [
     ['@bacons/link-assets', ['./assets/fonts/Inter.ttf']],
     'expo-localization',
+    [
+      'expo-image-picker',
+      {
+        photosPermission:
+          'This app requires access to the photo library to select images.',
+      },
+    ],
   ],
   extra: {
     ...ClientEnv,

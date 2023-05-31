@@ -12,7 +12,7 @@ import {
 
 const client = axios.create({
   baseURL: Env.API_URL,
-  headers: { 'Content-Type': 'application/json' },
+  // headers: { 'Content-Type': 'application/json' },
 });
 
 const refreshAuthToken = async (): Promise<void> => {
