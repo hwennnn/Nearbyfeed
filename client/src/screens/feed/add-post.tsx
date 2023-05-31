@@ -1,11 +1,11 @@
 import { classValidatorResolver } from '@hookform/resolvers/class-validator';
-import { useQueryClient } from '@tanstack/react-query';
+import { useNavigation } from '@react-navigation/native';
 import { IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import { showMessage } from 'react-native-flash-message';
 
-import { useAddPost, usePosts } from '@/api';
+import { useAddPost } from '@/api';
 import { Button, ControlledInput, showErrorMessage, View } from '@/ui';
 import { retrieveCurrentPosition } from '@/utils/geolocation-utils';
 
@@ -29,7 +29,8 @@ export const AddPost = () => {
     resolver,
   });
   const { mutate: addPost, isLoading } = useAddPost();
-  const queryClient = useQueryClient();
+
+  const { goBack } = useNavigation();
 
   const onSubmit = async (data: CreatePostDto) => {
     const location = await retrieveCurrentPosition();
@@ -46,8 +47,7 @@ export const AddPost = () => {
             message: 'Post added successfully',
             type: 'success',
           });
-          // here you can navigate to the post list and refresh the list data
-          queryClient.invalidateQueries(usePosts.getKey());
+          goBack();
         },
         onError: () => {
           showErrorMessage('Error adding post');

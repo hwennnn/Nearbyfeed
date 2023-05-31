@@ -5,6 +5,7 @@ import { RefreshControl } from 'react-native';
 
 import type { Post } from '@/api';
 import { usePosts } from '@/api';
+import { setPostsQueryKey } from '@/core/posts';
 import type { FeedNavigatorProp } from '@/navigation/feed-navigator';
 import { EmptyList, Text, View } from '@/ui';
 import { retrieveCurrentPosition } from '@/utils/geolocation-utils';
@@ -30,10 +31,19 @@ export const Feed = () => {
       distance,
       latitude,
       longitude,
-      take: 15,
     },
     enabled: latitude !== null && longitude !== null,
   });
+
+  useEffect(() => {
+    if (longitude !== null && latitude !== null) {
+      setPostsQueryKey({
+        longitude,
+        latitude,
+        distance,
+      });
+    }
+  }, [longitude, latitude, distance]);
 
   const { navigate } = useNavigation<FeedNavigatorProp>();
 

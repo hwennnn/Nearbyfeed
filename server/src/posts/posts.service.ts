@@ -13,6 +13,7 @@ import {
 import { type PostWithUpdoot } from 'src/posts/entities';
 
 import { PrismaService } from 'src/prisma/prisma.service';
+import { sleep } from 'src/utils';
 
 @Injectable()
 export class PostsService {
@@ -47,6 +48,8 @@ export class PostsService {
       locationName: geolocationName?.locationName,
       fullLocationName: geolocationName?.displayName,
     };
+
+    await sleep(15000);
 
     const post = await this.prismaService.post
       .create({
@@ -123,6 +126,7 @@ export class PostsService {
           updatedAt: true,
           authorId: true,
           updoots: selectUpdoots,
+          author: true,
         },
         orderBy: {
           createdAt: 'desc',
