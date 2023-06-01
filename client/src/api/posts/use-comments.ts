@@ -3,7 +3,7 @@ import { createInfiniteQuery } from 'react-query-kit';
 
 import type { Comment } from '@/api/posts/types';
 
-import { client } from '../common';
+import { client, queryClient } from '../common';
 
 type Response = {
   comments: Comment[];
@@ -11,8 +11,7 @@ type Response = {
 };
 type Variables = {
   postId: number;
-  cursor?: string;
-  take?: number;
+  sort: 'latest' | 'oldest';
 };
 
 export const useComments = createInfiniteQuery<Response, Variables, AxiosError>(
@@ -44,6 +43,13 @@ export const useComments = createInfiniteQuery<Response, Variables, AxiosError>(
       const lastComment = comments[comments.length - 1];
 
       return lastComment.id;
+    },
+    onSuccess: () => {
+      const queryCache = queryClient.getQueryCache();
+
+      const queryKeys = queryCache.getAll().map((cache) => cache.queryKey); // QueryKey[]
+
+      console.log(queryKeys);
     },
   }
 );

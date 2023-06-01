@@ -12,8 +12,6 @@ type Variables = {
   latitude: number | null;
   longitude: number | null;
   distance: number;
-  cursor?: string;
-  take?: number;
 };
 
 export const usePosts = createInfiniteQuery<Response, Variables, AxiosError>(

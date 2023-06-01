@@ -329,8 +329,6 @@ export class PostsService {
         createdAt: 'asc',
       };
     }
-    // else if (dto.sort === GetCommentsSort.MOST_VOTES) {
-    // }
 
     // in order to skip the cursor
     const skip = cursor !== undefined ? 1 : undefined;

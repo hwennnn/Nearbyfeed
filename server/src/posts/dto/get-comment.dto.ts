@@ -10,7 +10,6 @@ import { ValidNumberRangeValue } from 'src/posts/decorators';
 export enum GetCommentsSort {
   LATEST = 'latest',
   OLDEST = 'oldest',
-  MOST_VOTES = 'most-votes',
 }
 
 export class GetCommentDto {

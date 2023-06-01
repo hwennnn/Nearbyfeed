@@ -24,7 +24,9 @@ export type Comment = {
   updatedAt: Date;
   isDeleted: boolean;
   postId: number;
-  authorId: number;
+  authorId?: number;
+  author?: User;
+  isOptimistic?: boolean;
 };
 
 export type User = {
