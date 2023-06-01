@@ -13,7 +13,7 @@ export type Post = {
   updatedAt?: Date;
   authorId?: number;
   author?: User;
-  updoots?: Updoot[];
+  updoot?: Updoot;
   isOptimistic?: boolean;
 };
 

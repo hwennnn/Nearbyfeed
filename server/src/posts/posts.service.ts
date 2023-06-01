@@ -3,6 +3,7 @@ import { type Comment, type Post, type Updoot } from '@prisma/client';
 import { FilterService } from 'src/filter/filter.service';
 import { GeocodingService } from 'src/geocoding/geocoding.service';
 import {
+  GetCommentsSort,
   type CreateCommentDto,
   type CreatePostDto,
   type GetCommentDto,
@@ -10,7 +11,10 @@ import {
   type UpdateCommentDto,
   type UpdatePostDto,
 } from 'src/posts/dto';
-import { type PostWithUpdoot } from 'src/posts/entities';
+import {
+  type CommentWithAuthor,
+  type PostWithUpdoot,
+} from 'src/posts/entities';
 
 import { PrismaService } from 'src/prisma/prisma.service';
 
@@ -146,8 +150,22 @@ export class PostsService {
       posts.pop();
     }
 
+    // transform the updoots array into single updoot variable
+    const parsedPosts = posts.map((post) => {
+      const p = {
+        ...post,
+        updoot: post.updoots.length > 0 ? post.updoots[0] : undefined,
+      };
+
+      const { updoots: _, ...parsedPost } = p;
+
+      return parsedPost;
+    });
+
+    console.log(parsedPosts);
+
     return {
-      posts,
+      posts: parsedPosts,
       hasMore,
     };
   }
@@ -291,7 +309,7 @@ export class PostsService {
   async findComments(
     id: number,
     dto: GetCommentDto,
-  ): Promise<{ comments: Comment[]; hasMore: boolean }> {
+  ): Promise<{ comments: CommentWithAuthor[]; hasMore: boolean }> {
     const limit = dto.take ?? 15;
 
     let cursor: { id: number } | undefined;
@@ -300,6 +318,19 @@ export class PostsService {
         id: +dto.cursor,
       };
     }
+
+    // default sort is latest if not specified
+    let orderBy: any = {
+      createdAt: 'desc',
+    };
+
+    if (dto.sort === GetCommentsSort.OLDEST) {
+      orderBy = {
+        createdAt: 'asc',
+      };
+    }
+    // else if (dto.sort === GetCommentsSort.MOST_VOTES) {
+    // }
 
     // in order to skip the cursor
     const skip = cursor !== undefined ? 1 : undefined;
@@ -313,8 +344,16 @@ export class PostsService {
         cursor,
         take: limit + 1,
         skip,
-        orderBy: {
-          createdAt: 'desc',
+        orderBy,
+        select: {
+          id: true,
+          content: true,
+          createdAt: true,
+          updatedAt: true,
+          postId: true,
+          authorId: true,
+          author: true,
+          isDeleted: true,
         },
       })
       .catch((e) => {

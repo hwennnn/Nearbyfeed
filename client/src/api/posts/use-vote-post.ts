@@ -112,7 +112,7 @@ export const useVotePost = createMutation<
               updatedPosts[foundIndex] = {
                 author: updatedPosts[foundIndex].author,
                 ...data.post,
-                updoots: [data.updoot],
+                updoot: data.updoot,
               };
               return { ...page, posts: updatedPosts };
             }
@@ -127,10 +127,7 @@ export const useVotePost = createMutation<
 });
 
 const retrieveNewOptimisticPost = (post: Post, value: number): Post => {
-  let updoot =
-    post.updoots !== undefined && post.updoots.length > 0
-      ? post.updoots[0]
-      : null;
+  let updoot = post.updoot ?? null;
 
   let incrementValue = value;
 
@@ -155,7 +152,7 @@ const retrieveNewOptimisticPost = (post: Post, value: number): Post => {
   return {
     ...post,
     points: post.points + incrementValue,
-    updoots: [
+    updoot:
       updoot !== null
         ? {
             ...updoot,
@@ -169,6 +166,5 @@ const retrieveNewOptimisticPost = (post: Post, value: number): Post => {
             postId: post.id,
             userId: -1,
           },
-    ],
   };
 };

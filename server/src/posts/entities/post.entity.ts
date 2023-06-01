@@ -1,6 +1,6 @@
 import { type Post, type Updoot, type User } from '@prisma/client';
 
 export type PostWithUpdoot = Post & {
-  updoot?: Updoot[];
+  updoot?: Updoot;
   author: User;
 };

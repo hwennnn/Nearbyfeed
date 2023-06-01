@@ -14,22 +14,19 @@ export const Card = ({
   author,
   onPress,
   points,
-  updoots,
+  updoot,
   isOptimistic,
   image,
 }: Props) => {
-  let voteStatus =
-    updoots !== undefined && updoots.length > 0 ? updoots[0] : undefined;
-
-  const isUpvoted = voteStatus !== undefined && voteStatus.value === 1;
-  const isDownvoted = voteStatus !== undefined && voteStatus.value === -1;
+  const isUpvoted = updoot !== undefined && updoot.value === 1;
+  const isDownvoted = updoot !== undefined && updoot.value === -1;
 
   const { mutate } = useVotePost();
 
   const handleVote = (voteValue: number) => {
     if (isOptimistic === true) return;
 
-    let value = voteValue === voteStatus?.value ? 0 : voteValue;
+    let value = voteValue === updoot?.value ? 0 : voteValue;
 
     mutate({
       value: value,

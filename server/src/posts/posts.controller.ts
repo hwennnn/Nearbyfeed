@@ -121,6 +121,7 @@ export class PostsController {
     const parsedDto: GetCommentDto = {
       cursor: getCommentDto.cursor,
       take: getCommentDto.take !== undefined ? +getCommentDto.take : undefined,
+      sort: getCommentDto.sort,
     };
 
     return await this.postsService.findComments(+postId, parsedDto);
