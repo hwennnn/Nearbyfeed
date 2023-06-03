@@ -24,7 +24,7 @@ type Props = {
 };
 
 type LocationHeaderProps = {
-  location: GeolocationName;
+  location: GeolocationName | null | undefined;
   distance: number;
   setDistanceCallback: (distance: number) => void;
 };
@@ -67,8 +67,8 @@ const LocationHeader = ({
     );
   };
 
-  const formatDistanceName = (distance: number): string => {
-    switch (distance) {
+  const formatDistanceName = (dist: number): string => {
+    switch (dist) {
       case 200:
         return '200m';
 
@@ -83,6 +83,13 @@ const LocationHeader = ({
     }
   };
 
+  const locationName =
+    location === null || location === undefined
+      ? '...'
+      : showFullName
+      ? location.displayName
+      : location.locationName;
+
   return (
     <TouchableOpacity
       className="m-2 block flex-row items-center rounded-md border-[1px] border-neutral-200 p-4 shadow-xl dark:border-charcoal-700 dark:bg-charcoal-800 "
@@ -93,9 +100,9 @@ const LocationHeader = ({
         className="mx-4 flex-1 text-neutral-600 dark:text-white"
         variant="sm"
       >
-        {`Displaying feeds within ${formatDistanceName(distance)} from ${
-          showFullName ? location.displayName : location.locationName
-        }`}
+        {`Displaying feeds within ${formatDistanceName(
+          distance
+        )} from ${locationName}`}
       </Text>
       <TouchableOpacity onPress={onPressActionSheet}>
         <Ionicons name="ios-filter" color={iconColor} size={24} />
@@ -166,13 +173,11 @@ export const FeedList = ({
     <View className="flex-1">
       <FlashList
         ListHeaderComponent={
-          location !== null && location !== undefined ? (
-            <LocationHeader
-              distance={distance}
-              location={location}
-              setDistanceCallback={setDistanceCallback}
-            />
-          ) : undefined
+          <LocationHeader
+            distance={distance}
+            location={location}
+            setDistanceCallback={setDistanceCallback}
+          />
         }
         data={allPosts}
         renderItem={renderItem}
