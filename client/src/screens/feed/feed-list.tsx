@@ -43,7 +43,12 @@ const LocationHeader = ({
   const { showActionSheetWithOptions } = useActionSheet();
 
   const onPressActionSheet = () => {
-    const options = ['200m', '500m', '1km', 'Cancel'];
+    const options = [
+      'Within 200 meters',
+      'Within 500 meters',
+      'Within 1 kilometer',
+      'Cancel',
+    ];
     const values = [200, 500, 1000];
 
     const cancelButtonIndex = 3;
@@ -52,6 +57,7 @@ const LocationHeader = ({
       {
         options,
         cancelButtonIndex,
+        title: 'Select Distance Range',
       },
       (selectedIndex: number | undefined) => {
         switch (selectedIndex) {
@@ -92,7 +98,7 @@ const LocationHeader = ({
 
   return (
     <TouchableOpacity
-      className="m-2 block flex-row items-center rounded-md border-[1px] border-neutral-200 p-4 shadow-xl dark:border-charcoal-700 dark:bg-charcoal-800 "
+      className="m-2 block flex-row items-center rounded-md border-[1px] border-neutral-200 p-4 shadow-xl dark:border-charcoal-700 dark:bg-charcoal-800"
       onPress={() => setShowFullName((prev) => !prev)}
     >
       <Icon name="location-arrow" color={iconColor} size={24} />

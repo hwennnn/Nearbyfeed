@@ -21,7 +21,7 @@ const GoToAddPost = () => {
 
   return (
     <Pressable onPress={() => navigate('AddPost')} className="p-2">
-      <Icon name="ios-add" size={24} color="#FF8933" />
+      <Icon name="ios-add" size={28} color="#FF8933" />
     </Pressable>
   );
 };
