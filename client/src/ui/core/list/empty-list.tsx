@@ -24,7 +24,7 @@ export const EmptyList = React.memo(({ isLoading }: Props) => {
           <Text className="pt-4 text-center">
             There are no feeds available nearby your current location.
           </Text>
-          <TouchableOpacity onPress={() => navigate('AddPost')}>
+          <TouchableOpacity onPress={() => navigate('AddFeed')}>
             <Text className="pt-2 text-primary-400">
               Be the first one to create a feed!
             </Text>

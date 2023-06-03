@@ -3,7 +3,7 @@ import { createInfiniteQuery } from 'react-query-kit';
 
 import type { Comment } from '@/api/posts/types';
 
-import { client, queryClient } from '../common';
+import { client } from '../common';
 
 type Response = {
   comments: Comment[];
@@ -43,13 +43,6 @@ export const useComments = createInfiniteQuery<Response, Variables, AxiosError>(
       const lastComment = comments[comments.length - 1];
 
       return lastComment.id;
-    },
-    onSuccess: () => {
-      const queryCache = queryClient.getQueryCache();
-
-      const queryKeys = queryCache.getAll().map((cache) => cache.queryKey); // QueryKey[]
-
-      console.log(queryKeys);
     },
   }
 );
