@@ -1,21 +1,28 @@
 import { useNavigation } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { RefreshControl } from 'react-native';
 
 import type { Post } from '@/api';
 import { usePosts } from '@/api';
-import { setPostsQueryKey } from '@/core/posts';
 import type { FeedNavigatorProp } from '@/navigation/feed-navigator';
 import { EmptyList, Text, View } from '@/ui';
-import { retrieveCurrentPosition } from '@/utils/geolocation-utils';
 
 import { Card } from './card';
 
-export const Feed = () => {
-  const [longitude, setLongitude] = useState<number | null>(null);
-  const [latitude, setLatitude] = useState<number | null>(null);
-  const [distance, setDistance] = useState(200);
+type Props = {
+  longitude: number;
+  latitude: number;
+  distance: number;
+  refreshCallback: () => Promise<void>;
+};
+
+export const FeedList = ({
+  longitude,
+  latitude,
+  distance,
+  refreshCallback,
+}: Props) => {
   const [refreshing, setRefreshing] = useState(false);
 
   const {
@@ -32,36 +39,12 @@ export const Feed = () => {
       latitude,
       longitude,
     },
-    enabled: latitude !== null && longitude !== null,
   });
-
-  useEffect(() => {
-    if (longitude !== null && latitude !== null) {
-      setPostsQueryKey({
-        longitude,
-        latitude,
-        distance,
-      });
-    }
-  }, [longitude, latitude, distance]);
 
   const { navigate } = useNavigation<FeedNavigatorProp>();
 
-  const updateLocation = async (): Promise<void> => {
-    const location = await retrieveCurrentPosition();
-
-    if (location !== null) {
-      setLatitude(location.latitude);
-      setLongitude(location.longitude);
-    }
-  };
-
-  useEffect(() => {
-    updateLocation();
-  }, []);
-
   const handleRefresh = async () => {
-    await updateLocation();
+    await refreshCallback();
     refetch();
 
     setRefreshing(false);

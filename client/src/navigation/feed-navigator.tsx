@@ -2,10 +2,11 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 import type { Post as PostEntitiy } from '@/api';
 import { AddPost, Feed, Post } from '@/screens';
-import { Pressable, Text } from '@/ui';
+import { Pressable } from '@/ui';
 
 export type FeedStackParamList = {
   Feed: undefined;
@@ -20,7 +21,7 @@ const GoToAddPost = () => {
 
   return (
     <Pressable onPress={() => navigate('AddPost')} className="p-2">
-      <Text className="text-primary-300">Create</Text>
+      <Icon name="ios-add" size={24} color="white" />
     </Pressable>
   );
 };

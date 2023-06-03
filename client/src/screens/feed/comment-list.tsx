@@ -30,7 +30,7 @@ export const CommentList = ({ postId }: Props) => {
 
   const [sortDesc, setSortDesc] = useState(true);
 
-  const { control, handleSubmit, reset } = useForm<CreateCommentDto>({
+  const { control, handleSubmit } = useForm<CreateCommentDto>({
     resolver,
   });
 

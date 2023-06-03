@@ -1,3 +1,4 @@
 export * from './add-post';
-export * from './list';
+export * from './feed';
+export * from './feed-list';
 export * from './post';

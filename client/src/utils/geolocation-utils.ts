@@ -2,6 +2,8 @@ import { Platform } from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
 import { PERMISSIONS, request, RESULTS } from 'react-native-permissions';
 
+import { showErrorMessage } from '@/ui';
+
 export type Location = {
   latitude: number;
   longitude: number;
@@ -29,6 +31,9 @@ export const requestLocationPermission = async (): Promise<boolean> => {
     }
   } catch (error) {
     console.log('Error requesting location permission:', error);
+    showErrorMessage(
+      'There is an error when requesting location permission. Please try again.'
+    );
     // Handle the error, display an error message, etc.
     return false;
   }
