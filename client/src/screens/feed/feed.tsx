@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Linking } from 'react-native';
 
+import { useLocationName } from '@/api/posts/use-location-name';
 import { setPostsQueryKey } from '@/core/posts';
 import { FeedList } from '@/screens/feed/feed-list';
 import { ActivityIndicator, Image, Text, View } from '@/ui';
@@ -12,6 +13,14 @@ export const Feed = () => {
   const [latitude, setLatitude] = useState<number | null>(null);
   const [distance, setDistance] = useState(200);
   const [isLoading, setLoading] = useState(true);
+
+  const { data: locationName } = useLocationName({
+    variables: {
+      latitude,
+      longitude,
+    },
+    enabled: latitude !== null && longitude !== null,
+  });
 
   useEffect(() => {
     if (longitude !== null && latitude !== null) {
@@ -80,6 +89,8 @@ export const Feed = () => {
         longitude={longitude}
         distance={distance}
         refreshCallback={async () => await updateLocation()}
+        location={locationName}
+        setDistanceCallback={(dist) => setDistance(dist)}
       />
     </View>
   );

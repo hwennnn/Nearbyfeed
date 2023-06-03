@@ -73,6 +73,7 @@ const client = z.object({
 
   // ADD YOUR CLIENT ENV VARS HERE
   API_URL: z.string(),
+  NOMINATIM_OPENSTREETMAP_ENDPOINT: z.string(),
 });
 
 const buildTime = z.object({
@@ -92,6 +93,8 @@ const _clientEnv = {
 
   // ADD YOUR ENV VARS HERE TOO
   API_URL: process.env.API_URL,
+  NOMINATIM_OPENSTREETMAP_ENDPOINT:
+    process.env.NOMINATIM_OPENSTREETMAP_ENDPOINT,
 };
 
 /**
