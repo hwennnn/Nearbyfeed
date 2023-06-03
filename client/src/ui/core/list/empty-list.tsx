@@ -3,9 +3,11 @@ import React from 'react';
 import { ActivityIndicator } from 'react-native';
 
 import type { FeedNavigatorProp } from '@/navigation/feed-navigator';
-import { Text, TouchableOpacity, View } from '@/ui';
 
 import { NoData } from '../../icons';
+import { Text } from '../text';
+import { TouchableOpacity } from '../touchable-opacity';
+import { View } from '../view';
 
 type Props = {
   isLoading: boolean;
