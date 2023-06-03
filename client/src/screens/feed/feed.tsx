@@ -1,10 +1,13 @@
+import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { Linking } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 import { useLocationName } from '@/api/posts/use-location-name';
 import { setPostsQueryKey } from '@/core/posts';
+import type { FeedNavigatorProp } from '@/navigation/feed-navigator';
 import { FeedList } from '@/screens/feed/feed-list';
-import { ActivityIndicator, Image, Text } from '@/ui';
+import { ActivityIndicator, Image, Text, TouchableOpacity } from '@/ui';
 import { Layout } from '@/ui/core/layout';
 import { retrieveCurrentPosition } from '@/utils/geolocation-utils';
 
@@ -13,6 +16,8 @@ export const Feed = () => {
   const [latitude, setLatitude] = useState<number | null>(null);
   const [distance, setDistance] = useState(200);
   const [isLoading, setLoading] = useState(true);
+
+  const { navigate } = useNavigation<FeedNavigatorProp>();
 
   const { data: locationName } = useLocationName({
     variables: {
@@ -84,6 +89,13 @@ export const Feed = () => {
 
   return (
     <Layout className="flex-1" hasHorizontalPadding={false}>
+      <TouchableOpacity
+        onPress={() => navigate('AddFeed')}
+        className="absolute right-3 bottom-3 z-10 items-center justify-center rounded-full bg-primary-400 p-2"
+      >
+        <Icon name="ios-add" size={36} color="white" />
+      </TouchableOpacity>
+
       <FeedList
         latitude={latitude}
         longitude={longitude}

@@ -42,16 +42,6 @@ const CloseButton = () => {
   );
 };
 
-const GoToAddPost = () => {
-  const { navigate } = useNavigation<FeedNavigatorProp>();
-
-  return (
-    <TouchableOpacity onPress={() => navigate('AddFeed')} className="p-2">
-      <Icon name="ios-add" size={28} color="#FF8933" />
-    </TouchableOpacity>
-  );
-};
-
 type Props = NativeStackScreenProps<FeedStackParamList>;
 export type FeedNavigatorProp = Props['navigation'];
 
@@ -62,7 +52,7 @@ export const FeedNavigator = () => {
         name="Feed"
         component={Feed}
         options={{
-          headerRight: () => <GoToAddPost />,
+          headerShown: false,
         }}
       />
 

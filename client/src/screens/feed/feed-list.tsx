@@ -98,7 +98,7 @@ const LocationHeader = ({
 
   return (
     <TouchableOpacity
-      className="m-2 block flex-row items-center rounded-md border-[1px] border-neutral-200 p-4 shadow-xl dark:border-charcoal-700 dark:bg-charcoal-800"
+      className="m-2 block flex-row items-center rounded-md border-[1px] border-neutral-400 p-4 shadow-xl dark:border-charcoal-700 dark:bg-charcoal-800"
       onPress={() => setShowFullName((prev) => !prev)}
     >
       <Icon name="location-arrow" color={iconColor} size={24} />
@@ -159,6 +159,16 @@ export const FeedList = ({
     [navigate]
   );
 
+  const header = React.useCallback(() => {
+    return (
+      <LocationHeader
+        distance={distance}
+        location={location}
+        setDistanceCallback={setDistanceCallback}
+      />
+    );
+  }, [distance, location, setDistanceCallback]);
+
   if (isError) {
     return (
       <View>
@@ -178,18 +188,12 @@ export const FeedList = ({
   return (
     <View className="flex-1">
       <FlashList
-        ListHeaderComponent={
-          <LocationHeader
-            distance={distance}
-            location={location}
-            setDistanceCallback={setDistanceCallback}
-          />
-        }
+        ListHeaderComponent={header}
         data={allPosts}
         renderItem={renderItem}
         keyExtractor={(_, index) => `item-${index}`}
+        estimatedItemSize={200}
         ListEmptyComponent={<EmptyList isLoading={isLoading} />}
-        estimatedItemSize={300}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
         }
