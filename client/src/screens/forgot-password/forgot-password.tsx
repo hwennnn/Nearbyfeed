@@ -4,7 +4,8 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 
 import { useForgotPassword } from '@/api/auth/forgot-password';
-import { Button, ControlledInput, showSuccessMessage, Text, View } from '@/ui';
+import { Button, ControlledInput, showSuccessMessage, Text } from '@/ui';
+import { Layout } from '@/ui/core/layout';
 
 export class ForgotPasswordDto {
   @IsNotEmpty({ message: 'Email is required' })
@@ -30,20 +31,18 @@ export const ForgotPasswordScreen = () => {
   };
 
   return (
-    <View className="flex-1 justify-center p-4">
-      <Text testID="form-title" variant="h1" className="pb-2 text-center">
+    <Layout className="justify-center">
+      <Text variant="h1" className="pb-2 text-center">
         Forgot your password?
       </Text>
 
-      <Text testID="form-title" variant="md" className="pb-2">
+      <Text variant="md" className="pb-2">
         Enter your email address and we'll send you a link to reset your
         password.
       </Text>
 
       {typeof error === 'string' && (
-        <Text testID="form-title" className="pb-4 text-red-600">
-          {error}
-        </Text>
+        <Text className="pb-4 text-red-600">{error}</Text>
       )}
 
       <ControlledInput
@@ -60,6 +59,6 @@ export const ForgotPasswordScreen = () => {
         onPress={handleSubmit(onSubmit)}
         variant="primary"
       />
-    </View>
+    </Layout>
   );
 };

@@ -136,7 +136,8 @@ export const AddFeed = () => {
       <ControlledInput
         name="content"
         placeholder="Body Content (optional)"
-        className="border-none text-[16px] dark:text-charcoal-100"
+        // max of 6 lines
+        className="max-h-32 border-none text-[16px] dark:text-charcoal-100"
         control={control}
         multiline
       />

@@ -5,6 +5,7 @@ import React from 'react';
 import { useLogin } from '@/api/auth/login';
 import { useAuth } from '@/core';
 import type { AuthStackParamList } from '@/navigation/auth-navigator';
+import { Layout } from '@/ui/core/layout';
 
 import type { LoginFormProps } from './login-form';
 import { LoginForm } from './login-form';
@@ -26,11 +27,13 @@ export const Login = () => {
   };
 
   return (
-    <LoginForm
-      onSubmit={onSubmit}
-      isLoading={isLoading}
-      error={error}
-      emailVerified={verifyEmail === 'success'}
-    />
+    <Layout>
+      <LoginForm
+        onSubmit={onSubmit}
+        isLoading={isLoading}
+        error={error}
+        emailVerified={verifyEmail === 'success'}
+      />
+    </Layout>
   );
 };

@@ -51,7 +51,7 @@ export const RegisterForm = ({
   });
 
   return (
-    <View className="flex-1 justify-center p-4">
+    <View className="flex-1 justify-center px-4">
       <Text testID="form-title" variant="h1" className="pb-2 text-center">
         Register
       </Text>

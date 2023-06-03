@@ -2,12 +2,13 @@ import React from 'react';
 
 import { useIsFirstTime } from '@/core/hooks';
 import { Button, SafeAreaView, Text, View } from '@/ui';
+import { Layout } from '@/ui/core/layout';
 
 import { Cover } from './cover';
 export const Onboarding = () => {
   const [_, setIsFirstTime] = useIsFirstTime();
   return (
-    <View className="flex h-full items-center  justify-center">
+    <Layout className="flex h-full items-center  justify-center">
       <View className="w-full flex-1">
         <Cover />
       </View>
@@ -40,6 +41,6 @@ export const Onboarding = () => {
           }}
         />
       </SafeAreaView>
-    </View>
+    </Layout>
   );
 };

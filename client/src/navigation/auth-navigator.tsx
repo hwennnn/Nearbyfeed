@@ -2,8 +2,10 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
 
 import { Login, Register } from '@/screens';
-import { ForgotPasswordScreen } from '@/screens/forgot-password';
-import { ResetPasswordScreen } from '@/screens/forgot-password/reset-password';
+import {
+  ForgotPasswordScreen,
+  ResetPasswordScreen,
+} from '@/screens/forgot-password';
 import ValidateEmailScreen from '@/screens/validate-email';
 
 export type AuthStackParamList = {

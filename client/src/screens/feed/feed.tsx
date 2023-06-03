@@ -4,7 +4,7 @@ import { Linking } from 'react-native';
 import { useLocationName } from '@/api/posts/use-location-name';
 import { setPostsQueryKey } from '@/core/posts';
 import { FeedList } from '@/screens/feed/feed-list';
-import { ActivityIndicator, Image, Text, View } from '@/ui';
+import { ActivityIndicator, Image, Text } from '@/ui';
 import { Layout } from '@/ui/core/layout';
 import { retrieveCurrentPosition } from '@/utils/geolocation-utils';
 
@@ -83,7 +83,7 @@ export const Feed = () => {
   }
 
   return (
-    <View className="flex-1">
+    <Layout className="flex-1" hasHorizontalPadding={false}>
       <FeedList
         latitude={latitude}
         longitude={longitude}
@@ -92,6 +92,6 @@ export const Feed = () => {
         location={locationName}
         setDistanceCallback={(dist) => setDistance(dist)}
       />
-    </View>
+    </Layout>
   );
 };

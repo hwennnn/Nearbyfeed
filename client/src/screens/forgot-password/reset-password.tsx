@@ -8,7 +8,8 @@ import { useForm } from 'react-hook-form';
 
 import { useResetPassword } from '@/api/auth/reset-password';
 import type { AuthStackParamList } from '@/navigation/auth-navigator';
-import { Button, ControlledInput, showSuccessMessage, Text, View } from '@/ui';
+import { Button, ControlledInput, showSuccessMessage, Text } from '@/ui';
+import { Layout } from '@/ui/core/layout';
 import { MatchesProperty } from '@/utils/decorators';
 
 export class ResetPasswordDto {
@@ -54,7 +55,7 @@ export const ResetPasswordScreen = () => {
   };
 
   return (
-    <View className="flex-1 justify-center p-4">
+    <Layout className="flex-1 justify-center p-4">
       <Text testID="form-title" variant="h1" className="pb-2 text-center">
         Reset your password
       </Text>
@@ -90,6 +91,6 @@ export const ResetPasswordScreen = () => {
         onPress={handleSubmit(onSubmit)}
         variant="primary"
       />
-    </View>
+    </Layout>
   );
 };

@@ -11,7 +11,6 @@ import {
   Button,
   ControlledInput,
   Pressable,
-  SafeAreaView,
   Text,
   TouchableOpacity,
   View,
@@ -60,69 +59,67 @@ export const LoginForm = ({
   };
 
   return (
-    <SafeAreaView className="flex-1">
-      <View className="flex-1 justify-center px-4">
-        <Text testID="form-title" variant="h1" className="pb-2 text-center">
-          Sign In
-        </Text>
+    <View className="flex-1 justify-center px-4">
+      <Text testID="form-title" variant="h1" className="pb-2 text-center">
+        Sign In
+      </Text>
 
-        {isBannerVisible && (
-          <View className="my-4 w-full flex-row rounded-xl bg-green-500 p-4">
-            <Text className="flex-1 font-semibold text-white">
-              Your email has been successfully verified. You can now proceed to
-              log in.
-            </Text>
+      {isBannerVisible && (
+        <View className="my-4 w-full flex-row rounded-xl bg-green-500 p-4">
+          <Text className="flex-1 font-semibold text-white">
+            Your email has been successfully verified. You can now proceed to
+            log in.
+          </Text>
 
-            <TouchableOpacity onPress={handleBannerClose} className="flex">
-              <Icon name="close" size={24} color="black" />
-            </TouchableOpacity>
-          </View>
-        )}
-
-        {typeof error === 'string' && (
-          <Text className="pb-4 text-red-600">{error}</Text>
-        )}
-
-        <ControlledInput
-          testID="email-input"
-          control={control}
-          name="email"
-          label="Email"
-        />
-
-        <ControlledInput
-          testID="password-input"
-          control={control}
-          name="password"
-          label="Password"
-          placeholder="********"
-          secureTextEntry={true}
-        />
-
-        <Text
-          className="pb-1 text-primary-400"
-          variant="sm"
-          onPress={navToForgotPassword}
-        >
-          Forgot password?
-        </Text>
-
-        <Button
-          loading={isLoading}
-          testID="login-button"
-          label="Login"
-          onPress={handleSubmit(onSubmit)}
-          variant="primary"
-        />
-
-        <View className="flex-row">
-          <Text className="">Do not have an account? </Text>
-
-          <Pressable onPress={() => navigate('Auth', { screen: 'Register' })}>
-            <Text className="text-primary-400">Register now</Text>
-          </Pressable>
+          <TouchableOpacity onPress={handleBannerClose} className="flex">
+            <Icon name="close" size={24} color="black" />
+          </TouchableOpacity>
         </View>
+      )}
+
+      {typeof error === 'string' && (
+        <Text className="pb-4 text-red-600">{error}</Text>
+      )}
+
+      <ControlledInput
+        testID="email-input"
+        control={control}
+        name="email"
+        label="Email"
+      />
+
+      <ControlledInput
+        testID="password-input"
+        control={control}
+        name="password"
+        label="Password"
+        placeholder="********"
+        secureTextEntry={true}
+      />
+
+      <Text
+        className="pb-1 text-primary-400"
+        variant="sm"
+        onPress={navToForgotPassword}
+      >
+        Forgot password?
+      </Text>
+
+      <Button
+        loading={isLoading}
+        testID="login-button"
+        label="Login"
+        onPress={handleSubmit(onSubmit)}
+        variant="primary"
+      />
+
+      <View className="flex-row">
+        <Text className="">Do not have an account? </Text>
+
+        <Pressable onPress={() => navigate('Auth', { screen: 'Register' })}>
+          <Text className="text-primary-400">Register now</Text>
+        </Pressable>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };

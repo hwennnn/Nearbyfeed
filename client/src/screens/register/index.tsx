@@ -2,6 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 
 import { useRegister } from '@/api/auth';
+import { Layout } from '@/ui/core/layout';
 
 import type { RegisterFormProps } from './register-form';
 import { RegisterForm } from './register-form';
@@ -22,6 +23,8 @@ export const Register = () => {
   };
 
   return (
-    <RegisterForm onSubmit={onSubmit} isLoading={isLoading} error={error} />
+    <Layout>
+      <RegisterForm onSubmit={onSubmit} isLoading={isLoading} error={error} />
+    </Layout>
   );
 };
