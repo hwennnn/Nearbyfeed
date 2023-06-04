@@ -1,6 +1,6 @@
 import { classValidatorResolver } from '@hookform/resolvers/class-validator';
 import { FlashList } from '@shopify/flash-list';
-import { IsString, MaxLength, MinLength } from 'class-validator';
+import { IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ActivityIndicator, RefreshControl } from 'react-native';
@@ -17,6 +17,7 @@ import { ControlledInput, Pressable, showErrorMessage, Text, View } from '@/ui';
 type Props = { postId: number };
 
 export class CreateCommentDto {
+  @IsOptional()
   @IsString()
   @MinLength(2)
   @MaxLength(500)
@@ -30,7 +31,8 @@ export const CommentList = ({ postId }: Props) => {
 
   const [sortDesc, setSortDesc] = useState(true);
 
-  const { control, handleSubmit } = useForm<CreateCommentDto>({
+  const { control, handleSubmit, reset } = useForm<CreateCommentDto>({
+    reValidateMode: 'onSubmit',
     resolver,
   });
 
@@ -89,6 +91,8 @@ export const CommentList = ({ postId }: Props) => {
   };
 
   const onSubmitComment = (dto: CreateCommentDto) => {
+    reset();
+
     addComment(
       { ...dto, postId },
       {
@@ -106,13 +110,13 @@ export const CommentList = ({ postId }: Props) => {
   };
 
   return (
-    <View className="mt-8 flex-1">
+    <View className="mt-4 flex-1">
       <View className="flex-row items-center justify-between">
         <Text variant="xl" className="">
           Comments
         </Text>
 
-        <View className="flex-row space-x-2">
+        <View className="flex-row items-center space-x-2">
           <Text variant="md" className="">
             Sort
           </Text>
@@ -126,18 +130,20 @@ export const CommentList = ({ postId }: Props) => {
         </View>
       </View>
 
-      <View className="flex-row items-center">
+      <View className="flex-row items-center justify-center space-x-2">
         <View className="flex-1">
           <ControlledInput
             name="content"
             placeholder="Write a comment"
             control={control}
+            rightIcon={
+              <Pressable onPress={handleSubmit(onSubmitComment)}>
+                <Ionicons name="ios-send" size={24} color="white" />
+              </Pressable>
+            }
             multiline
           />
         </View>
-        <Pressable onPress={handleSubmit(onSubmitComment)}>
-          <Ionicons name="ios-send" size={24} color="white" />
-        </Pressable>
       </View>
 
       <FlashList

@@ -16,10 +16,11 @@ export interface NInputProps extends TextInputProps {
   label?: string;
   disabled?: boolean;
   error?: string;
+  rightIcon?: React.ReactElement;
 }
 
 export const Input = React.forwardRef<TextInput, NInputProps>((props, ref) => {
-  const { label, error, ...inputProps } = props;
+  const { label, error, rightIcon, ...inputProps } = props;
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
   const [isFocussed, setIsFocussed] = React.useState(false);
@@ -58,18 +59,21 @@ export const Input = React.forwardRef<TextInput, NInputProps>((props, ref) => {
           {label}
         </Text>
       )}
-      <STextInput
-        testID="STextInput"
-        ref={ref}
-        placeholderTextColor={colors.neutral[400]}
-        className={`mt-0 border-[1px] py-4 px-2  ${borderColor} rounded-md ${bgColor} text-[16px] ${textDirection} dark:text-charcoal-100`}
-        onBlur={onBlur}
-        onFocus={onFocus}
-        {...inputProps}
-        style={StyleSheet.flatten([
-          { writingDirection: isRTL ? 'rtl' : 'ltr' },
-        ])}
-      />
+      <View className="items-between flex-row items-center justify-center space-x-2">
+        <STextInput
+          testID="STextInput"
+          ref={ref}
+          placeholderTextColor={colors.neutral[400]}
+          className={`mt-0 flex-1 border-[1px] py-4 px-2  ${borderColor} rounded-md ${bgColor} text-[16px] ${textDirection} dark:text-charcoal-100`}
+          onBlur={onBlur}
+          onFocus={onFocus}
+          {...inputProps}
+          style={StyleSheet.flatten([
+            { writingDirection: isRTL ? 'rtl' : 'ltr' },
+          ])}
+        />
+        {rightIcon !== undefined && rightIcon}
+      </View>
       {error && <Text variant="error">{error}</Text>}
     </View>
   );

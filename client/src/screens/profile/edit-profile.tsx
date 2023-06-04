@@ -197,7 +197,7 @@ export const EditProfile = () => {
       <View className="flex-1 space-y-10">
         <View className="pb-4">
           <Text>Email</Text>
-          <View className="order-charcoal-700 mt-0 rounded-md border-[1px] bg-charcoal-800 py-4 px-2 text-[16px] dark:text-charcoal-100">
+          <View className="order-charcoal-700 mt-0 rounded-md border-[1px] bg-charcoal-300 py-4 px-2 text-[16px] dark:bg-charcoal-800 dark:text-charcoal-100">
             <Text>{user?.email}</Text>
           </View>
         </View>

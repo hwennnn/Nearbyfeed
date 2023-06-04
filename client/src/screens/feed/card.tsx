@@ -1,18 +1,17 @@
 import { useColorScheme } from 'nativewind';
 import React from 'react';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import type { Post } from '@/api';
 import { useVotePost } from '@/api/posts/use-vote-post';
 import {
   ActivityIndicator,
-  colors,
   Image,
   Pressable,
   Text,
   TouchableOpacity,
   View,
 } from '@/ui';
+import { Ionicons } from '@/ui/icons/ionicons';
 import { getInitials } from '@/utils/get-initials';
 import { timeUtils } from '@/utils/time-utils';
 
@@ -31,11 +30,10 @@ export const Card = ({
   image,
   createdAt,
 }: Props) => {
-  console.log(createdAt);
   const { colorScheme } = useColorScheme();
 
   const iconColor =
-    colorScheme === 'dark' ? colors.neutral[400] : colors.neutral[500];
+    colorScheme === 'dark' ? 'text-neutral-400' : 'text-neutral-500';
 
   const isUpvoted = updoot !== undefined && updoot.value === 1;
   const isDownvoted = updoot !== undefined && updoot.value === -1;
@@ -107,15 +105,23 @@ export const Card = ({
               <View className="flex-row items-center">
                 <Pressable onPress={() => handleVote(1)}>
                   <Ionicons
-                    name="ios-arrow-up"
+                    name={isDownvoted ? 'ios-arrow-down' : 'ios-arrow-up'}
                     size={16}
-                    color={isUpvoted ? colors.primary[400] : iconColor}
+                    className={
+                      isDownvoted
+                        ? 'text-purple-500'
+                        : isUpvoted
+                        ? 'text-primary-400'
+                        : iconColor
+                    }
                   />
                 </Pressable>
 
                 <Text
                   className={
-                    isUpvoted
+                    isDownvoted
+                      ? 'text-purple-500'
+                      : isUpvoted
                       ? 'text-primary-400'
                       : 'text-gray-600 dark:text-gray-300'
                   }
@@ -126,7 +132,7 @@ export const Card = ({
               </View>
 
               <View className="flex-row items-center space-x-[2px]">
-                <Ionicons name="time" size={16} color={iconColor} />
+                <Ionicons name="time" size={16} className={iconColor} />
 
                 <Text className="text-gray-600 dark:text-gray-300" variant="sm">
                   {timeUtils.formatCreatedTime(new Date(createdAt!))}
@@ -134,7 +140,11 @@ export const Card = ({
               </View>
 
               <View className="flex-row items-center space-x-[2px]">
-                <Ionicons name="location-sharp" size={16} color={iconColor} />
+                <Ionicons
+                  name="location-sharp"
+                  size={16}
+                  className={iconColor}
+                />
 
                 <Text className="text-gray-600 dark:text-gray-300" variant="sm">
                   {locationName}
@@ -153,19 +163,19 @@ export const Card = ({
               <Ionicons
                 name="ios-arrow-up"
                 size={24}
-                color={isUpvoted ? 'white' : iconColor}
+                className={isUpvoted ? 'text-white' : iconColor}
               />
             </Pressable>
             <Pressable
               onPress={() => handleVote(-1)}
               className={`h-[32px] w-[32px] rounded-md p-1 ${
-                isDownvoted ? 'bg-primary-400' : 'bg-inherit'
+                isDownvoted ? 'bg-purple-500' : 'bg-inherit'
               }`}
             >
               <Ionicons
                 name="ios-arrow-down"
                 size={24}
-                color={isDownvoted ? 'white' : iconColor}
+                className={isDownvoted ? 'text-white' : iconColor}
               />
             </Pressable>
           </View>

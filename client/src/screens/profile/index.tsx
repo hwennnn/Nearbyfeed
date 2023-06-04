@@ -81,17 +81,13 @@ export const Profile = () => {
             {user?.email ?? ''}
           </Text>
 
-          <View className="pt-2">
+          <View className="items-center justify-center pt-2">
             <TouchableOpacity
               onPress={navToEditProfile}
-              className="dark:bg- flex-row items-center justify-center space-x-2 rounded-full bg-primary-600 py-2 px-4"
+              className="dark:bg- flex-row items-center justify-center space-x-2 rounded-full bg-black py-2 px-4 dark:bg-primary-600"
             >
-              <Text>Edit Profile</Text>
-              <Icon
-                name="chevron-forward"
-                color={isDark ? 'white' : 'black'}
-                size={16}
-              />
+              <Text className="text-white">Edit Profile</Text>
+              <Icon name="chevron-forward" color={'white'} size={16} />
             </TouchableOpacity>
           </View>
         </View>
