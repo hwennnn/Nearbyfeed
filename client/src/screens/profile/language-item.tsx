@@ -24,7 +24,7 @@ export const LanguageItem = () => {
   const langs = React.useMemo(
     () => [
       { label: translate('settings.english'), value: 'en' },
-      { label: translate('settings.arabic'), value: 'ar' },
+      // { label: translate('settings.arabic'), value: 'ar' },
     ],
     []
   );

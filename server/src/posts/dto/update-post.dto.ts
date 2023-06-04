@@ -4,12 +4,12 @@ export class UpdatePostDto {
   @IsOptional()
   @IsString()
   @MinLength(4)
-  @MaxLength(25)
+  @MaxLength(50)
   title: string;
 
   @IsOptional()
   @IsString()
   @MinLength(15)
-  @MaxLength(100)
+  @MaxLength(500)
   content: string;
 }

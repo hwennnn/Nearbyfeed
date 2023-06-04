@@ -1,15 +1,20 @@
+import { useColorScheme } from 'nativewind';
 import React from 'react';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import type { Post } from '@/api';
 import { useVotePost } from '@/api/posts/use-vote-post';
 import {
   ActivityIndicator,
+  colors,
   Image,
   Pressable,
   Text,
   TouchableOpacity,
   View,
 } from '@/ui';
+import { getInitials } from '@/utils/get-initials';
+import { timeUtils } from '@/utils/time-utils';
 
 type Props = Post & { onPress?: () => void };
 
@@ -24,7 +29,14 @@ export const Card = ({
   updoot,
   isOptimistic,
   image,
+  createdAt,
 }: Props) => {
+  console.log(createdAt);
+  const { colorScheme } = useColorScheme();
+
+  const iconColor =
+    colorScheme === 'dark' ? colors.neutral[400] : colors.neutral[500];
+
   const isUpvoted = updoot !== undefined && updoot.value === 1;
   const isDownvoted = updoot !== undefined && updoot.value === -1;
 
@@ -46,9 +58,9 @@ export const Card = ({
       className="m-2 block overflow-hidden rounded-xl bg-neutral-200 p-2 shadow-xl dark:bg-charcoal-900"
       onPress={onPress}
     >
-      <View className="flex-1 space-y-2">
-        <Text variant="md" numberOfLines={1} className="font-bold">
-          {`${id}. ${title}`}
+      <View className="flex-1 space-y-3">
+        <Text variant="md" numberOfLines={2} className="font-bold">
+          {`${title}`}
         </Text>
 
         {image !== null && (
@@ -61,25 +73,103 @@ export const Card = ({
         )}
 
         {content !== null && content !== undefined && content.length > 0 && (
-          <Text variant="xs" numberOfLines={3}>
+          <Text variant="sm" numberOfLines={4}>
             {content}
           </Text>
         )}
 
-        <Text variant="xs" numberOfLines={3}>
-          {author?.username ?? ''} {locationName}
-        </Text>
+        <View className="flex-row justify-between">
+          <View className="flex-col space-y-2">
+            <View className="flex-row items-center space-x-2">
+              <View className="h-[24px] w-[24px] items-center justify-center rounded-full bg-gray-100 dark:bg-gray-600">
+                {author?.image === null && (
+                  <Text
+                    className="font-medium text-gray-600 dark:text-gray-300"
+                    variant="h3"
+                  >
+                    {getInitials(author.username)}
+                  </Text>
+                )}
+                {author?.image !== null && (
+                  <Image
+                    source={{ uri: author?.image }}
+                    className="h-[24px] w-[24px] rounded-full"
+                  />
+                )}
+              </View>
 
-        <Text>{points}</Text>
+              <Text variant="sm" numberOfLines={3}>
+                {author?.username ?? ''}
+              </Text>
+            </View>
 
-        <Pressable onPress={() => handleVote(1)}>
-          <Text className={isUpvoted ? 'text-primary-400' : ''}>Upvote</Text>
-        </Pressable>
-        <Pressable onPress={() => handleVote(-1)}>
-          <Text className={isDownvoted ? 'text-primary-400' : ''}>
-            Downvote
-          </Text>
-        </Pressable>
+            <View className="flex-row items-center space-x-2">
+              <View className="flex-row items-center">
+                <Pressable onPress={() => handleVote(1)}>
+                  <Ionicons
+                    name="ios-arrow-up"
+                    size={16}
+                    color={isUpvoted ? colors.primary[400] : iconColor}
+                  />
+                </Pressable>
+
+                <Text
+                  className={
+                    isUpvoted
+                      ? 'text-primary-400'
+                      : 'text-gray-600 dark:text-gray-300'
+                  }
+                  variant="sm"
+                >
+                  {points}
+                </Text>
+              </View>
+
+              <View className="flex-row items-center space-x-[2px]">
+                <Ionicons name="time" size={16} color={iconColor} />
+
+                <Text className="text-gray-600 dark:text-gray-300" variant="sm">
+                  {timeUtils.formatCreatedTime(new Date(createdAt!))}
+                </Text>
+              </View>
+
+              <View className="flex-row items-center space-x-[2px]">
+                <Ionicons name="location-sharp" size={16} color={iconColor} />
+
+                <Text className="text-gray-600 dark:text-gray-300" variant="sm">
+                  {locationName}
+                </Text>
+              </View>
+            </View>
+          </View>
+
+          <View className="flex-row space-x-2">
+            <Pressable
+              onPress={() => handleVote(1)}
+              className={`h-[32px] w-[32px] rounded-md p-1 ${
+                isUpvoted ? 'bg-primary-400' : 'bg-inherit'
+              }`}
+            >
+              <Ionicons
+                name="ios-arrow-up"
+                size={24}
+                color={isUpvoted ? 'white' : iconColor}
+              />
+            </Pressable>
+            <Pressable
+              onPress={() => handleVote(-1)}
+              className={`h-[32px] w-[32px] rounded-md p-1 ${
+                isDownvoted ? 'bg-primary-400' : 'bg-inherit'
+              }`}
+            >
+              <Ionicons
+                name="ios-arrow-down"
+                size={24}
+                color={isDownvoted ? 'white' : iconColor}
+              />
+            </Pressable>
+          </View>
+        </View>
 
         {isOptimistic === true && (
           <View className="flex-row space-x-2">

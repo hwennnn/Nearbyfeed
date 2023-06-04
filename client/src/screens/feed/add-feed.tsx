@@ -24,13 +24,13 @@ import { retrieveCurrentPosition } from '@/utils/geolocation-utils';
 export class CreatePostDto {
   @IsString()
   @MinLength(4)
-  @MaxLength(25)
+  @MaxLength(50)
   title: string;
 
   @IsOptional()
   @IsString()
   @MinLength(15)
-  @MaxLength(100)
+  @MaxLength(500)
   content?: string;
 }
 
@@ -137,7 +137,7 @@ export const AddFeed = () => {
         name="content"
         placeholder="Body Content (optional)"
         // max of 6 lines
-        className="max-h-32 border-none text-[16px] dark:text-charcoal-100"
+        className="max-h-64 border-none text-[16px] dark:text-charcoal-100"
         control={control}
         multiline
       />
