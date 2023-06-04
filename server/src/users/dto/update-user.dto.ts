@@ -1,5 +1,5 @@
 import {
-  IsEmail,
+  IsBoolean,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -16,8 +16,6 @@ export class UpdateUserDto {
   username: string;
 
   @IsOptional()
-  @IsString()
-  @IsNotEmpty()
-  @IsEmail()
-  email: string;
+  @IsBoolean()
+  shouldSetImageNull: boolean;
 }

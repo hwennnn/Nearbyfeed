@@ -2,7 +2,7 @@ import type { AxiosError } from 'axios';
 import { createQuery } from 'react-query-kit';
 
 import { geolocationClient } from '@/api/common/geolocation-client';
-import type { GeolocationName, Place } from '@/api/posts/types';
+import type { GeolocationName, Place } from '@/api/types';
 
 type Response = GeolocationName | null;
 type Variables = {

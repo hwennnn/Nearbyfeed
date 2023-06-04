@@ -2,7 +2,7 @@ import type { AxiosError } from 'axios';
 import { createQuery } from 'react-query-kit';
 
 import { client } from '../common';
-import type { Post } from './types';
+import type { Post } from '../types';
 
 type Variables = { id: number };
 type Response = Post;

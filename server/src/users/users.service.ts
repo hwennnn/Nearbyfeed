@@ -190,12 +190,30 @@ export class UsersService {
   async update(
     id: number,
     updateUserDto: UpdateUserDto,
+    imageUrl?: string,
   ): Promise<UserWithoutPassword> {
+    console.log(
+      '🚀 ~ file: users.service.ts:195 ~ UsersService ~ updateUserDto:',
+      updateUserDto,
+    );
+
+    const data = {
+      username: updateUserDto.username,
+      image:
+        imageUrl !== undefined
+          ? imageUrl
+          : updateUserDto.shouldSetImageNull === true
+          ? null
+          : undefined,
+    };
+
+    console.log(data);
+
     return this.excludePasswordFromUser(
       await this.prismaService.user
         .update({
           where: { id },
-          data: updateUserDto,
+          data,
         })
         .catch((e) => {
           this.logger.error(

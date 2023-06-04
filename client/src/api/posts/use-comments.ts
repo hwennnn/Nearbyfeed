@@ -1,7 +1,7 @@
 import type { AxiosError } from 'axios';
 import { createInfiniteQuery } from 'react-query-kit';
 
-import type { Comment } from '@/api/posts/types';
+import type { Comment } from '@/api/types';
 
 import { client } from '../common';
 

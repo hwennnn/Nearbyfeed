@@ -2,7 +2,7 @@ import type { AxiosError } from 'axios';
 import { createMutation } from 'react-query-kit';
 
 import { client, queryClient } from '../common';
-import type { Comment } from './types';
+import type { Comment } from '../types';
 
 type Variables = {
   content: string;

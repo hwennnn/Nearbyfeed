@@ -2,7 +2,14 @@ import React from 'react';
 
 import type { Post } from '@/api';
 import { useVotePost } from '@/api/posts/use-vote-post';
-import { ActivityIndicator, Image, Pressable, Text, View } from '@/ui';
+import {
+  ActivityIndicator,
+  Image,
+  Pressable,
+  Text,
+  TouchableOpacity,
+  View,
+} from '@/ui';
 
 type Props = Post & { onPress?: () => void };
 
@@ -35,27 +42,29 @@ export const Card = ({
   };
 
   return (
-    <Pressable
+    <TouchableOpacity
       className="m-2 block overflow-hidden rounded-xl bg-neutral-200 p-2 shadow-xl dark:bg-charcoal-900"
       onPress={onPress}
     >
-      <View className="flex space-y-2">
+      <View className="flex-1 space-y-2">
         <Text variant="md" numberOfLines={1} className="font-bold">
           {`${id}. ${title}`}
         </Text>
 
         {image !== null && (
           <Image
-            className="h-56 w-full object-cover "
+            className="h-56 w-full object-cover"
             source={{
               uri: image,
             }}
           />
         )}
 
-        <Text variant="xs" numberOfLines={3}>
-          {content}
-        </Text>
+        {content !== null && content !== undefined && content.length > 0 && (
+          <Text variant="xs" numberOfLines={3}>
+            {content}
+          </Text>
+        )}
 
         <Text variant="xs" numberOfLines={3}>
           {author?.username ?? ''} {locationName}
@@ -80,6 +89,6 @@ export const Card = ({
           </View>
         )}
       </View>
-    </Pressable>
+    </TouchableOpacity>
   );
 };

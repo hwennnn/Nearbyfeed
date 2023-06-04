@@ -5,7 +5,7 @@ import { createMutation } from 'react-query-kit';
 import { usePostKeys } from '@/core/posts';
 
 import { client, queryClient } from '../common';
-import type { Post } from './types';
+import type { Post } from '../types';
 
 type Variables = {
   title: string;

@@ -1,7 +1,7 @@
 import type { AxiosError } from 'axios';
 import { createMutation } from 'react-query-kit';
 
-import type { Post, Updoot } from '@/api/posts/types';
+import type { Post, Updoot } from '@/api/types';
 import { usePostKeys } from '@/core/posts';
 
 import { client, queryClient } from '../common';

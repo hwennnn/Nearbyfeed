@@ -5,21 +5,18 @@ import { useColorScheme } from 'nativewind';
 import type { ComponentType } from 'react';
 import * as React from 'react';
 import type { SvgProps } from 'react-native-svg';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
-import { Settings, Style } from '@/screens';
-import {
-  colors,
-  Feed as FeedIcon,
-  Settings as SettingsIcon,
-  Style as StyleIcon,
-} from '@/ui';
+import { ProfileNavigator } from '@/navigation/profile-navigator';
+import { Style } from '@/screens';
+import { colors, Feed as FeedIcon, Style as StyleIcon } from '@/ui';
 
 import { FeedNavigator } from './feed-navigator';
 
 type TabParamList = {
   Style: undefined;
   FeedNavigator: undefined;
-  Settings: undefined;
+  ProfileNavigator: undefined;
 };
 
 type TabType = {
@@ -37,7 +34,9 @@ const Tab = createBottomTabNavigator<TabParamList>();
 const tabsIcons: TabIconsType = {
   Style: (props: SvgProps) => <StyleIcon {...props} />,
   FeedNavigator: (props: SvgProps) => <FeedIcon {...props} />,
-  Settings: (props: SvgProps) => <SettingsIcon {...props} />,
+  ProfileNavigator: ({ color }: SvgProps) => (
+    <Ionicons name="person-circle-outline" size={24} color={color} />
+  ),
 };
 
 export type TabList<T extends keyof TabParamList> = {
@@ -57,9 +56,9 @@ const tabs: TabType[] = [
     label: 'Feed',
   },
   {
-    name: 'Settings',
-    component: Settings,
-    label: 'Settings',
+    name: 'ProfileNavigator',
+    component: ProfileNavigator,
+    label: 'Profile',
   },
 ];
 
@@ -70,6 +69,7 @@ type BarIconType = {
 
 const BarIcon = ({ color, name, ...reset }: BarIconType) => {
   const Icon = tabsIcons[name];
+
   return <Icon color={color} {...reset} />;
 };
 

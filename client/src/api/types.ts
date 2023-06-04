@@ -1,7 +1,7 @@
 export type Post = {
   id: number;
   title: string;
-  content: string | null;
+  content?: string | null;
   latitude: number;
   longitude: number;
   locationName?: string | null;
@@ -33,6 +33,7 @@ export type User = {
   id: number;
   username: string;
   email: string;
+  image: string | null;
   createdAt: Date;
   updatedAt: Date;
 };
