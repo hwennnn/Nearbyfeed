@@ -2,7 +2,7 @@ import type { RouteProp } from '@react-navigation/native';
 import { useRoute } from '@react-navigation/native';
 import React from 'react';
 
-import { useLogin } from '@/api/auth/login';
+import { useLogin } from '@/api/auth';
 import { useAuth } from '@/core';
 import type { AuthStackParamList } from '@/navigation/auth-navigator';
 import { Layout } from '@/ui/core/layout';

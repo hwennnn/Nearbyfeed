@@ -3,7 +3,7 @@ import { IsEmail, IsNotEmpty } from 'class-validator';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 
-import { useForgotPassword } from '@/api/auth/forgot-password';
+import { useForgotPassword } from '@/api/auth';
 import { Button, ControlledInput, showSuccessMessage, Text } from '@/ui';
 import { Layout } from '@/ui/core/layout';
 

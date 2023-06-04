@@ -6,7 +6,7 @@ import { Length, Matches } from 'class-validator';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 
-import { useResetPassword } from '@/api/auth/reset-password';
+import { useResetPassword } from '@/api/auth';
 import type { AuthStackParamList } from '@/navigation/auth-navigator';
 import { Button, ControlledInput, showSuccessMessage, Text } from '@/ui';
 import { Layout } from '@/ui/core/layout';
