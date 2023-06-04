@@ -78,7 +78,7 @@ export const LoginForm = ({
       )}
 
       {typeof error === 'string' && (
-        <Text className="pb-4 text-red-600">{error}</Text>
+        <Text className="pb-4 text-center text-red-600">{error}</Text>
       )}
 
       <ControlledInput

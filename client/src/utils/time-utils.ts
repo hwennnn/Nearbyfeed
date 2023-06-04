@@ -29,7 +29,7 @@ const formatCreatedTime = (createdTime: Date): string => {
   if (years > 0) {
     return `${years}y`;
   } else if (months > 0) {
-    return `${months}m`;
+    return `${months}mo`;
   } else if (days > 0) {
     return `${days}d`;
   } else if (hours > 0) {

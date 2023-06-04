@@ -57,7 +57,7 @@ export const RegisterForm = ({
       </Text>
 
       {typeof error === 'string' && (
-        <Text testID="form-title" className="pb-4 text-red-600">
+        <Text testID="form-title" className="pb-4 text-center text-red-600">
           {error}
         </Text>
       )}

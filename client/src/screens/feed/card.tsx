@@ -85,7 +85,7 @@ export const Card = ({
                 {author?.image === null && (
                   <Text
                     className="font-medium text-gray-600 dark:text-gray-300"
-                    variant="h3"
+                    variant="xs"
                   >
                     {getInitials(author.username)}
                   </Text>
