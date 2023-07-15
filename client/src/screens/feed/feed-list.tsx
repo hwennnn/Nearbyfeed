@@ -170,11 +170,7 @@ export const FeedList = ({
   }, [distance, location, setDistanceCallback]);
 
   const footer = React.useCallback(() => {
-    return (
-      <View className="py-6">
-        <Text className="text-center">You have scrolled to the end :D</Text>
-      </View>
-    );
+    return <View className="py-6" />;
   }, []);
 
   if (isError) {

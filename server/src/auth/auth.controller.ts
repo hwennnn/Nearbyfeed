@@ -54,7 +54,6 @@ export class AuthController {
     @Res() res: Response,
   ): Promise<void> {
     const user = await this.authService.verifyEmail(id);
-    console.log('verify email', user);
 
     const deepLink = (await this.configService.get('APP_DEEP_LINK')) as string;
     res.redirect(deepLink + 'login/success');

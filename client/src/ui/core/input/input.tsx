@@ -59,7 +59,7 @@ export const Input = React.forwardRef<TextInput, NInputProps>((props, ref) => {
           {label}
         </Text>
       )}
-      <View className="items-between flex-row items-center justify-center space-x-2">
+      <View className="items-between flex-row items-center space-x-2">
         <STextInput
           testID="STextInput"
           ref={ref}

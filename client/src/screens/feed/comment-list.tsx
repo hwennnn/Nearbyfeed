@@ -1,11 +1,10 @@
 import { classValidatorResolver } from '@hookform/resolvers/class-validator';
 import { FlashList } from '@shopify/flash-list';
 import { IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { ActivityIndicator, RefreshControl } from 'react-native';
+import { ActivityIndicator } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/Octicons';
 
 import type { Comment } from '@/api';
@@ -13,8 +12,9 @@ import { useAddComment } from '@/api/posts/use-add-comment';
 import { useComments } from '@/api/posts/use-comments';
 import { CommentCard } from '@/screens/feed/comment-card';
 import { ControlledInput, Pressable, showErrorMessage, Text, View } from '@/ui';
+import { Ionicons } from '@/ui/icons/ionicons';
 
-type Props = { postId: number };
+type Props = { postId: number; onRefetchDone: () => void; refreshing: boolean };
 
 export class CreateCommentDto {
   @IsOptional()
@@ -26,9 +26,7 @@ export class CreateCommentDto {
 
 const resolver = classValidatorResolver(CreateCommentDto);
 
-export const CommentList = ({ postId }: Props) => {
-  const [refreshing, setRefreshing] = useState(false);
-
+export const CommentList = ({ postId, refreshing, onRefetchDone }: Props) => {
   const [sortDesc, setSortDesc] = useState(true);
 
   const { control, handleSubmit, reset } = useForm<CreateCommentDto>({
@@ -51,11 +49,15 @@ export const CommentList = ({ postId }: Props) => {
     variables: { postId, sort: sortDesc ? 'latest' : 'oldest' },
   });
 
-  const handleRefresh = async () => {
-    refetch();
+  const onRefetch = useCallback(() => {
+    if (refreshing) {
+      refetch().then(() => onRefetchDone());
+    }
+  }, [onRefetchDone, refetch, refreshing]);
 
-    setRefreshing(false);
-  };
+  useEffect(() => {
+    onRefetch();
+  }, [onRefetch]);
 
   const renderItem = React.useCallback(
     ({ item }: { item: Comment }) => <CommentCard {...item} />,
@@ -64,7 +66,7 @@ export const CommentList = ({ postId }: Props) => {
 
   if (isLoading) {
     return (
-      <View className="flex-1  justify-center">
+      <View className="flex-1 justify-center">
         <ActivityIndicator />
       </View>
     );
@@ -110,27 +112,23 @@ export const CommentList = ({ postId }: Props) => {
   };
 
   return (
-    <View className="mt-4 flex-1">
+    <View className="mt-4 flex-1 space-y-1">
       <View className="flex-row items-center justify-between">
         <Text variant="xl" className="">
           Comments
         </Text>
 
-        <View className="flex-row items-center space-x-2">
-          <Text variant="md" className="">
-            Sort
-          </Text>
-          <Pressable onPress={toggleSort} disabled={isCreateCommentLoading}>
-            <Icon
-              name={sortDesc ? 'sort-desc' : 'sort-asc'}
-              size={24}
-              color="white"
-            />
-          </Pressable>
-        </View>
+        <Pressable onPress={toggleSort} disabled={isCreateCommentLoading}>
+          <View className="flex-row items-center space-x-2">
+            <Icon name={'sort-asc'} size={24} color="white" />
+            <Text variant="xs" className="">
+              {sortDesc ? 'in reverse order' : 'in order'}
+            </Text>
+          </View>
+        </Pressable>
       </View>
 
-      <View className="flex-row items-center justify-center space-x-2">
+      <View className="-mb-2 flex-row items-center justify-center space-x-2">
         <View className="flex-1">
           <ControlledInput
             name="content"
@@ -146,17 +144,17 @@ export const CommentList = ({ postId }: Props) => {
         </View>
       </View>
 
-      <FlashList
-        data={allComments}
-        renderItem={renderItem}
-        keyExtractor={(_, index) => `item-${index}`}
-        estimatedItemSize={300}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
-        }
-        onEndReached={handleEndReached}
-        onEndReachedThreshold={0.1}
-      />
+      <View className="min-h-[2px] flex-1">
+        <FlashList
+          refreshing={false}
+          data={allComments}
+          renderItem={renderItem}
+          keyExtractor={(_, index) => `item-${index}`}
+          estimatedItemSize={300}
+          onEndReached={handleEndReached}
+          onEndReachedThreshold={0.1}
+        />
+      </View>
     </View>
   );
 };

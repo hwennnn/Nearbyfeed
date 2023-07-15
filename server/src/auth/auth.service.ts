@@ -98,6 +98,7 @@ export class AuthService {
 
   async verifyEmail(id: string): Promise<UserWithoutPassword> {
     const pendingUser = await this.usersService.findPendingUser(id);
+    console.log(pendingUser?.email, new Date().getTime());
 
     if (pendingUser === null) {
       throw new BadRequestException('Invalid email verification link');

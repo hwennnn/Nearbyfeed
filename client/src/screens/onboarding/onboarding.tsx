@@ -7,30 +7,27 @@ import { Layout } from '@/ui/core/layout';
 import { Cover } from './cover';
 export const Onboarding = () => {
   const [_, setIsFirstTime] = useIsFirstTime();
+
   return (
-    <Layout className="flex h-full items-center  justify-center">
+    <Layout className="flex h-full items-center justify-center">
       <View className="w-full flex-1">
         <Cover />
       </View>
       <View className="justify-end ">
-        <Text className="my-3 text-center text-5xl font-bold">
-          Obytes Starter
-        </Text>
+        <Text className="my-3 text-center text-5xl font-bold">NearbyFeed</Text>
         <Text className="mb-2 text-center text-lg text-gray-600">
-          The right way to build your mobile app
+          Discover and connect with your local community through real-time
+          updates and engaging posts.
         </Text>
 
         <Text className="my-1 pt-6 text-left text-lg">
-          🚀 Production-ready{' '}
+          🌍 Discover Local Feeds in Real-Time
         </Text>
         <Text className="my-1 text-left text-lg">
-          🥷 Developer experience + Productivity
+          ⚡️ Seamless Enhanced Engagement
         </Text>
         <Text className="my-1 text-left text-lg">
-          🧩 Minimal code and dependencies
-        </Text>
-        <Text className="my-1 text-left text-lg">
-          💪 well maintained third-party libraries
+          🚀 Streamlined and Efficient Platform
         </Text>
       </View>
       <SafeAreaView className="mt-6">
