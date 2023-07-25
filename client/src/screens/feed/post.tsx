@@ -6,8 +6,9 @@ import { RefreshControl } from 'react-native';
 
 import type { FeedStackParamList } from '@/navigation/feed-navigator';
 import { CommentList } from '@/screens/feed/comment-list';
-import { Image, ScrollView, Text, View } from '@/ui';
+import { Image, ScrollView, Text, TouchableOpacity, View } from '@/ui';
 import { Ionicons } from '@/ui/icons/ionicons';
+import { ImageViewer } from '@/ui/image-viewer';
 import { getInitials } from '@/utils/get-initials';
 import { timeUtils } from '@/utils/time-utils';
 
@@ -26,6 +27,8 @@ export const Post = () => {
     locationName,
     createdAt,
   } = post;
+
+  const [imageModalVisible, setImageModalVisible] = React.useState(false);
 
   const { colorScheme } = useColorScheme();
 
@@ -53,12 +56,28 @@ export const Post = () => {
         <Text variant="h3">{title}</Text>
 
         {image !== null && (
-          <Image
-            className="h-56 w-full object-cover"
-            source={{
-              uri: image,
-            }}
-          />
+          <>
+            <TouchableOpacity
+              onPress={() => setImageModalVisible(true)}
+              className="mt-1"
+            >
+              <Image
+                className="h-56 w-full object-cover"
+                source={{
+                  uri: image,
+                }}
+              />
+            </TouchableOpacity>
+            <ImageViewer
+              images={[
+                {
+                  uri: image!,
+                },
+              ]}
+              visible={imageModalVisible}
+              onClose={() => setImageModalVisible(false)}
+            />
+          </>
         )}
 
         {post.content !== null && post.content !== undefined && (

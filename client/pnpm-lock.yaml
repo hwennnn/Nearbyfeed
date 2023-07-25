@@ -118,6 +118,9 @@ dependencies:
   react-native-gesture-handler:
     specifier: ~2.9.0
     version: 2.9.0(react-native@0.71.8)(react@18.2.0)
+  react-native-image-viewing:
+    specifier: ^0.2.2
+    version: 0.2.2(react-native@0.71.8)(react@18.2.0)
   react-native-mmkv:
     specifier: 2.6.3
     version: 2.6.3(react-native@0.71.8)(react@18.2.0)
@@ -10537,6 +10540,16 @@ packages:
 
   /react-native-gradle-plugin@0.71.18:
     resolution: {integrity: sha512-7F6bD7B8Xsn3JllxcwHhFcsl9aHIig47+3eN4IHFNqfLhZr++3ElDrcqfMzugM+niWbaMi7bJ0kAkAL8eCpdWg==}
+
+  /react-native-image-viewing@0.2.2(react-native@0.71.8)(react@18.2.0):
+    resolution: {integrity: sha512-osWieG+p/d2NPbAyonOMubttajtYEYiRGQaJA54slFxZ69j1V4/dCmcrVQry47ktVKy8/qpFwCpW1eT6MH5T2Q==}
+    peerDependencies:
+      react: '>=16.11.0'
+      react-native: '>=0.61.3'
+    dependencies:
+      react: 18.2.0
+      react-native: 0.71.8(@babel/core@7.21.0)(@babel/preset-env@7.20.2)(react@18.2.0)
+    dev: false
 
   /react-native-iphone-screen-helper@2.0.3(react-native@0.71.8):
     resolution: {integrity: sha512-gbSnV0iYWQ3hne3inYoueatSJL/Un49biIkHLGKsm7J7QjFhL+/WSPB1sZhQ87lNIANwFh33nvxcjixxR4T+NQ==}

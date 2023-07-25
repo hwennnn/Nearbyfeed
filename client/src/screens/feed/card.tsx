@@ -1,5 +1,5 @@
 import { useColorScheme } from 'nativewind';
-import React from 'react';
+import React, { useState } from 'react';
 
 import type { Post } from '@/api';
 import { useVotePost } from '@/api/posts/use-vote-post';
@@ -12,6 +12,7 @@ import {
   View,
 } from '@/ui';
 import { Ionicons } from '@/ui/icons/ionicons';
+import { ImageViewer } from '@/ui/image-viewer';
 import { getInitials } from '@/utils/get-initials';
 import { timeUtils } from '@/utils/time-utils';
 
@@ -30,6 +31,8 @@ export const Card = ({
   image,
   createdAt,
 }: Props) => {
+  const [imageModalVisible, setImageModalVisible] = useState(false);
+
   const { colorScheme } = useColorScheme();
 
   const iconColor =
@@ -62,12 +65,28 @@ export const Card = ({
         </Text>
 
         {image !== null && (
-          <Image
-            className="h-56 w-full object-cover"
-            source={{
-              uri: image,
-            }}
-          />
+          <>
+            <TouchableOpacity
+              onPress={() => setImageModalVisible(true)}
+              className="mt-1"
+            >
+              <Image
+                className="h-56 w-full object-cover"
+                source={{
+                  uri: image,
+                }}
+              />
+            </TouchableOpacity>
+            <ImageViewer
+              images={[
+                {
+                  uri: image!,
+                },
+              ]}
+              visible={imageModalVisible}
+              onClose={() => setImageModalVisible(false)}
+            />
+          </>
         )}
 
         {content !== null && content !== undefined && content.length > 0 && (
