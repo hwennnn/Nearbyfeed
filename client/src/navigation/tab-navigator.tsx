@@ -7,14 +7,15 @@ import * as React from 'react';
 import type { SvgProps } from 'react-native-svg';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
+import { MapNavigator } from '@/navigation/map-navigator';
 import { ProfileNavigator } from '@/navigation/profile-navigator';
 import { colors, Feed as FeedIcon } from '@/ui';
 
 import { FeedNavigator } from './feed-navigator';
 
 type TabParamList = {
-  // Style: undefined;
   FeedNavigator: undefined;
+  MapNavigator: undefined;
   ProfileNavigator: undefined;
 };
 
@@ -31,7 +32,9 @@ type TabIconsType = {
 const Tab = createBottomTabNavigator<TabParamList>();
 
 const tabsIcons: TabIconsType = {
-  // Style: (props: SvgProps) => <StyleIcon {...props} />,
+  MapNavigator: ({ color }: SvgProps) => (
+    <Ionicons name="map" size={24} color={color} />
+  ),
   FeedNavigator: (props: SvgProps) => <FeedIcon {...props} />,
   ProfileNavigator: ({ color }: SvgProps) => (
     <Ionicons name="person-circle-outline" size={24} color={color} />
@@ -44,15 +47,15 @@ export type TabList<T extends keyof TabParamList> = {
 };
 
 const tabs: TabType[] = [
-  // {
-  //   name: 'Style',
-  //   component: Style,
-  //   label: 'Style',
-  // },
   {
     name: 'FeedNavigator',
     component: FeedNavigator,
     label: 'Feed',
+  },
+  {
+    name: 'MapNavigator',
+    component: MapNavigator,
+    label: 'Maps',
   },
   {
     name: 'ProfileNavigator',
