@@ -9,7 +9,7 @@ import { isRTL, translate } from '@/core';
 
 const SText = styled(NNText);
 
-interface Props extends TextProps {
+export interface ITextProps extends TextProps {
   variant?: keyof typeof textVariants;
   className?: string;
   tx?: TxKeyPath;
@@ -22,7 +22,7 @@ export const textVariants = {
   h3: 'text-[24px] leading-[36px] font-medium',
   xl: 'text-[20px] leading-[30px]',
   lg: 'text-[18px] leading-[30px]',
-  md: '',
+  md: 'text-[16px] leading-[30px]',
   sm: 'text-[14px] leading-[21px]',
   xs: 'text-[12px] leading-[18px]',
   error: ' text-[12px] leading-[30px] text-danger-500',
@@ -35,7 +35,7 @@ export const Text = ({
   tx,
   children,
   ...props
-}: Props) => {
+}: ITextProps) => {
   const content = tx ? translate(tx) : children;
   return (
     <SText

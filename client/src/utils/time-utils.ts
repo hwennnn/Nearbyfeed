@@ -16,8 +16,8 @@ const formatDateStringToDateMonthYear = (dateString: any): string => {
   return dateFormat(date, 'dd mmm yyyy');
 };
 
-const formatCreatedTime = (createdTime: Date): string => {
-  const currentTime = new Date();
+const formatCreatedTime = (createdTime: Date, currentTime?: Date): string => {
+  currentTime ??= new Date();
   const timeDiff = Math.abs(currentTime.getTime() - createdTime.getTime());
   const seconds = Math.floor(timeDiff / 1000);
   const minutes = Math.floor(seconds / 60);
@@ -34,10 +34,10 @@ const formatCreatedTime = (createdTime: Date): string => {
     return `${days}d`;
   } else if (hours > 0) {
     return `${hours}h`;
-  } else if (minutes > 0) {
+  } else if (minutes > 5) {
     return `${minutes}m`;
   } else {
-    return `${seconds}s`;
+    return `Just now`;
   }
 };
 

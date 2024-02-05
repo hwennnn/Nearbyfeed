@@ -8,5 +8,6 @@ export * from './scroll-view';
 export * from './select';
 export * from './select/options';
 export * from './text';
+export * from './time-widget';
 export * from './touchable-opacity';
 export * from './view';

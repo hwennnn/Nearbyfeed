@@ -1,8 +1,7 @@
 import React from 'react';
 
 import type { Comment } from '@/api';
-import { Text, View } from '@/ui';
-import { timeUtils } from '@/utils/time-utils';
+import { Text, TimeWidget, View } from '@/ui';
 
 type Props = Comment;
 
@@ -14,9 +13,7 @@ export const CommentCard = ({ content, createdAt, author }: Props) => {
           {author?.username ?? ''}
         </Text>
 
-        <Text variant="sm">
-          {timeUtils.formatCreatedTime(new Date(createdAt))}
-        </Text>
+        <TimeWidget variant="sm" time={createdAt!} />
       </View>
       <Text variant="sm">{`${content}`}</Text>
     </View>

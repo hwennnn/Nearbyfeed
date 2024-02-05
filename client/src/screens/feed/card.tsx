@@ -8,13 +8,13 @@ import {
   Image,
   Pressable,
   Text,
+  TimeWidget,
   TouchableOpacity,
   View,
 } from '@/ui';
 import { Ionicons } from '@/ui/icons/ionicons';
 import { ImageViewer } from '@/ui/image-viewer';
 import { getInitials } from '@/utils/get-initials';
-import { timeUtils } from '@/utils/time-utils';
 
 type Props = Post & { onPress?: () => void };
 
@@ -153,9 +153,11 @@ export const Card = ({
               <View className="flex-row items-center space-x-[2px]">
                 <Ionicons name="time" size={16} className={iconColor} />
 
-                <Text className="text-gray-600 dark:text-gray-300" variant="sm">
-                  {timeUtils.formatCreatedTime(new Date(createdAt!))}
-                </Text>
+                <TimeWidget
+                  className="text-gray-600 dark:text-gray-300"
+                  variant="sm"
+                  time={createdAt!}
+                />
               </View>
 
               <View className="flex-row items-center space-x-[2px]">
