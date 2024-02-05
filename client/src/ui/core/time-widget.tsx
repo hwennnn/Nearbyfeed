@@ -13,10 +13,10 @@ export const TimeWidget = ({ time, ...props }: TimeWidgetProps) => {
   const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
-    // Update the time every 5000ms
+    // Update the time every minute
     const intervalId = setInterval(() => {
       setCurrentTime(new Date());
-    }, 5000);
+    }, 60000);
 
     // Cleanup the interval on component unmount
     return () => clearInterval(intervalId);
