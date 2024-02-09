@@ -99,17 +99,19 @@ export class PostsController {
     return await this.postsService.votePost(+userId, +postId, updootDto.value);
   }
 
-  @Post(':id/comments')
+  @Post(':id/comments/:parentCommentId?')
   @UseGuards(JwtAuthGuard)
   async createComment(
     @Body() createCommentDto: CreateCommentDto,
     @GetUser('userId') userId: string,
     @Param('id') postId: string,
+    @Param('parentCommentId') parentCommentId?: string,
   ): Promise<Comment> {
     return await this.postsService.createComment(
       createCommentDto,
       +postId,
       +userId,
+      parentCommentId !== undefined ? +parentCommentId : undefined,
     );
   }
 

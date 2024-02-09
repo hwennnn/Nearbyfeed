@@ -283,12 +283,14 @@ export class PostsService {
     createCommentDto: CreateCommentDto,
     postId: number,
     authorId: number,
+    parentCommentId?: number,
   ): Promise<Comment> {
     const data = {
       ...createCommentDto,
       postId,
       authorId,
       content: this.filterService.filterText(createCommentDto.content),
+      parentCommentId,
     };
 
     const comment = await this.prismaService.comment
@@ -338,6 +340,7 @@ export class PostsService {
         where: {
           postId: id,
           isDeleted: false,
+          parentCommentId: null,
         },
         cursor,
         take: limit + 1,
@@ -352,6 +355,8 @@ export class PostsService {
           authorId: true,
           author: true,
           isDeleted: true,
+          childComments: true, // TODO: handle fetching all nested child comments
+          parentCommentId: true,
         },
       })
       .catch((e) => {
