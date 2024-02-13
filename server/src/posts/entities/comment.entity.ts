@@ -1,5 +1,8 @@
-import { type Comment, type User } from '@prisma/client';
+import { type Comment } from '@prisma/client';
+import { type UserWithoutPassword } from 'src/users/entities';
 
 export type CommentWithAuthor = Comment & {
-  author: User;
+  author: UserWithoutPassword;
+  hasMore: boolean;
+  childComments: CommentWithAuthor[];
 };

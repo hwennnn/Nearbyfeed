@@ -60,18 +60,18 @@ model FlaggedPost {
 }
 
 model Comment {
-  id              Int       @id @default(autoincrement())
+  id              Int      @id @default(autoincrement())
   content         String
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  isDeleted       Boolean   @default(false)
-  post            Post      @relation(fields: [postId], references: [id])
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  isDeleted       Boolean  @default(false)
+  post            Post     @relation(fields: [postId], references: [id])
   postId          Int
-  author          User      @relation(fields: [authorId], references: [id])
+  author          User     @relation(fields: [authorId], references: [id])
   authorId        Int
-  parentComment   Comment?  @relation("ChildComments", fields: [parentCommentId], references: [id])
   parentCommentId Int?
-  childComments   Comment[] @relation("ChildComments")
+  // parentComment   Comment?  @relation("ChildComments", fields: [parentCommentId], references: [id])
+  // childComments   Comment[] @relation("ChildComments")
 }
 
 model Updoot {

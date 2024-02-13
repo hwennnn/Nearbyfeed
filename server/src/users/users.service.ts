@@ -78,6 +78,28 @@ export class UsersService {
     ).map((user) => this.excludePasswordFromUser(user));
   }
 
+  async findManyUsers(users: number[]): Promise<UserWithoutPassword[]> {
+    return (
+      await this.prismaService.user
+        .findMany({
+          where: {
+            id: {
+              in: users,
+            },
+          },
+        })
+        .catch((e) => {
+          this.logger.error(
+            'Failed to find users',
+            e instanceof Error ? e.stack : undefined,
+            UsersService.name,
+          );
+
+          throw new BadRequestException('Failed to find users');
+        })
+    ).map((user) => this.excludePasswordFromUser(user));
+  }
+
   async findPendingUsersWithEmail(email: string): Promise<boolean> {
     const pendingUser = await this.prismaService.pendingUser
       .findFirst({
@@ -202,7 +224,7 @@ export class UsersService {
       image:
         imageUrl !== undefined
           ? imageUrl
-          : updateUserDto.shouldSetImageNull === true
+          : updateUserDto.shouldSetImageNull
           ? null
           : undefined,
     };

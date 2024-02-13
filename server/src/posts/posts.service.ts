@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-import { type Comment, type Post, type Updoot } from '@prisma/client';
+import { Prisma, type Comment, type Post, type Updoot } from '@prisma/client';
 import { FilterService } from 'src/filter/filter.service';
 import { GeocodingService } from 'src/geocoding/geocoding.service';
 import {
@@ -17,6 +17,8 @@ import {
 } from 'src/posts/entities';
 
 import { PrismaService } from 'src/prisma/prisma.service';
+import { type UserWithoutPassword } from 'src/users/entities';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class PostsService {
@@ -25,6 +27,7 @@ export class PostsService {
     private readonly logger: Logger,
     private readonly filterService: FilterService,
     private readonly geocodingService: GeocodingService,
+    private readonly usersService: UsersService,
   ) {}
 
   async createPost(
@@ -161,8 +164,6 @@ export class PostsService {
 
       return parsedPost;
     });
-
-    console.log(parsedPosts);
 
     return {
       posts: parsedPosts,
@@ -309,75 +310,126 @@ export class PostsService {
   }
 
   async findComments(
-    id: number,
+    postId: number,
     dto: GetCommentDto,
-  ): Promise<{ comments: CommentWithAuthor[]; hasMore: boolean }> {
-    const limit = dto.take ?? 15;
+  ): Promise<{
+    comments: CommentWithAuthor[];
+    hasMore: boolean;
+  }> {
+    const anchorLimit = dto.take ?? 15;
+    const recursiveLimit = 20;
 
-    let cursor: { id: number } | undefined;
-    if (dto.cursor !== undefined) {
-      cursor = {
-        id: +dto.cursor,
-      };
-    }
+    const anchorCursorClause = Prisma.sql`AND "public"."Comment"."id" >= ${+(
+      (dto.cursor ?? '0') // redundant value of '0'
+    )}`;
 
-    // default sort is latest if not specified
-    let orderBy: any = {
-      createdAt: 'desc',
-    };
+    // // in order to skip the cursor
+    const anchorSkipClause =
+      dto.cursor !== undefined ? Prisma.sql`OFFSET 1` : Prisma.empty;
 
-    if (dto.sort === GetCommentsSort.OLDEST) {
-      orderBy = {
-        createdAt: 'asc',
-      };
-    }
+    const anchorOrderByClause = Prisma.sql([
+      dto.sort === GetCommentsSort.OLDEST ? 'ASC' : 'DESC',
+    ]);
 
-    // in order to skip the cursor
-    const skip = cursor !== undefined ? 1 : undefined;
+    const comments: CommentWithAuthor[] = (await this.prismaService
+      .$queryRaw(
+        Prisma.sql`
+      WITH RECURSIVE NestedComments AS (
+      --   Anchor Clause
+        (SELECT 
+          "public"."Comment"."id", 
+          "public"."Comment"."content", 
+          "public"."Comment"."createdAt", 
+          "public"."Comment"."updatedAt", 
+          "public"."Comment"."isDeleted", 
+          "public"."Comment"."postId", 
+          "public"."Comment"."authorId", 
+          "public"."Comment"."parentCommentId", 
+          1 AS depth
+        FROM 
+          "public"."Comment"
+        WHERE 
+          "public"."Comment"."postId" = ${postId} AND "public"."Comment"."parentCommentId" IS NULL AND "public"."Comment"."isDeleted" = false
+        ${dto.cursor !== undefined ? anchorCursorClause : Prisma.empty}
+        ORDER BY "public"."Comment"."createdAt" ${anchorOrderByClause}
+        LIMIT ${anchorLimit + 1} ${anchorSkipClause}
+        )
+        
+        UNION ALL
+      --   Recursive Clause
+        (SELECT 
+          c."id", 
+          c."content", 
+          c."createdAt", 
+          c."updatedAt", 
+          c."isDeleted", 
+          c."postId", 
+          c."authorId", 
+          c."parentCommentId", 
+          nc.depth + 1 AS depth
+        FROM 
+          "public"."Comment" c
+        INNER JOIN 
+          NestedComments nc ON c."parentCommentId" = nc.id
+        ORDER BY c."createdAt" DESC
+        LIMIT ${recursiveLimit + 1})
+      )
 
-    const comments = await this.prismaService.comment
-      .findMany({
-        where: {
-          postId: id,
-          isDeleted: false,
-          parentCommentId: null,
-        },
-        cursor,
-        take: limit + 1,
-        skip,
-        orderBy,
-        select: {
-          id: true,
-          content: true,
-          createdAt: true,
-          updatedAt: true,
-          postId: true,
-          authorId: true,
-          author: true,
-          isDeleted: true,
-          childComments: true, // TODO: handle fetching all nested child comments
-          parentCommentId: true,
-        },
-      })
+      SELECT 
+        "id", "content", "createdAt", "updatedAt", "isDeleted", "postId", "authorId", "parentCommentId"
+      FROM 
+        NestedComments 
+      ORDER BY 
+        depth;
+
+  `,
+      )
       .catch((e) => {
         this.logger.error(
-          `Failed to find comments for post ${id}`,
+          `Failed to find comments for post ${postId}`,
           e instanceof Error ? e.stack : undefined,
           PostsService.name,
         );
 
         throw new BadRequestException('Failed to find comments');
-      });
+      })) as CommentWithAuthor[];
 
-    const hasMore = comments.length === limit + 1;
+    const usersList: number[] = [
+      ...new Set(comments.map((comment: any) => comment.authorId)),
+    ];
+    const users = await this.usersService.findManyUsers(usersList);
+    const userMap = new Map(users.map((user) => [user.id, user]));
+    const commentsMap = new Map<number, CommentWithAuthor[]>();
+    const topLevelComments: CommentWithAuthor[] = [];
+
+    // loop the comments in reverse as the result is orderd by depth,
+    // which later helps to build the child comments list
+    for (const comment of comments.reverse()) {
+      comment.childComments = (commentsMap.get(comment.id) ?? []).reverse();
+      comment.author = userMap.get(comment.authorId) as UserWithoutPassword;
+      comment.hasMore = comment.childComments.length === recursiveLimit + 1;
+
+      if (comment.hasMore) {
+        comment.childComments.pop();
+      }
+
+      if (comment.parentCommentId !== null) {
+        if (!commentsMap.has(comment.parentCommentId)) {
+          commentsMap.set(comment.parentCommentId, []);
+        }
+
+        commentsMap.get(comment.parentCommentId)?.push(comment);
+      } else {
+        topLevelComments.push(comment);
+      }
+    }
+
+    const hasMore = comments.length === anchorLimit + 1;
     if (hasMore) {
       comments.pop();
     }
 
-    return {
-      comments,
-      hasMore,
-    };
+    return { comments: topLevelComments.reverse(), hasMore };
   }
 
   async updateComment(
