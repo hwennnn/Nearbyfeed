@@ -7,6 +7,7 @@ import type { Comment } from '../types';
 type Variables = {
   content: string;
   postId: number;
+  sort: 'latest' | 'oldest';
 };
 type Response = Comment;
 type CommentsResponse = {
@@ -20,6 +21,7 @@ type InfiniteComments = {
 type Context = {
   previousComments?: InfiniteComments[];
   newComment: Variables;
+  optimisticCommentId: number;
 };
 
 export const useAddComment = createMutation<
@@ -41,70 +43,116 @@ export const useAddComment = createMutation<
 
     return response.data;
   },
-  // onMutate: async (newComment) => {
-  //   const queryKey = [
-  //     'comments',
-  //     {
-  //       postId: newComment.postId,
-  //       sort: 'latest',
-  //     },
-  //   ];
+  onMutate: async (newComment) => {
+    const queryKey = [
+      'comments',
+      {
+        postId: newComment.postId,
+        sort: newComment.sort,
+      },
+    ];
 
-  //   // Cancel any outgoing refetches
-  //   // (so they don't overwrite our optimistic update)
-  //   await queryClient.cancelQueries({ queryKey });
+    // Cancel any outgoing refetches
+    // (so they don't overwrite our optimistic update)
+    await queryClient.cancelQueries({ queryKey });
 
-  //   // Snapshot the previous value
-  //   const previousComments =
-  //     queryClient.getQueryData<InfiniteComments[]>(queryKey);
+    // Snapshot the previous value
+    const previousComments =
+      queryClient.getQueryData<InfiniteComments[]>(queryKey);
 
-  //   const optimisticComment: Comment = {
-  //     id: new Date().getTime(),
-  //     content: newComment.content,
-  //     createdAt: new Date(),
-  //     updatedAt: new Date(),
-  //     isDeleted: false,
-  //     postId: newComment.postId,
-  //     authorId: 1,
-  //     isOptimistic: true,
-  //   };
+    const optimisticCommentId = new Date().getTime();
+    const optimisticComment: Comment = {
+      id: optimisticCommentId,
+      content: newComment.content,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      isDeleted: false,
+      postId: newComment.postId,
+      authorId: 1,
+      isOptimistic: true,
+      parentCommentId: null,
+    };
 
-  //   // Update the cache optimistically by adding the new Comment to the existing list
-  //   queryClient.setQueryData<InfiniteComments>(queryKey, (oldData) => {
-  //     if (oldData) {
-  //       const updatedPage = {
-  //         ...oldData.pages[0],
-  //         comments: [optimisticComment, ...oldData.pages[0].comments],
-  //       };
+    // Update the cache optimistically by adding the new Comment to the existing list
+    queryClient.setQueryData<InfiniteComments>(queryKey, (oldData) => {
+      if (oldData) {
+        if (newComment.sort === 'latest') {
+          const updatedPage = {
+            ...oldData.pages[0],
+            comments: [optimisticComment, ...oldData.pages[0].comments],
+          };
 
-  //       return {
-  //         pageParams: oldData.pageParams,
-  //         pages: [updatedPage, ...oldData.pages.slice(1)],
-  //       };
-  //     }
-  //     return oldData;
-  //   });
-  //   // Return a context with the previous and new todo
-  //   return { previousComments, newComment };
-  // },
+          return {
+            pageParams: oldData.pageParams,
+            pages: [updatedPage, ...oldData.pages.slice(1)],
+          };
+        } else {
+          // If the sort parameter is not 'latest', you need to determine where to place the optimistic comment
 
-  // // If the mutation fails, use the context we returned above
-  // onError: (_err, newComment, context) => {
-  //   const queryKey = [
-  //     'comments',
-  //     {
-  //       postId: newComment.postId,
-  //       sort: 'latest',
-  //     },
-  //   ];
+          const lastPage = oldData.pages[oldData.pages.length - 1];
+          const updatedPage = {
+            ...lastPage,
+            comments: [...lastPage.comments, optimisticComment],
+          };
 
-  //   queryClient.setQueryData<InfiniteComments[]>(
-  //     queryKey,
-  //     context?.previousComments
-  //   );
-  // },
-  // Always refetch after error or success:
-  onSettled: (_) => {
-    queryClient.invalidateQueries(['comments']);
+          return {
+            pageParams: oldData.pageParams,
+            pages: [...oldData.pages.slice(0, -1), updatedPage],
+          };
+        }
+      }
+      return oldData;
+    });
+
+    // Return a context with the previous and new comment
+    return { previousComments, newComment, optimisticCommentId };
+  },
+  // If the mutation fails, use the context we returned above
+  onError: (_err, newComment, context) => {
+    const queryKey = [
+      'comments',
+      {
+        postId: newComment.postId,
+        sort: newComment.sort,
+      },
+    ];
+
+    queryClient.setQueryData<InfiniteComments[]>(
+      queryKey,
+      context?.previousComments
+    );
+  },
+  onSuccess: (data, _variables, context) => {
+    const queryKey = [
+      'comments',
+      {
+        postId: _variables.postId,
+        sort: _variables.sort,
+      },
+    ];
+    const optimisticCommentId = context?.optimisticCommentId;
+    // Update the cache with the response data from the API
+
+    queryClient.setQueryData<InfiniteComments>(queryKey, (oldData) => {
+      if (oldData) {
+        return {
+          pageParams: oldData.pageParams,
+          pages: oldData.pages.map((page) => {
+            const foundIndex = page.comments.findIndex(
+              (comment) => comment.id === optimisticCommentId
+            );
+
+            if (foundIndex !== -1) {
+              const updatedComments = [...page.comments];
+              updatedComments[foundIndex] = data;
+              return { ...page, comments: updatedComments };
+            }
+
+            return page;
+          }),
+        };
+      }
+      return oldData;
+    });
   },
 });

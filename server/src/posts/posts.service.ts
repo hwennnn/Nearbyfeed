@@ -298,7 +298,12 @@ export class PostsService {
     };
 
     const comment = await this.prismaService.comment
-      .create({ data })
+      .create({
+        data,
+        include: {
+          author: true,
+        },
+      })
       .catch((e) => {
         this.logger.error(
           'Failed to create comment',

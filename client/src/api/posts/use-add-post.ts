@@ -102,7 +102,6 @@ export const useAddPost = createMutation<
     // Return a context with the previous and new todo
     return { previousPosts, newPost, optimisticPostId };
   },
-
   // If the mutation fails, use the context we returned above
   onError: (_err, _newPost, context) => {
     const queryKey = ['posts', usePostKeys.getState().postsQueryKey];

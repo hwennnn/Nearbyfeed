@@ -27,6 +27,7 @@ export type Comment = {
   authorId?: number;
   author?: User;
   isOptimistic?: boolean;
+  parentCommentId: number | null;
 };
 
 export type User = {

@@ -96,7 +96,7 @@ export const CommentList = ({ postId, refreshing, onRefetchDone }: Props) => {
     reset();
 
     addComment(
-      { ...dto, postId },
+      { ...dto, postId, sort: sortDesc ? 'latest' : 'oldest' },
       {
         onSuccess: () => {
           showMessage({
