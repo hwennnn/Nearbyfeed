@@ -60,6 +60,9 @@ export class PostsService {
     const post = await this.prismaService.post
       .create({
         data,
+        include: {
+          author: true,
+        },
       })
       .catch((e) => {
         this.logger.error(

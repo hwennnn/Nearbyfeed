@@ -26,6 +26,7 @@ type InfinitePosts = {
 type Context = {
   previousPosts?: InfinitePosts[];
   newPost: Variables;
+  optimisticPostId: number;
 };
 
 export const useAddPost = createMutation<
@@ -71,9 +72,10 @@ export const useAddPost = createMutation<
 
     // Snapshot the previous value
     const previousPosts = queryClient.getQueryData<InfinitePosts[]>(queryKey);
+    const optimisticPostId = new Date().getTime();
 
     const optimisticPost: Post = {
-      id: new Date().getTime(),
+      id: optimisticPostId,
       title: newPost.title,
       content: newPost.content,
       longitude: newPost.longitude,
@@ -98,7 +100,7 @@ export const useAddPost = createMutation<
       return oldData;
     });
     // Return a context with the previous and new todo
-    return { previousPosts, newPost };
+    return { previousPosts, newPost, optimisticPostId };
   },
 
   // If the mutation fails, use the context we returned above
@@ -107,8 +109,31 @@ export const useAddPost = createMutation<
 
     queryClient.setQueryData<InfinitePosts[]>(queryKey, context?.previousPosts);
   },
-  // Always refetch after error or success:
-  onSettled: (_) => {
-    queryClient.invalidateQueries(['posts']);
+  onSuccess: (data, _variables, context) => {
+    const queryKey = ['posts', usePostKeys.getState().postsQueryKey];
+    const optimisticPostId = context?.optimisticPostId;
+    // Update the cache with the response data from the API
+
+    queryClient.setQueryData<InfinitePosts>(queryKey, (oldData) => {
+      if (oldData) {
+        return {
+          pageParams: oldData.pageParams,
+          pages: oldData.pages.map((page) => {
+            const foundIndex = page.posts.findIndex(
+              (post) => post.id === optimisticPostId
+            );
+
+            if (foundIndex !== -1) {
+              const updatedPosts = [...page.posts];
+              updatedPosts[foundIndex] = data;
+              return { ...page, posts: updatedPosts };
+            }
+
+            return page;
+          }),
+        };
+      }
+      return oldData;
+    });
   },
 });
