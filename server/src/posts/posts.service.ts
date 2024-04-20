@@ -288,6 +288,33 @@ export class PostsService {
     authorId: number,
     parentCommentId?: number,
   ): Promise<Comment> {
+    if (parentCommentId !== null) {
+      const parentComment = await this.prismaService.comment
+        .findUnique({
+          where: {
+            id: parentCommentId,
+          },
+        })
+        .catch((e) => {
+          this.logger.error(
+            'Failed to find parent comment',
+            e instanceof Error ? e.stack : undefined,
+            PostsService.name,
+          );
+          throw new BadRequestException('Failed to find parent comment');
+        });
+
+      if (parentComment?.parentCommentId !== null) {
+        this.logger.error(
+          'Only one level of comments is allowed',
+          undefined,
+          PostsService.name,
+        );
+
+        throw new BadRequestException('Only one level of comments is allowed');
+      }
+    }
+
     const data = {
       ...createCommentDto,
       postId,
