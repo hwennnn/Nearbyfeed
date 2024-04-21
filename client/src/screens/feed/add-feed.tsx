@@ -25,14 +25,14 @@ import { retrieveCurrentPosition } from '@/utils/geolocation-utils';
 export class CreatePostDto {
   @IsString()
   @MinLength(4)
-  @MaxLength(50)
+  @MaxLength(70)
   @Transform(({ value }) => value?.trim())
   title: string;
 
   @IsOptional()
   @IsString()
   @MinLength(15)
-  @MaxLength(500)
+  @MaxLength(1000)
   @Transform(({ value }) => value?.trim())
   content?: string;
 }

@@ -131,6 +131,7 @@ export class PostsService {
           authorId: true,
           likes: selectLikes,
           author: true,
+          commentsCount: true,
         },
         orderBy: {
           createdAt: 'desc',
@@ -316,13 +317,23 @@ export class PostsService {
       parentCommentId,
     };
 
-    const comment = await this.prismaService.comment
-      .create({
-        data,
-        include: {
-          author: true,
-        },
-      })
+    const [resultComment] = await this.prismaService
+      .$transaction([
+        this.prismaService.comment.create({
+          data,
+          include: {
+            author: true,
+          },
+        }),
+        this.prismaService.post.update({
+          where: { id: postId },
+          data: {
+            commentsCount: {
+              increment: 1,
+            },
+          },
+        }),
+      ])
       .catch((e) => {
         this.logger.error(
           'Failed to create comment',
@@ -333,7 +344,7 @@ export class PostsService {
         throw new BadRequestException('Failed to create comment');
       });
 
-    return comment;
+    return resultComment;
   }
 
   async findComments(

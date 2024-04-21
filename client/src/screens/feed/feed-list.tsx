@@ -12,7 +12,7 @@ import { usePosts } from '@/api';
 import type { RootNavigatorProp } from '@/navigation/root-navigator';
 import { colors, EmptyList, Text, TouchableOpacity, View } from '@/ui';
 
-import { Card } from './card';
+import { FeedCard } from './feed-card';
 
 type Props = {
   longitude: number;
@@ -154,7 +154,10 @@ export const FeedList = ({
 
   const renderItem = React.useCallback(
     ({ item }: { item: Post }) => (
-      <Card {...item} onPress={() => navigate('FeedDetails', { post: item })} />
+      <FeedCard
+        {...item}
+        onPress={() => navigate('FeedDetails', { post: item })}
+      />
     ),
     [navigate]
   );

@@ -18,7 +18,7 @@ import { getInitials } from '@/utils/get-initials';
 
 type Props = Post & { onPress?: () => void };
 
-export const Card = ({
+export const FeedCard = ({
   id,
   title,
   content,

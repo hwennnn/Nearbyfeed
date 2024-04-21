@@ -13,7 +13,7 @@ import { ControlledInput, Pressable, showErrorMessage, View } from '@/ui';
 export class CreateCommentDto {
   @IsString()
   @MinLength(2)
-  @MaxLength(500)
+  @MaxLength(1000)
   @Transform(({ value }) => value?.trim())
   content: string;
 }

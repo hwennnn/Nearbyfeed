@@ -81,7 +81,7 @@ export const FeedDetails = () => {
 
             <View className="flex-col justify-between">
               <View className="flex-row items-center space-x-2">
-                <Text variant="sm" numberOfLines={3}>
+                <Text className="font-semibold" variant="sm" numberOfLines={3}>
                   {author?.username ?? ''}
                 </Text>
 
