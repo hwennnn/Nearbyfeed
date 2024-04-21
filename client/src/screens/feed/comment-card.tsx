@@ -2,7 +2,8 @@ import { useColorScheme } from 'nativewind';
 import React from 'react';
 
 import type { Comment } from '@/api';
-import { Image, Text, TimeWidget, View } from '@/ui';
+import { useVoteComment } from '@/api/posts/use-vote-comment';
+import { Image, Pressable, Text, TimeWidget, View } from '@/ui';
 import { Ionicons } from '@/ui/icons/ionicons';
 import { getInitials } from '@/utils/get-initials';
 
@@ -14,14 +15,30 @@ export const CommentCard = ({
   author,
   points,
   like,
+  isOptimistic,
+  postId,
+  id,
+  repliesCount,
 }: Props) => {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
   const iconColor = isDark ? 'text-neutral-400' : 'text-neutral-500';
 
-  console.log(like);
+  const isLiked = like !== undefined && like.value === 1;
 
-  const isLiked = true;
+  const { mutate } = useVoteComment();
+
+  const handleVote = (voteValue: number) => {
+    if (isOptimistic === true) return;
+
+    let value = voteValue === like?.value ? 0 : voteValue;
+
+    mutate({
+      value: value,
+      postId: postId.toString(),
+      commentId: id.toString(),
+    });
+  };
 
   return (
     <View className="space-y-1 rounded-xl bg-charcoal-900 px-4 py-3 shadow-xl">
@@ -59,24 +76,43 @@ export const CommentCard = ({
 
             <Text variant="sm">{`${content}`}</Text>
 
-            <View className="flex-row items-center space-x-1">
-              <Ionicons
-                name={isLiked ? 'heart' : 'heart-outline'}
-                size={18}
-                className={isLiked ? 'text-primary-400' : iconColor}
-              />
+            <View className="flex-row items-center space-x-5">
+              <View className="flex-row items-center space-x-1">
+                <Pressable onPress={() => handleVote(isLiked ? 0 : 1)}>
+                  <Ionicons
+                    name={isLiked ? 'heart' : 'heart-outline'}
+                    size={16}
+                    className={isLiked ? 'text-primary-400' : iconColor}
+                  />
+                </Pressable>
 
-              <Text
-                className={`font-semibold
+                <Text
+                  className={`font-semibold
                   ${
                     isLiked
                       ? 'text-primary-400'
                       : 'text-gray-600 dark:text-gray-300'
                   }`}
-                variant="sm"
-              >
-                {points}
-              </Text>
+                  variant="sm"
+                >
+                  {points}
+                </Text>
+              </View>
+
+              <View className="flex-row items-center space-x-1">
+                <Ionicons
+                  name="chatbox-outline"
+                  size={16}
+                  className={iconColor}
+                />
+
+                <Text
+                  className="font-semibold text-gray-600 dark:text-gray-300"
+                  variant="sm"
+                >
+                  {repliesCount}
+                </Text>
+              </View>
             </View>
           </View>
         </View>

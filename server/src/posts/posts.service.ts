@@ -442,8 +442,20 @@ export class PostsService {
       comments.pop();
     }
 
+    // transform the likes array into single like variable -> this is to indicate whether the current user likes the post or not
+    const parsedComments = comments.map((comment) => {
+      const p = {
+        ...comment,
+        like: comment.likes.length > 0 ? comment.likes[0] : undefined,
+      };
+
+      const { likes: _, ...parsedComment } = p;
+
+      return parsedComment;
+    });
+
     return {
-      comments,
+      comments: parsedComments,
       hasMore,
     };
   }

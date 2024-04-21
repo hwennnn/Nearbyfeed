@@ -117,6 +117,7 @@ export class PostsController {
   }
 
   @Get(':id/comments')
+  @UseGuards(OptionalJwtAuthGuard)
   async findComments(
     @Param('id') postId: string,
     @Query() getCommentDto: GetCommentDto,
