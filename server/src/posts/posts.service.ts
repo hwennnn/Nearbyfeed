@@ -1,5 +1,10 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-import { type Comment, type Post, type PostLike } from '@prisma/client';
+import {
+  type Comment,
+  type CommentLike,
+  type Post,
+  type PostLike,
+} from '@prisma/client';
 import { FilterService } from 'src/filter/filter.service';
 import { GeocodingService } from 'src/geocoding/geocoding.service';
 import {
@@ -377,12 +382,20 @@ export class PostsService {
     if (dto.sort === GetCommentsSort.TOP) {
       orderBy = {
         points: 'desc',
-        createdAt: 'desc',
       };
     }
 
     // in order to skip the cursor
     const skip = cursor !== undefined ? 1 : undefined;
+
+    const selectLikes =
+      dto.userId !== undefined
+        ? {
+            where: {
+              userId: +dto.userId,
+            },
+          }
+        : false;
 
     const comments = await this.prismaService.comment
       .findMany({
@@ -405,6 +418,8 @@ export class PostsService {
           author: true,
           isDeleted: true,
           parentCommentId: true,
+          repliesCount: true,
+          likes: selectLikes,
         },
       })
       .catch((e) => {
@@ -452,5 +467,83 @@ export class PostsService {
 
         throw new BadRequestException('Failed to update comment');
       });
+  }
+
+  async voteComment(
+    userId: number,
+    postId: number,
+    commentId: number,
+    value: number,
+  ): Promise<{
+    like: CommentLike;
+    comment: Comment;
+  }> {
+    const like = await this.prismaService.commentLike.findFirst({
+      where: {
+        userId,
+        commentId,
+      },
+    });
+
+    let incrementValue = value;
+
+    // If the user alrady liked the comment
+    if (like !== null) {
+      // If the user's vote is the same as the current vote
+      if (like.value === value) {
+        // nothing changed
+        incrementValue = 0;
+      } else {
+        if (value === 1) {
+          incrementValue = 1;
+        } else {
+          incrementValue = -1;
+        }
+      }
+    }
+
+    const [resultLike, resultComment] = await this.prismaService
+      .$transaction([
+        this.prismaService.commentLike.upsert({
+          where: {
+            commentId_userId: {
+              commentId,
+              userId,
+            },
+          },
+          update: {
+            value,
+          },
+          create: {
+            commentId,
+            userId,
+            value,
+          },
+        }),
+        this.prismaService.comment.update({
+          data: {
+            points: {
+              increment: incrementValue,
+            },
+          },
+          where: {
+            id: commentId,
+          },
+        }),
+      ])
+      .catch((e) => {
+        this.logger.error(
+          'Failed to like the comment',
+          e instanceof Error ? e.stack : undefined,
+          PostsService.name,
+        );
+
+        throw new BadRequestException('Failed to like the comment');
+      });
+
+    return {
+      like: resultLike,
+      comment: resultComment,
+    };
   }
 }

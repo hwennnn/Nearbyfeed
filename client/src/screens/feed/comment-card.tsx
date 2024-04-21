@@ -1,12 +1,28 @@
+import { useColorScheme } from 'nativewind';
 import React from 'react';
 
 import type { Comment } from '@/api';
 import { Image, Text, TimeWidget, View } from '@/ui';
+import { Ionicons } from '@/ui/icons/ionicons';
 import { getInitials } from '@/utils/get-initials';
 
 type Props = Comment;
 
-export const CommentCard = ({ content, createdAt, author }: Props) => {
+export const CommentCard = ({
+  content,
+  createdAt,
+  author,
+  points,
+  like,
+}: Props) => {
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
+  const iconColor = isDark ? 'text-neutral-400' : 'text-neutral-500';
+
+  console.log(like);
+
+  const isLiked = true;
+
   return (
     <View className="space-y-1 rounded-xl bg-charcoal-900 px-4 py-3 shadow-xl">
       <View className="flex-row items-center justify-between">
@@ -42,6 +58,26 @@ export const CommentCard = ({ content, createdAt, author }: Props) => {
             </View>
 
             <Text variant="sm">{`${content}`}</Text>
+
+            <View className="flex-row items-center space-x-1">
+              <Ionicons
+                name={isLiked ? 'heart' : 'heart-outline'}
+                size={18}
+                className={isLiked ? 'text-primary-400' : iconColor}
+              />
+
+              <Text
+                className={`font-semibold
+                  ${
+                    isLiked
+                      ? 'text-primary-400'
+                      : 'text-gray-600 dark:text-gray-300'
+                  }`}
+                variant="sm"
+              >
+                {points}
+              </Text>
+            </View>
           </View>
         </View>
       </View>

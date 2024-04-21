@@ -34,6 +34,7 @@ export const FeedDetails = () => {
     points,
     locationName,
     createdAt,
+    commentsCount,
   } = post;
 
   const [imageModalVisible, setImageModalVisible] = React.useState(false);
@@ -142,11 +143,12 @@ export const FeedDetails = () => {
               />
 
               <Text
-                className={
-                  isLiked
-                    ? 'text-primary-400'
-                    : 'text-gray-600 dark:text-gray-300'
-                }
+                className={`font-semibold
+                  ${
+                    isLiked
+                      ? 'text-primary-400'
+                      : 'text-gray-600 dark:text-gray-300'
+                  }`}
                 variant="sm"
               >
                 {points}
@@ -164,7 +166,7 @@ export const FeedDetails = () => {
                 className="font-semibold text-gray-600 dark:text-gray-300"
                 variant="sm"
               >
-                {'2'}
+                {commentsCount}
               </Text>
             </View>
 

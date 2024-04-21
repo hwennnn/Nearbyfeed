@@ -7,7 +7,7 @@ import { showMessage } from 'react-native-flash-message';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import { useAddComment } from '@/api/posts/use-add-comment';
-import { usePostDetails } from '@/core/posts/post-details';
+import { useCommentKeys } from '@/core/comments';
 import { ControlledInput, Pressable, showErrorMessage, View } from '@/ui';
 
 export class CreateCommentDto {
@@ -38,10 +38,10 @@ export const CommentComposer = ({ postId }: Props) => {
   const onSubmitComment = (dto: CreateCommentDto) => {
     reset();
 
-    const postDetails = usePostDetails.getState().postDetails!;
+    const sort = useCommentKeys.getState().commentsQueryKey!.sort;
 
     addComment(
-      { ...dto, postId, sort: postDetails.commentsSort },
+      { ...dto, postId, sort },
       {
         onSuccess: () => {
           showMessage({

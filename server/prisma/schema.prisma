@@ -63,6 +63,7 @@ model Comment {
   author          User          @relation(fields: [authorId], references: [id])
   authorId        Int
   parentCommentId Int?
+  repliesCount    Int           @default(0)
   likes           CommentLike[]
 }
 

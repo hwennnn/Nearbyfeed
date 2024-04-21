@@ -27,4 +27,6 @@ export class GetCommentDto {
   @IsString()
   @IsEnum(GetCommentsSort)
   sort?: string;
+
+  userId?: string;
 }

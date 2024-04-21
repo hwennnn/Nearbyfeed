@@ -14,6 +14,7 @@ export type Post = {
   author?: User;
   like?: PostLike;
   isOptimistic?: boolean;
+  commentsCount: number;
 };
 
 export type Comment = {
@@ -29,6 +30,7 @@ export type Comment = {
   isOptimistic?: boolean;
   parentCommentId: number | null;
   like?: CommentLike;
+  repliesCount: number;
 };
 
 export type User = {

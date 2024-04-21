@@ -82,6 +82,7 @@ export const useAddPost = createMutation<
       latitude: newPost.longitude,
       points: 0,
       isOptimistic: true,
+      commentsCount: 0,
     };
 
     // Update the cache optimistically by adding the new post to the existing list

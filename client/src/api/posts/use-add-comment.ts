@@ -7,7 +7,7 @@ import type { Comment } from '../types';
 type Variables = {
   content: string;
   postId: number;
-  sort: 'latest' | 'oldest';
+  sort: 'latest' | 'oldest' | 'top';
 };
 type Response = Comment;
 type CommentsResponse = {
@@ -71,6 +71,8 @@ export const useAddComment = createMutation<
       authorId: 1,
       isOptimistic: true,
       parentCommentId: null,
+      points: 0,
+      repliesCount: 0,
     };
 
     // Update the cache optimistically by adding the new Comment to the existing list

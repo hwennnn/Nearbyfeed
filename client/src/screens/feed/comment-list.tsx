@@ -1,10 +1,12 @@
+import { useActionSheet } from '@expo/react-native-action-sheet';
 import { FlashList } from '@shopify/flash-list';
 import React, { useCallback, useEffect } from 'react';
 import { ActivityIndicator } from 'react-native';
 
 import { type Comment } from '@/api';
 import { useComments } from '@/api/posts/use-comments';
-import { setPostDetails, usePostDetails } from '@/core/posts/post-details';
+import type { CommentsSort } from '@/core/comments';
+import { setCommentsQueryKey, useCommentKeys } from '@/core/comments';
 import { CommentCard } from '@/screens/feed/comment-card';
 import { Pressable, Text, View } from '@/ui';
 import Divider from '@/ui/core/divider';
@@ -13,7 +15,9 @@ import { Ionicons } from '@/ui/icons/ionicons';
 type Props = { postId: number; onRefetchDone: () => void; refreshing: boolean };
 
 export const CommentList = ({ postId, refreshing, onRefetchDone }: Props) => {
-  const postDetails = usePostDetails().postDetails!;
+  const sort = useCommentKeys().commentsQueryKey!.sort;
+
+  const { showActionSheetWithOptions } = useActionSheet();
 
   const {
     data,
@@ -24,7 +28,7 @@ export const CommentList = ({ postId, refreshing, onRefetchDone }: Props) => {
     fetchNextPage,
     isFetchingNextPage,
   } = useComments({
-    variables: { postId, sort: postDetails.commentsSort },
+    variables: { postId, sort },
   });
 
   const onRefetch = useCallback(() => {
@@ -66,10 +70,32 @@ export const CommentList = ({ postId, refreshing, onRefetchDone }: Props) => {
     }
   };
 
-  const toggleSort = () => {
-    setPostDetails({
-      commentsSort: 'oldest',
-    });
+  const onPressActionSheet = () => {
+    const options = ['Newest', 'Oldest', 'Top', 'Cancel'];
+    const values = ['latest', 'oldest', 'top'];
+
+    const cancelButtonIndex = 3;
+
+    showActionSheetWithOptions(
+      {
+        options,
+        cancelButtonIndex,
+        title: 'View Comments Sort',
+      },
+      (selectedIndex: number | undefined) => {
+        switch (selectedIndex) {
+          case undefined:
+          case cancelButtonIndex:
+            break;
+
+          default:
+            setCommentsQueryKey({
+              sort: values[selectedIndex] as CommentsSort,
+            });
+            break;
+        }
+      }
+    );
   };
 
   return (
@@ -77,10 +103,14 @@ export const CommentList = ({ postId, refreshing, onRefetchDone }: Props) => {
       <View className="flex-1">
         <Divider />
         <View className="mx-4 flex-row items-center justify-between py-2">
-          <Pressable onPress={toggleSort}>
+          <Pressable onPress={onPressActionSheet}>
             <View className="flex-row items-center space-x-1">
               <Text variant="sm" className="font-semibold">
-                {postDetails.commentsSort === 'oldest' ? 'Oldest' : 'Newest'}
+                {sort === 'top'
+                  ? 'Top'
+                  : sort === 'oldest'
+                  ? 'Oldest'
+                  : 'Newest'}
               </Text>
               <Ionicons name="chevron-down-outline" size={20} color="white" />
             </View>

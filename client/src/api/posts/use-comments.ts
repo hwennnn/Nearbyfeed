@@ -11,7 +11,7 @@ type Response = {
 };
 type Variables = {
   postId: number;
-  sort: 'latest' | 'oldest';
+  sort: 'latest' | 'oldest' | 'top';
 };
 
 export const useComments = createInfiniteQuery<Response, Variables, AxiosError>(

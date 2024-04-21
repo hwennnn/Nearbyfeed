@@ -13,7 +13,8 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
-  type Comment,
+  type Comment as CommentEntity,
+  type CommentLike,
   type Post as PostEntity,
   type PostLike,
 } from '@prisma/client';
@@ -106,7 +107,7 @@ export class PostsController {
     @GetUser('userId') userId: string,
     @Param('id') postId: string,
     @Param('parentCommentId') parentCommentId?: string,
-  ): Promise<Comment> {
+  ): Promise<CommentEntity> {
     return await this.postsService.createComment(
       createCommentDto,
       +postId,
@@ -119,11 +120,13 @@ export class PostsController {
   async findComments(
     @Param('id') postId: string,
     @Query() getCommentDto: GetCommentDto,
-  ): Promise<{ comments: Comment[]; hasMore: boolean }> {
+    @GetUser() user: TokenUser | null,
+  ): Promise<{ comments: CommentEntity[]; hasMore: boolean }> {
     const parsedDto: GetCommentDto = {
       cursor: getCommentDto.cursor,
       take: getCommentDto.take !== undefined ? +getCommentDto.take : undefined,
       sort: getCommentDto.sort,
+      userId: user?.userId,
     };
 
     return await this.postsService.findComments(+postId, parsedDto);
@@ -134,7 +137,26 @@ export class PostsController {
   async updateComment(
     @Param('id') commentId: string,
     @Body() updateCommentDto: UpdateCommentDto,
-  ): Promise<Comment> {
+  ): Promise<CommentEntity> {
     return await this.postsService.updateComment(+commentId, updateCommentDto);
+  }
+
+  @Put(':postId/comments/:commentId/vote')
+  @UseGuards(JwtAuthGuard)
+  async voteComment(
+    @GetUser('userId') userId: string,
+    @Param('postId') postId: string,
+    @Param('commentId') commentId: string,
+    @Body() likeDto: LikeDto,
+  ): Promise<{
+    like: CommentLike;
+    comment: CommentEntity;
+  }> {
+    return await this.postsService.voteComment(
+      +userId,
+      +postId,
+      +commentId,
+      likeDto.value,
+    );
   }
 }
