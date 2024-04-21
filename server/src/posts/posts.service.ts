@@ -380,9 +380,14 @@ export class PostsService {
     }
 
     if (dto.sort === GetCommentsSort.TOP) {
-      orderBy = {
-        points: 'desc',
-      };
+      orderBy = [
+        {
+          points: 'desc',
+        },
+        {
+          createdAt: 'desc',
+        },
+      ];
     }
 
     // in order to skip the cursor
