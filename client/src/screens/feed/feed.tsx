@@ -5,7 +5,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 
 import { useLocationName } from '@/api/posts/use-location-name';
 import { setPostsQueryKey } from '@/core/posts';
-import type { FeedNavigatorProp } from '@/navigation/feed-navigator';
+import type { RootNavigatorProp } from '@/navigation';
 import { FeedList } from '@/screens/feed/feed-list';
 import { ActivityIndicator, Image, Text, TouchableOpacity } from '@/ui';
 import { Layout } from '@/ui/core/layout';
@@ -17,7 +17,7 @@ export const Feed = () => {
   const [distance, setDistance] = useState(200);
   const [isLoading, setLoading] = useState(true);
 
-  const { navigate } = useNavigation<FeedNavigatorProp>();
+  const { navigate } = useNavigation<RootNavigatorProp>();
 
   const { data: locationName } = useLocationName({
     variables: {

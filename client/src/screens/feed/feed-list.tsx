@@ -9,7 +9,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import type { GeolocationName, Post } from '@/api';
 import { usePosts } from '@/api';
-import type { FeedNavigatorProp } from '@/navigation/feed-navigator';
+import type { RootNavigatorProp } from '@/navigation/root-navigator';
 import { colors, EmptyList, Text, TouchableOpacity, View } from '@/ui';
 
 import { Card } from './card';
@@ -143,7 +143,7 @@ export const FeedList = ({
     },
   });
 
-  const { navigate } = useNavigation<FeedNavigatorProp>();
+  const { navigate } = useNavigation<RootNavigatorProp>();
 
   const handleRefresh = async () => {
     await refreshCallback();
@@ -154,7 +154,7 @@ export const FeedList = ({
 
   const renderItem = React.useCallback(
     ({ item }: { item: Post }) => (
-      <Card {...item} onPress={() => navigate('Post', { post: item })} />
+      <Card {...item} onPress={() => navigate('FeedDetails', { post: item })} />
     ),
     [navigate]
   );

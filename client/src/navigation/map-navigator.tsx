@@ -11,7 +11,7 @@ export type MapStackParamList = {
 const Stack = createNativeStackNavigator<MapStackParamList>();
 
 type Props = NativeStackScreenProps<MapStackParamList>;
-export type FeedNavigatorProp = Props['navigation'];
+export type MapNavigatorProp = Props['navigation'];
 
 export const MapNavigator = () => {
   return (

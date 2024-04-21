@@ -23,13 +23,13 @@ export const Input = React.forwardRef<TextInput, NInputProps>((props, ref) => {
   const { label, error, rightIcon, ...inputProps } = props;
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
-  const [isFocussed, setIsFocussed] = React.useState(false);
-  const onBlur = React.useCallback(() => setIsFocussed(false), []);
-  const onFocus = React.useCallback(() => setIsFocussed(true), []);
+  const [isFocused, setIsFocused] = React.useState(false);
+  const onBlur = React.useCallback(() => setIsFocused(false), []);
+  const onFocus = React.useCallback(() => setIsFocused(true), []);
 
   const borderColor = error
     ? 'border-danger-600'
-    : isFocussed
+    : isFocused
     ? isDark
       ? 'border-white'
       : 'border-neutral-600'
@@ -64,7 +64,7 @@ export const Input = React.forwardRef<TextInput, NInputProps>((props, ref) => {
           testID="STextInput"
           ref={ref}
           placeholderTextColor={colors.neutral[400]}
-          className={`mt-0 flex-1 border-[1px] py-4 px-2  ${borderColor} rounded-md ${bgColor} text-[16px] ${textDirection} dark:text-charcoal-100`}
+          className={`mt-0 flex-1 border-[1px] p-4 ${borderColor} rounded-full ${bgColor} text-[16px] ${textDirection} dark:text-charcoal-100`}
           onBlur={onBlur}
           onFocus={onFocus}
           {...inputProps}

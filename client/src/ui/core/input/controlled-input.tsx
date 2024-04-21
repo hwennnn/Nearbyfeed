@@ -39,8 +39,8 @@ export function ControlledInput<T extends FieldValues>(
       autoCapitalize="none"
       onChangeText={field.onChange}
       value={field.value as string}
-      {...inputProps}
       error={fieldState.error?.message}
+      {...inputProps}
     />
   );
 }

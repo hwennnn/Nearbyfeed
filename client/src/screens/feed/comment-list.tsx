@@ -1,41 +1,24 @@
-import { classValidatorResolver } from '@hookform/resolvers/class-validator';
 import { FlashList } from '@shopify/flash-list';
-import { IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
-import React, { useCallback, useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import React, { useCallback, useEffect } from 'react';
 import { ActivityIndicator } from 'react-native';
-import { showMessage } from 'react-native-flash-message';
-import Icon from 'react-native-vector-icons/Octicons';
 
-import type { Comment } from '@/api';
-import { useAddComment } from '@/api/posts/use-add-comment';
+import { type Comment } from '@/api';
 import { useComments } from '@/api/posts/use-comments';
+import { setPostDetails, usePostDetails } from '@/core/posts/post-details';
 import { CommentCard } from '@/screens/feed/comment-card';
-import { ControlledInput, Pressable, showErrorMessage, Text, View } from '@/ui';
+import { Pressable, Text, View } from '@/ui';
 import { Ionicons } from '@/ui/icons/ionicons';
 
 type Props = { postId: number; onRefetchDone: () => void; refreshing: boolean };
 
-export class CreateCommentDto {
-  @IsOptional()
-  @IsString()
-  @MinLength(2)
-  @MaxLength(500)
-  content: string;
-}
-
-const resolver = classValidatorResolver(CreateCommentDto);
+const Divider = () => {
+  return (
+    <View className="w-full border-b-[0.5px] border-b-gray-500 bg-charcoal-900" />
+  );
+};
 
 export const CommentList = ({ postId, refreshing, onRefetchDone }: Props) => {
-  const [sortDesc, setSortDesc] = useState(true);
-
-  const { control, handleSubmit, reset } = useForm<CreateCommentDto>({
-    reValidateMode: 'onSubmit',
-    resolver,
-  });
-
-  const { mutate: addComment, isLoading: isCreateCommentLoading } =
-    useAddComment();
+  const postDetails = usePostDetails().postDetails!;
 
   const {
     data,
@@ -46,7 +29,7 @@ export const CommentList = ({ postId, refreshing, onRefetchDone }: Props) => {
     fetchNextPage,
     isFetchingNextPage,
   } = useComments({
-    variables: { postId, sort: sortDesc ? 'latest' : 'oldest' },
+    variables: { postId, sort: postDetails.commentsSort },
   });
 
   const onRefetch = useCallback(() => {
@@ -89,68 +72,34 @@ export const CommentList = ({ postId, refreshing, onRefetchDone }: Props) => {
   };
 
   const toggleSort = () => {
-    setSortDesc((prev) => !prev);
-  };
-
-  const onSubmitComment = (dto: CreateCommentDto) => {
-    reset();
-
-    addComment(
-      { ...dto, postId, sort: sortDesc ? 'latest' : 'oldest' },
-      {
-        onSuccess: () => {
-          showMessage({
-            message: 'Comment added successfully',
-            type: 'success',
-          });
-        },
-        onError: () => {
-          showErrorMessage('Error adding comment');
-        },
-      }
-    );
+    setPostDetails({
+      commentsSort: 'oldest',
+    });
   };
 
   return (
-    <View className="mt-4 flex-1 space-y-1">
-      <View className="flex-row items-center justify-between">
-        <Text variant="xl" className="">
-          Comments
-        </Text>
-
-        <Pressable onPress={toggleSort} disabled={isCreateCommentLoading}>
-          <View className="flex-row items-center space-x-2">
-            <Icon name={'sort-asc'} size={24} color="white" />
-            <Text variant="xs" className="">
-              {sortDesc ? 'in reverse order' : 'in order'}
-            </Text>
-          </View>
-        </Pressable>
-      </View>
-
-      <View className="-mb-2 flex-row items-center justify-center space-x-2">
-        <View className="flex-1">
-          <ControlledInput
-            name="content"
-            placeholder="Write a comment"
-            control={control}
-            rightIcon={
-              <Pressable onPress={handleSubmit(onSubmitComment)}>
-                <Ionicons name="ios-send" size={24} color="white" />
-              </Pressable>
-            }
-            multiline
-          />
+    <View className="flex-1">
+      <View className="w-full border-[0.5px] border-y-gray-500 bg-charcoal-900 py-2">
+        <View className="mx-4 flex-row items-center justify-between">
+          <Pressable onPress={toggleSort}>
+            <View className="flex-row items-center space-x-1">
+              <Text variant="sm" className="font-semibold">
+                {postDetails.commentsSort === 'oldest' ? 'Oldest' : 'Newest'}
+              </Text>
+              <Ionicons name="chevron-down-outline" size={20} color="white" />
+            </View>
+          </Pressable>
         </View>
       </View>
 
       <View className="min-h-[2px] flex-1">
         <FlashList
+          ItemSeparatorComponent={Divider}
           refreshing={false}
           data={allComments}
           renderItem={renderItem}
           keyExtractor={(_, index) => `item-${index}`}
-          estimatedItemSize={300}
+          estimatedItemSize={150}
           onEndReached={handleEndReached}
           onEndReachedThreshold={0.1}
         />
