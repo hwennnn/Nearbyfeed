@@ -15,7 +15,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import {
   type Comment,
   type Post as PostEntity,
-  type Updoot,
+  type PostLike,
 } from '@prisma/client';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import { type TokenUser } from 'src/auth/entities';
@@ -31,8 +31,8 @@ import {
   UpdatePostDto,
 } from 'src/posts/dto';
 import { CreatePostDto } from 'src/posts/dto/create-post.dto';
-import { UpdootDto } from 'src/posts/dto/updoot.dto';
-import { type PostWithUpdoot } from 'src/posts/entities';
+import { LikeDto } from 'src/posts/dto/like.dto';
+import { type PostWithLike } from 'src/posts/entities';
 import { PostsService } from './posts.service';
 
 @Controller('posts')
@@ -64,7 +64,7 @@ export class PostsController {
   async findAll(
     @Query() getPostDto: GetPostDto,
     @GetUser() user: TokenUser | null,
-  ): Promise<{ posts: PostWithUpdoot[]; hasMore: boolean }> {
+  ): Promise<{ posts: PostWithLike[]; hasMore: boolean }> {
     const parsedDto: GetPostDto = {
       latitude: +getPostDto.latitude,
       longitude: +getPostDto.longitude,
@@ -91,12 +91,12 @@ export class PostsController {
   async votePost(
     @GetUser('userId') userId: string,
     @Param('id') postId: string,
-    @Body() updootDto: UpdootDto,
+    @Body() likeDto: LikeDto,
   ): Promise<{
-    updoot: Updoot;
+    like: PostLike;
     post: PostEntity;
   }> {
-    return await this.postsService.votePost(+userId, +postId, updootDto.value);
+    return await this.postsService.votePost(+userId, +postId, likeDto.value);
   }
 
   @Post(':id/comments/:parentCommentId?')

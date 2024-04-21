@@ -29,7 +29,7 @@ export const FeedDetails = () => {
     title,
     content,
     author,
-    updoot,
+    like,
     image,
     points,
     locationName,
@@ -46,8 +46,7 @@ export const FeedDetails = () => {
 
   const iconColor = isDark ? 'text-neutral-400' : 'text-neutral-500';
 
-  const isUpvoted = updoot !== undefined && updoot.value === 1;
-  const isDownvoted = updoot !== undefined && updoot.value === -1;
+  const isLiked = like !== undefined && like.value === 1;
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -137,22 +136,14 @@ export const FeedDetails = () => {
           <View className="flex-row justify-between px-10 py-4">
             <View className="flex-row items-center space-x-1">
               <Ionicons
-                name="heart-outline"
+                name={isLiked ? 'heart' : 'heart-outline'}
                 size={18}
-                className={
-                  isDownvoted
-                    ? 'text-purple-500'
-                    : isUpvoted
-                    ? 'text-primary-400'
-                    : iconColor
-                }
+                className={isLiked ? 'text-primary-400' : iconColor}
               />
 
               <Text
                 className={
-                  'font-semibold' + isDownvoted
-                    ? 'text-purple-500'
-                    : isUpvoted
+                  isLiked
                     ? 'text-primary-400'
                     : 'text-gray-600 dark:text-gray-300'
                 }

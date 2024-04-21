@@ -1,5 +1,6 @@
 import { classValidatorResolver } from '@hookform/resolvers/class-validator';
-import { IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsString, MaxLength, MinLength } from 'class-validator';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { showMessage } from 'react-native-flash-message';
@@ -10,10 +11,10 @@ import { usePostDetails } from '@/core/posts/post-details';
 import { ControlledInput, Pressable, showErrorMessage, View } from '@/ui';
 
 export class CreateCommentDto {
-  @IsOptional()
   @IsString()
   @MinLength(2)
   @MaxLength(500)
+  @Transform(({ value }) => value?.trim())
   content: string;
 }
 

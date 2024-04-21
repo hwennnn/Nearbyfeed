@@ -8,12 +8,11 @@ export type Post = {
   fullLocationName?: string | null;
   image?: string | null;
   points: number;
-  flagged?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
   authorId?: number;
   author?: User;
-  updoot?: Updoot;
+  like?: PostLike;
   isOptimistic?: boolean;
 };
 
@@ -24,10 +23,12 @@ export type Comment = {
   updatedAt: Date;
   isDeleted: boolean;
   postId: number;
+  points: number;
   authorId?: number;
   author?: User;
   isOptimistic?: boolean;
   parentCommentId: number | null;
+  like?: CommentLike;
 };
 
 export type User = {
@@ -39,12 +40,21 @@ export type User = {
   updatedAt: Date;
 };
 
-export type Updoot = {
+export type PostLike = {
   id: number;
   value: number;
   createdAt: Date;
   updatedAt: Date;
   postId: number;
+  userId: number;
+};
+
+export type CommentLike = {
+  id: number;
+  value: number;
+  createdAt: Date;
+  updatedAt: Date;
+  commentId: number;
   userId: number;
 };
 

@@ -1,5 +1,6 @@
 import { classValidatorResolver } from '@hookform/resolvers/class-validator';
 import { useNavigation } from '@react-navigation/native';
+import { Transform } from 'class-transformer';
 import { IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 import * as ImagePicker from 'expo-image-picker';
 import * as React from 'react';
@@ -25,12 +26,14 @@ export class CreatePostDto {
   @IsString()
   @MinLength(4)
   @MaxLength(50)
+  @Transform(({ value }) => value?.trim())
   title: string;
 
   @IsOptional()
   @IsString()
   @MinLength(15)
   @MaxLength(500)
+  @Transform(({ value }) => value?.trim())
   content?: string;
 }
 

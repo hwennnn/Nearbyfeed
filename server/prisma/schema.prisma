@@ -19,20 +19,21 @@ model PendingUser {
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
-  username  String
-  email     String    @unique
-  password  String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  image     String?
-  posts     Post[]
-  comments  Comment[]
-  updoots   Updoot[]
+  id            Int           @id @default(autoincrement())
+  username      String
+  email         String        @unique
+  password      String
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  image         String?
+  posts         Post[]
+  comments      Comment[]
+  likedPosts    PostLike[]
+  likedComments CommentLike[]
 }
 
 model Post {
-  id               Int           @id @default(autoincrement())
+  id               Int        @id @default(autoincrement())
   title            String
   content          String?
   latitude         Float
@@ -40,39 +41,31 @@ model Post {
   locationName     String?
   fullLocationName String?
   image            String?
-  points           Int           @default(0)
-  flagged          Boolean       @default(false)
-  createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @updatedAt
-  author           User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  points           Int        @default(0)
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  author           User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId         Int
-  flaggedPosts     FlaggedPost[]
   comments         Comment[]
-  updoots          Updoot[]
-}
-
-model FlaggedPost {
-  id        Int      @id @default(autoincrement())
-  reason    String
-  createdAt DateTime @default(now())
-  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
-  postId    Int
+  likes            PostLike[]
 }
 
 model Comment {
-  id              Int      @id @default(autoincrement())
+  id              Int           @id @default(autoincrement())
   content         String
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  isDeleted       Boolean  @default(false)
-  post            Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  isDeleted       Boolean       @default(false)
+  points          Int           @default(0)
+  post            Post          @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId          Int
-  author          User     @relation(fields: [authorId], references: [id])
+  author          User          @relation(fields: [authorId], references: [id])
   authorId        Int
   parentCommentId Int?
+  likes           CommentLike[]
 }
 
-model Updoot {
+model PostLike {
   id        Int      @default(autoincrement())
   value     Int
   createdAt DateTime @default(now())
@@ -83,4 +76,17 @@ model Updoot {
   userId    Int
 
   @@id([postId, userId])
+}
+
+model CommentLike {
+  id        Int      @default(autoincrement())
+  value     Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  commentId Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+
+  @@id([commentId, userId])
 }

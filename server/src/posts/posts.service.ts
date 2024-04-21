@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-import { type Comment, type Post, type Updoot } from '@prisma/client';
+import { type Comment, type Post, type PostLike } from '@prisma/client';
 import { FilterService } from 'src/filter/filter.service';
 import { GeocodingService } from 'src/geocoding/geocoding.service';
 import {
@@ -11,10 +11,7 @@ import {
   type UpdateCommentDto,
   type UpdatePostDto,
 } from 'src/posts/dto';
-import {
-  type CommentWithAuthor,
-  type PostWithUpdoot,
-} from 'src/posts/entities';
+import { type CommentWithAuthor, type PostWithLike } from 'src/posts/entities';
 
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UsersService } from 'src/users/users.service';
@@ -77,7 +74,7 @@ export class PostsService {
   }
 
   async findNearbyPosts(dto: GetPostDto): Promise<{
-    posts: PostWithUpdoot[];
+    posts: PostWithLike[];
     hasMore: boolean;
   }> {
     const degreesPerMeter = 1 / 111320; // 1 degree is approximately 111320 meters
@@ -85,7 +82,7 @@ export class PostsService {
 
     const limit = dto.take ?? 15;
 
-    const selectUpdoots =
+    const selectLikes =
       dto.userId !== undefined
         ? {
             where: {
@@ -129,11 +126,10 @@ export class PostsService {
           fullLocationName: true,
           image: true,
           points: true,
-          flagged: true,
           createdAt: true,
           updatedAt: true,
           authorId: true,
-          updoots: selectUpdoots,
+          likes: selectLikes,
           author: true,
         },
         orderBy: {
@@ -155,14 +151,14 @@ export class PostsService {
       posts.pop();
     }
 
-    // transform the updoots array into single updoot variable
+    // transform the likes array into single like variable -> this is to indicate whether the current user likes the post or not
     const parsedPosts = posts.map((post) => {
       const p = {
         ...post,
-        updoot: post.updoots.length > 0 ? post.updoots[0] : undefined,
+        like: post.likes.length > 0 ? post.likes[0] : undefined,
       };
 
-      const { updoots: _, ...parsedPost } = p;
+      const { likes: _, ...parsedPost } = p;
 
       return parsedPost;
     });
@@ -207,10 +203,10 @@ export class PostsService {
     postId: number,
     value: number,
   ): Promise<{
-    updoot: Updoot;
+    like: PostLike;
     post: Post;
   }> {
-    const updoot = await this.prismaService.updoot.findFirst({
+    const like = await this.prismaService.postLike.findFirst({
       where: {
         userId,
         postId,
@@ -219,27 +215,24 @@ export class PostsService {
 
     let incrementValue = value;
 
-    // If the user has already voted on the post
-    if (updoot !== null) {
+    // If the user alrady liked the post
+    if (like !== null) {
       // If the user's vote is the same as the current vote
-      if (updoot.value === value) {
+      if (like.value === value) {
         // nothing changed
         incrementValue = 0;
       } else {
-        // If the user is changing their vote
-        if (updoot.value !== 0 && value === 0) {
-          // If the previous vote was not 0 and the new vote is 0, set the increment value to the inverse of the previous vote
-          incrementValue = -updoot.value;
+        if (value === 1) {
+          incrementValue = 1;
         } else {
-          // If the previous vote was 0 or the new vote is not 0, set the increment value to the new vote multiplied by 2
-          incrementValue = updoot.value === 0 ? value : value * 2;
+          incrementValue = -1;
         }
       }
     }
 
-    const [resultUpdoot, resultPost] = await this.prismaService
+    const [resultLike, resultPost] = await this.prismaService
       .$transaction([
-        this.prismaService.updoot.upsert({
+        this.prismaService.postLike.upsert({
           where: {
             postId_userId: {
               postId,
@@ -268,16 +261,16 @@ export class PostsService {
       ])
       .catch((e) => {
         this.logger.error(
-          'Failed to updoot',
+          'Failed to like the post',
           e instanceof Error ? e.stack : undefined,
           PostsService.name,
         );
 
-        throw new BadRequestException('Failed to updoot');
+        throw new BadRequestException('Failed to like the post');
       });
 
     return {
-      updoot: resultUpdoot,
+      like: resultLike,
       post: resultPost,
     };
   }
@@ -370,6 +363,13 @@ export class PostsService {
       };
     }
 
+    if (dto.sort === GetCommentsSort.TOP) {
+      orderBy = {
+        points: 'desc',
+        createdAt: 'desc',
+      };
+    }
+
     // in order to skip the cursor
     const skip = cursor !== undefined ? 1 : undefined;
 
@@ -389,6 +389,7 @@ export class PostsService {
           createdAt: true,
           updatedAt: true,
           postId: true,
+          points: true,
           authorId: true,
           author: true,
           isDeleted: true,

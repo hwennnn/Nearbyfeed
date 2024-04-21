@@ -1,7 +1,7 @@
 import type { AxiosError } from 'axios';
 import { createMutation } from 'react-query-kit';
 
-import type { Post, Updoot } from '@/api/types';
+import type { Post, PostLike } from '@/api/types';
 import { usePostKeys } from '@/core/posts';
 
 import { client, queryClient } from '../common';
@@ -11,7 +11,7 @@ type Variables = {
   value: number;
 };
 type Response = {
-  updoot: Updoot;
+  like: PostLike;
   post: Post;
 };
 type PostsResponse = {
@@ -112,7 +112,7 @@ export const useVotePost = createMutation<
               updatedPosts[foundIndex] = {
                 author: updatedPosts[foundIndex].author,
                 ...data.post,
-                updoot: data.updoot,
+                like: data.like,
               };
               return { ...page, posts: updatedPosts };
             }
@@ -127,24 +127,21 @@ export const useVotePost = createMutation<
 });
 
 const retrieveNewOptimisticPost = (post: Post, value: number): Post => {
-  let updoot = post.updoot ?? null;
+  let like = post.like ?? null;
 
   let incrementValue = value;
 
-  // If the user has already voted on the post
-  if (updoot !== null) {
+  // If the user has already liked the post
+  if (like !== null) {
     // If the user's vote is the same as the current vote
-    if (updoot.value === value) {
+    if (like.value === value) {
       // nothing changed
       incrementValue = 0;
     } else {
-      // If the user is changing their vote
-      if (updoot.value !== 0 && value === 0) {
-        // If the previous vote was not 0 and the new vote is 0, set the increment value to the inverse of the previous vote
-        incrementValue = -updoot.value;
+      if (value === 1) {
+        incrementValue = 1;
       } else {
-        // If the previous vote was 0 or the new vote is not 0, set the increment value to the new vote multiplied by 2
-        incrementValue = updoot.value === 0 ? value : value * 2;
+        incrementValue = -1;
       }
     }
   }
@@ -152,10 +149,10 @@ const retrieveNewOptimisticPost = (post: Post, value: number): Post => {
   return {
     ...post,
     points: post.points + incrementValue,
-    updoot:
-      updoot !== null
+    like:
+      like !== null
         ? {
-            ...updoot,
+            ...like,
             value,
           }
         : {

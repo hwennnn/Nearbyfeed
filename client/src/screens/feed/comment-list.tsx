@@ -7,15 +7,10 @@ import { useComments } from '@/api/posts/use-comments';
 import { setPostDetails, usePostDetails } from '@/core/posts/post-details';
 import { CommentCard } from '@/screens/feed/comment-card';
 import { Pressable, Text, View } from '@/ui';
+import Divider from '@/ui/core/divider';
 import { Ionicons } from '@/ui/icons/ionicons';
 
 type Props = { postId: number; onRefetchDone: () => void; refreshing: boolean };
-
-const Divider = () => {
-  return (
-    <View className="w-full border-b-[0.5px] border-b-gray-500 bg-charcoal-900" />
-  );
-};
 
 export const CommentList = ({ postId, refreshing, onRefetchDone }: Props) => {
   const postDetails = usePostDetails().postDetails!;
@@ -79,8 +74,9 @@ export const CommentList = ({ postId, refreshing, onRefetchDone }: Props) => {
 
   return (
     <View className="flex-1">
-      <View className="w-full border-[0.5px] border-y-gray-500 bg-charcoal-900 py-2">
-        <View className="mx-4 flex-row items-center justify-between">
+      <View className="flex-1">
+        <Divider />
+        <View className="mx-4 flex-row items-center justify-between py-2">
           <Pressable onPress={toggleSort}>
             <View className="flex-row items-center space-x-1">
               <Text variant="sm" className="font-semibold">
@@ -90,6 +86,7 @@ export const CommentList = ({ postId, refreshing, onRefetchDone }: Props) => {
             </View>
           </Pressable>
         </View>
+        <Divider />
       </View>
 
       <View className="min-h-[2px] flex-1">

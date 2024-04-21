@@ -80,6 +80,7 @@ export const Root = () => {
                 screenOptions={{
                   headerShown: true,
                   animation: 'default',
+                  gestureEnabled: true,
                 }}
               >
                 <Stack.Screen
