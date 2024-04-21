@@ -288,7 +288,7 @@ export class PostsService {
     authorId: number,
     parentCommentId?: number,
   ): Promise<Comment> {
-    if (parentCommentId !== null) {
+    if (parentCommentId !== undefined) {
       const parentComment = await this.prismaService.comment
         .findUnique({
           where: {
