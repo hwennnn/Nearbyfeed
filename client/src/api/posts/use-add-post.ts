@@ -19,12 +19,12 @@ type PostsResponse = {
   posts: Post[];
   hasMore: boolean;
 };
-type InfinitePosts = {
+export type InfinitePosts = {
   pages: PostsResponse[];
   pageParams: unknown[];
 };
 type Context = {
-  previousPosts?: InfinitePosts[];
+  previousPosts?: InfinitePosts;
   newPost: Variables;
   optimisticPostId: number;
 };
@@ -71,7 +71,7 @@ export const useAddPost = createMutation<
     await queryClient.cancelQueries({ queryKey });
 
     // Snapshot the previous value
-    const previousPosts = queryClient.getQueryData<InfinitePosts[]>(queryKey);
+    const previousPosts = queryClient.getQueryData<InfinitePosts>(queryKey);
     const optimisticPostId = new Date().getTime();
 
     const optimisticPost: Post = {
@@ -107,7 +107,7 @@ export const useAddPost = createMutation<
   onError: (_err, _newPost, context) => {
     const queryKey = ['posts', usePostKeys.getState().postsQueryKey];
 
-    queryClient.setQueryData<InfinitePosts[]>(queryKey, context?.previousPosts);
+    queryClient.setQueryData<InfinitePosts>(queryKey, context?.previousPosts);
   },
   onSuccess: (data, _variables, context) => {
     const queryKey = ['posts', usePostKeys.getState().postsQueryKey];

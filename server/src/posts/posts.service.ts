@@ -161,7 +161,10 @@ export class PostsService {
     const parsedPosts = posts.map((post) => {
       const p = {
         ...post,
-        like: post.likes.length > 0 ? post.likes[0] : undefined,
+        like:
+          post.likes !== undefined && post.likes.length > 0
+            ? post.likes[0]
+            : undefined,
       };
 
       const { likes: _, ...parsedPost } = p;

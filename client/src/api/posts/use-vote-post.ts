@@ -23,7 +23,7 @@ type InfinitePosts = {
   pageParams: unknown[];
 };
 type Context = {
-  previousPosts?: InfinitePosts[];
+  previousPosts?: InfinitePosts;
   newPost: Variables;
 };
 
@@ -54,7 +54,7 @@ export const useVotePost = createMutation<
     await queryClient.cancelQueries({ queryKey });
 
     // Snapshot the previous value
-    const previousPosts = queryClient.getQueryData<InfinitePosts[]>(queryKey);
+    const previousPosts = queryClient.getQueryData<InfinitePosts>(queryKey);
 
     // Update the cache optimistically by modifying the points value on the existing list
     queryClient.setQueryData<InfinitePosts>(queryKey, (oldData) => {
@@ -92,7 +92,7 @@ export const useVotePost = createMutation<
   onError: (_err, _newPost, context) => {
     const queryKey = ['posts', usePostKeys.getState().postsQueryKey];
 
-    queryClient.setQueryData<InfinitePosts[]>(queryKey, context?.previousPosts);
+    queryClient.setQueryData<InfinitePosts>(queryKey, context?.previousPosts);
   },
   // Update the cache after success:
   onSuccess: (data, newPost) => {

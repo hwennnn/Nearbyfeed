@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { ActivityIndicator } from 'react-native';
 
-import type { FeedNavigatorProp } from '@/navigation/feed-navigator';
+import type { RootNavigatorProp } from '@/navigation';
 
 import { NoData } from '../../icons';
 import { Text } from '../text';
@@ -14,7 +14,7 @@ type Props = {
 };
 
 export const EmptyList = React.memo(({ isLoading }: Props) => {
-  const { navigate } = useNavigation<FeedNavigatorProp>();
+  const { navigate } = useNavigation<RootNavigatorProp>();
 
   return (
     <View className="min-h-[400px] flex-1 items-center justify-center px-10">

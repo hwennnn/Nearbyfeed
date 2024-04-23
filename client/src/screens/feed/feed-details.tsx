@@ -1,14 +1,19 @@
 import type { RouteProp } from '@react-navigation/native';
 import { useRoute } from '@react-navigation/native';
+import { useQueryClient } from '@tanstack/react-query';
 import { useColorScheme } from 'nativewind';
 import * as React from 'react';
 import { RefreshControl } from 'react-native';
 
+import type { InfinitePosts } from '@/api';
+import { usePost } from '@/api';
+import { usePostKeys } from '@/core/posts';
 import type { RootStackParamList } from '@/navigation';
 import { CommentComposer } from '@/screens/feed/comment-composer';
 import { CommentList } from '@/screens/feed/comment-list';
 import {
   Image,
+  NoData,
   ScrollView,
   Text,
   TimeWidget,
@@ -23,7 +28,54 @@ type Props = RouteProp<RootStackParamList, 'FeedDetails'>;
 
 export const FeedDetails = () => {
   const { params } = useRoute<Props>();
-  const { post } = params;
+  const { postId } = params;
+
+  const queryClient = useQueryClient();
+
+  const { data: post, isLoading } = usePost({
+    variables: {
+      id: postId,
+    },
+
+    initialData: () => {
+      // Populate initial data from the cache
+      const queryKey = ['posts', usePostKeys.getState().postsQueryKey];
+
+      const infinitePosts = queryClient.getQueryData<InfinitePosts>(queryKey);
+      if (infinitePosts === undefined) return undefined;
+
+      for (const postsPages of infinitePosts.pages) {
+        for (const p of postsPages.posts) {
+          if (p.id === postId) return p;
+        }
+      }
+
+      return undefined;
+    },
+  });
+
+  const [imageModalVisible, setImageModalVisible] = React.useState(false);
+
+  const { colorScheme } = useColorScheme();
+
+  const isDark = colorScheme === 'dark';
+
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const iconColor = isDark ? 'text-neutral-400' : 'text-neutral-500';
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+  };
+
+  if (isLoading || post === undefined) {
+    return (
+      <View className="flex-1 items-center justify-center">
+        <NoData />
+      </View>
+    );
+  }
+
   const {
     id,
     title,
@@ -37,21 +89,7 @@ export const FeedDetails = () => {
     commentsCount,
   } = post;
 
-  const [imageModalVisible, setImageModalVisible] = React.useState(false);
-
-  const { colorScheme } = useColorScheme();
-
-  const isDark = colorScheme === 'dark';
-
-  const [refreshing, setRefreshing] = React.useState(false);
-
-  const iconColor = isDark ? 'text-neutral-400' : 'text-neutral-500';
-
   const isLiked = like !== undefined && like.value === 1;
-
-  const onRefresh = async () => {
-    setRefreshing(true);
-  };
 
   return (
     <View className="flex-1">

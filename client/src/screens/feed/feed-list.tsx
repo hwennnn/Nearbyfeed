@@ -156,7 +156,7 @@ export const FeedList = ({
     ({ item }: { item: Post }) => (
       <FeedCard
         {...item}
-        onPress={() => navigate('FeedDetails', { post: item })}
+        onPress={() => navigate('FeedDetails', { postId: item.id })}
       />
     ),
     [navigate]

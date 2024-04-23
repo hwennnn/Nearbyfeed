@@ -24,7 +24,7 @@ type InfiniteComments = {
   pageParams: unknown[];
 };
 type Context = {
-  previousComments?: InfiniteComments[];
+  previousComments?: InfiniteComments;
   newComment: Variables;
 };
 
@@ -56,7 +56,7 @@ export const useVoteComment = createMutation<
 
     // Snapshot the previous value
     const previousComments =
-      queryClient.getQueryData<InfiniteComments[]>(queryKey);
+      queryClient.getQueryData<InfiniteComments>(queryKey);
 
     // Update the cache optimistically by modifying the points value on the existing list
     queryClient.setQueryData<InfiniteComments>(queryKey, (oldData) => {
@@ -94,7 +94,7 @@ export const useVoteComment = createMutation<
   onError: (_err, _newComment, context) => {
     const queryKey = ['comments', useCommentKeys.getState().commentsQueryKey];
 
-    queryClient.setQueryData<InfiniteComments[]>(
+    queryClient.setQueryData<InfiniteComments>(
       queryKey,
       context?.previousComments
     );

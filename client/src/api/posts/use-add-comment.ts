@@ -19,7 +19,7 @@ type InfiniteComments = {
   pageParams: unknown[];
 };
 type Context = {
-  previousComments?: InfiniteComments[];
+  previousComments?: InfiniteComments;
   newComment: Variables;
   optimisticCommentId: number;
 };
@@ -58,7 +58,7 @@ export const useAddComment = createMutation<
 
     // Snapshot the previous value
     const previousComments =
-      queryClient.getQueryData<InfiniteComments[]>(queryKey);
+      queryClient.getQueryData<InfiniteComments>(queryKey);
 
     const optimisticCommentId = new Date().getTime();
     const optimisticComment: Comment = {
@@ -119,7 +119,7 @@ export const useAddComment = createMutation<
       },
     ];
 
-    queryClient.setQueryData<InfiniteComments[]>(
+    queryClient.setQueryData<InfiniteComments>(
       queryKey,
       context?.previousComments
     );
