@@ -27,7 +27,7 @@ import { ImagesService } from 'src/images/images.service';
 import {
   CreateCommentDto,
   GetCommentDto,
-  GetPostDto,
+  GetPostsDto,
   UpdateCommentDto,
   UpdatePostDto,
 } from 'src/posts/dto';
@@ -62,20 +62,29 @@ export class PostsController {
 
   @Get()
   @UseGuards(OptionalJwtAuthGuard)
-  async findAll(
-    @Query() getPostDto: GetPostDto,
+  async findPosts(
+    @Query() getPostsDto: GetPostsDto,
     @GetUser() user: TokenUser | null,
   ): Promise<{ posts: PostWithLike[]; hasMore: boolean }> {
-    const parsedDto: GetPostDto = {
-      latitude: +getPostDto.latitude,
-      longitude: +getPostDto.longitude,
-      distance: +getPostDto.distance,
+    const parsedDto: GetPostsDto = {
+      latitude: +getPostsDto.latitude,
+      longitude: +getPostsDto.longitude,
+      distance: +getPostsDto.distance,
       userId: user?.userId,
-      cursor: getPostDto.cursor,
-      take: getPostDto.take !== undefined ? +getPostDto.take : undefined,
+      cursor: getPostsDto.cursor,
+      take: getPostsDto.take !== undefined ? +getPostsDto.take : undefined,
     };
 
     return await this.postsService.findNearbyPosts(parsedDto);
+  }
+
+  @Get(':id')
+  @UseGuards(OptionalJwtAuthGuard)
+  async findPost(
+    @Param('id') postId: string,
+    @GetUser() user: TokenUser | null,
+  ): Promise<PostWithLike | null> {
+    return await this.postsService.findPost(+postId, user?.userId);
   }
 
   @Patch(':id')

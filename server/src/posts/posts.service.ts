@@ -12,7 +12,7 @@ import {
   type CreateCommentDto,
   type CreatePostDto,
   type GetCommentDto,
-  type GetPostDto,
+  type GetPostsDto,
   type UpdateCommentDto,
   type UpdatePostDto,
 } from 'src/posts/dto';
@@ -78,7 +78,7 @@ export class PostsService {
     return post;
   }
 
-  async findNearbyPosts(dto: GetPostDto): Promise<{
+  async findNearbyPosts(dto: GetPostsDto): Promise<{
     posts: PostWithLike[];
     hasMore: boolean;
   }> {
@@ -173,6 +173,66 @@ export class PostsService {
       posts: parsedPosts,
       hasMore,
     };
+  }
+
+  async findPost(
+    postId: number,
+    userId?: string,
+  ): Promise<PostWithLike | null> {
+    const selectLikes =
+      userId !== undefined
+        ? {
+            where: {
+              userId: +userId,
+            },
+          }
+        : false;
+
+    const post = await this.prismaService.post
+      .findFirst({
+        where: {
+          id: +postId,
+        },
+        select: {
+          id: true,
+          title: true,
+          content: true,
+          latitude: true,
+          longitude: true,
+          locationName: true,
+          fullLocationName: true,
+          image: true,
+          points: true,
+          createdAt: true,
+          updatedAt: true,
+          authorId: true,
+          likes: selectLikes,
+          author: true,
+          commentsCount: true,
+        },
+      })
+      .catch((e) => {
+        this.logger.error(
+          'Failed to find post',
+          e instanceof Error ? e.stack : undefined,
+          PostsService.name,
+        );
+
+        throw new BadRequestException('Failed to find post');
+      });
+
+    if (post === null) return null;
+
+    // transform the likes array into single like variable -> this is to indicate whether the current user likes the post or not
+    const parsedPost = {
+      ...post,
+      like:
+        post.likes !== undefined && post.likes.length > 0
+          ? post.likes[0]
+          : undefined,
+    };
+
+    return parsedPost;
   }
 
   async updatePost(id: number, updatePostDto: UpdatePostDto): Promise<Post> {

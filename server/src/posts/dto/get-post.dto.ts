@@ -11,7 +11,7 @@ import {
   ValidNumberRangeValue,
 } from 'src/posts/decorators';
 
-export class GetPostDto {
+export class GetPostsDto {
   @IsLatitude()
   latitude: number;
 
