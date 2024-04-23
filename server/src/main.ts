@@ -2,6 +2,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import helmet from 'helmet';
 
+import { PasswordSanitizerInterceptor } from 'src/interceptors/password-sanitizer.interceptor';
 import { AllExceptionsFilter } from 'src/utils';
 import { AppModule } from './app.module';
 
@@ -12,6 +13,7 @@ async function bootstrap(): Promise<void> {
   app.useGlobalPipes(
     new ValidationPipe({ whitelist: true, forbidUnknownValues: false }),
   );
+  app.useGlobalInterceptors(new PasswordSanitizerInterceptor());
 
   const { httpAdapter } = app.get(HttpAdapterHost);
 
