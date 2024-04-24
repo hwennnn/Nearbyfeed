@@ -3,6 +3,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { FilterModule } from 'src/filter/filter.module';
 import { GeocodingModule } from 'src/geocoding/geocoding.module';
 import { ImagesModule } from 'src/images/images.module';
+import { CommentsService } from 'src/posts/comments.service';
 import { UsersModule } from 'src/users/users.module';
 import { PostsController } from './posts.controller';
 import { PostsService } from './posts.service';
@@ -16,6 +17,6 @@ import { PostsService } from './posts.service';
     GeocodingModule,
   ],
   controllers: [PostsController],
-  providers: [PostsService, Logger],
+  providers: [PostsService, CommentsService, Logger],
 })
 export class PostsModule {}

@@ -30,3 +30,16 @@ export class GetCommentDto {
 
   userId?: string;
 }
+
+export class GetChildCommentDto {
+  @IsOptional()
+  @IsString()
+  cursor?: string;
+
+  @IsOptional()
+  @IsNumberString()
+  @Validate(ValidNumberRangeValue, [15, 25])
+  take?: number;
+
+  userId?: string;
+}

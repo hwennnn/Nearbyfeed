@@ -1,6 +1,7 @@
-import { type Comment } from '@prisma/client';
+import { type Comment, type CommentLike } from '@prisma/client';
 import { type UserWithoutPassword } from 'src/users/entities';
 
-export type CommentWithAuthor = Comment & {
+export type CommentWithLike = Comment & {
+  like?: CommentLike;
   author: UserWithoutPassword;
 };

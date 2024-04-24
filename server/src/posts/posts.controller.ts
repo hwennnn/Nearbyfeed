@@ -26,6 +26,7 @@ import { imageUploadOptions } from 'src/images/constants';
 import { ImagesService } from 'src/images/images.service';
 import {
   CreateCommentDto,
+  GetChildCommentDto,
   GetCommentDto,
   GetPostsDto,
   UpdateCommentDto,
@@ -33,13 +34,15 @@ import {
 } from 'src/posts/dto';
 import { CreatePostDto } from 'src/posts/dto/create-post.dto';
 import { LikeDto } from 'src/posts/dto/like.dto';
-import { type PostWithLike } from 'src/posts/entities';
+import { type CommentWithLike, type PostWithLike } from 'src/posts/entities';
+import { CommentsService } from './comments.service';
 import { PostsService } from './posts.service';
 
 @Controller('posts')
 export class PostsController {
   constructor(
     private readonly postsService: PostsService,
+    private readonly commentsService: CommentsService,
     private readonly imagesService: ImagesService,
   ) {}
 
@@ -117,11 +120,25 @@ export class PostsController {
     @Param('id') postId: string,
     @Param('parentCommentId') parentCommentId?: string,
   ): Promise<CommentEntity> {
-    return await this.postsService.createComment(
+    return await this.commentsService.createComment(
       createCommentDto,
       +postId,
       +userId,
       parentCommentId !== undefined ? +parentCommentId : undefined,
+    );
+  }
+
+  @Get(':postId/comments/:commentId')
+  @UseGuards(OptionalJwtAuthGuard)
+  async findComment(
+    @Param('postId') postId: string,
+    @Param('commentId') commentId: string,
+    @GetUser() user: TokenUser | null,
+  ): Promise<CommentWithLike | null> {
+    return await this.commentsService.findComment(
+      +postId,
+      +commentId,
+      user?.userId,
     );
   }
 
@@ -131,7 +148,7 @@ export class PostsController {
     @Param('id') postId: string,
     @Query() getCommentDto: GetCommentDto,
     @GetUser() user: TokenUser | null,
-  ): Promise<{ comments: CommentEntity[]; hasMore: boolean }> {
+  ): Promise<{ comments: CommentWithLike[]; hasMore: boolean }> {
     const parsedDto: GetCommentDto = {
       cursor: getCommentDto.cursor,
       take: getCommentDto.take !== undefined ? +getCommentDto.take : undefined,
@@ -139,7 +156,31 @@ export class PostsController {
       userId: user?.userId,
     };
 
-    return await this.postsService.findComments(+postId, parsedDto);
+    return await this.commentsService.findComments(+postId, parsedDto);
+  }
+
+  @Get(':postId/comments/:commentId')
+  @UseGuards(OptionalJwtAuthGuard)
+  async findChildComments(
+    @Param('postId') postId: string,
+    @Param('commentId') commentId: string,
+    @Query() getChildCommentDto: GetChildCommentDto,
+    @GetUser() user: TokenUser | null,
+  ): Promise<{ comments: CommentWithLike[]; hasMore: boolean }> {
+    const parsedDto: GetCommentDto = {
+      cursor: getChildCommentDto.cursor,
+      take:
+        getChildCommentDto.take !== undefined
+          ? +getChildCommentDto.take
+          : undefined,
+      userId: user?.userId,
+    };
+
+    return await this.commentsService.findChildComments(
+      +postId,
+      +commentId,
+      parsedDto,
+    );
   }
 
   @Patch(':postId/comments/:id')
@@ -148,7 +189,10 @@ export class PostsController {
     @Param('id') commentId: string,
     @Body() updateCommentDto: UpdateCommentDto,
   ): Promise<CommentEntity> {
-    return await this.postsService.updateComment(+commentId, updateCommentDto);
+    return await this.commentsService.updateComment(
+      +commentId,
+      updateCommentDto,
+    );
   }
 
   @Put(':postId/comments/:commentId/vote')
@@ -162,7 +206,7 @@ export class PostsController {
     like: CommentLike;
     comment: CommentEntity;
   }> {
-    return await this.postsService.voteComment(
+    return await this.commentsService.voteComment(
       +userId,
       +postId,
       +commentId,
