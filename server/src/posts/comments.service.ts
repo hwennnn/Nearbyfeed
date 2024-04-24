@@ -325,10 +325,9 @@ export class CommentsService {
     }
 
     const orderBy: any = [
-      // temporarily commented as it might mess up with the pagination order
-      // {
-      //   points: 'desc',
-      // },
+      {
+        points: 'desc',
+      },
       {
         createdAt: 'desc',
       },

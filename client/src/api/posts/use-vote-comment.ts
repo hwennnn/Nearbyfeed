@@ -10,6 +10,7 @@ import { client, queryClient } from '../common';
 export enum CommentType {
   PARENT_COMMENT = 0,
   REPLY_COMMENT = 1,
+  PREVIEW_COMMENT = 2,
 }
 
 type Variables = {
@@ -59,7 +60,8 @@ export const useVoteComment = createMutation<
   onMutate: async (newComment) => {
     // 1. Handle the infinite comments (either from the base comments or child comments)
     const commentsQueryKey =
-      newComment.commentType === CommentType.PARENT_COMMENT
+      newComment.commentType === CommentType.PARENT_COMMENT ||
+      newComment.commentType === CommentType.PREVIEW_COMMENT
         ? retrieveUseCommentsKey(
             +newComment.postId,
             useCommentKeys.getState().commentsQueryKey.sort
@@ -68,6 +70,7 @@ export const useVoteComment = createMutation<
             +newComment.postId,
             +newComment.parentCommentId!
           );
+
     // Cancel any outgoing refetches
     // (so they don't overwrite our optimistic update)
     await queryClient.cancelQueries({ queryKey: commentsQueryKey });
@@ -82,21 +85,54 @@ export const useVoteComment = createMutation<
         return {
           pageParams: oldData.pageParams,
           pages: oldData.pages.map((page) => {
+            const targetId =
+              newComment.commentType === CommentType.PREVIEW_COMMENT
+                ? newComment.parentCommentId?.toString()
+                : newComment.commentId;
             const foundIndex = page.comments.findIndex(
-              (comment) => comment.id.toString() === newComment.commentId
+              (comment) => comment.id.toString() === targetId
             );
 
             if (foundIndex !== -1) {
-              const updatedComments = [...page.comments];
-              const newOptimisticComment = retrieveNewOptimisticComment(
-                updatedComments[foundIndex],
-                newComment.value
-              );
+              if (newComment.commentType === CommentType.PREVIEW_COMMENT) {
+                // Update the nested replies
+                const updatedComments = [...page.comments];
+                const replyIndex = updatedComments[
+                  foundIndex
+                ].replies.findIndex(
+                  (reply) => reply.id.toString() === newComment.commentId
+                );
 
-              updatedComments[foundIndex] = {
-                ...newOptimisticComment,
-              };
-              return { ...page, comments: updatedComments };
+                if (replyIndex !== -1) {
+                  const newOptimisticComment = retrieveNewOptimisticComment(
+                    updatedComments[foundIndex].replies[replyIndex],
+                    newComment.value
+                  );
+
+                  const replies = [...updatedComments[foundIndex].replies];
+                  replies[replyIndex] = {
+                    ...newOptimisticComment,
+                  };
+
+                  updatedComments[foundIndex] = {
+                    ...updatedComments[foundIndex],
+                    replies,
+                  };
+
+                  return { ...page, comments: updatedComments };
+                }
+              } else {
+                const updatedComments = [...page.comments];
+                const newOptimisticComment = retrieveNewOptimisticComment(
+                  updatedComments[foundIndex],
+                  newComment.value
+                );
+
+                updatedComments[foundIndex] = {
+                  ...newOptimisticComment,
+                };
+                return { ...page, comments: updatedComments };
+              }
             }
 
             return page;
@@ -140,7 +176,8 @@ export const useVoteComment = createMutation<
   // If the mutation fails, use the context we returned above
   onError: (_err, newComment, context) => {
     const commentsQueryKey =
-      newComment.commentType === CommentType.PARENT_COMMENT
+      newComment.commentType === CommentType.PARENT_COMMENT ||
+      newComment.commentType === CommentType.PREVIEW_COMMENT
         ? retrieveUseCommentsKey(
             +newComment.postId,
             useCommentKeys.getState().commentsQueryKey.sort
@@ -170,7 +207,8 @@ export const useVoteComment = createMutation<
   // Update the cache after success:
   onSuccess: (data, newComment) => {
     const commentsQueryKey =
-      newComment.commentType === CommentType.PARENT_COMMENT
+      newComment.commentType === CommentType.PARENT_COMMENT ||
+      newComment.commentType === CommentType.PREVIEW_COMMENT
         ? retrieveUseCommentsKey(
             +newComment.postId,
             useCommentKeys.getState().commentsQueryKey.sort
@@ -185,19 +223,49 @@ export const useVoteComment = createMutation<
         return {
           pageParams: oldData.pageParams,
           pages: oldData.pages.map((page) => {
+            const targetId =
+              newComment.commentType === CommentType.PREVIEW_COMMENT
+                ? newComment.parentCommentId?.toString()
+                : newComment.commentId;
             const foundIndex = page.comments.findIndex(
-              (comment) => comment.id.toString() === newComment.commentId
+              (comment) => comment.id.toString() === targetId
             );
 
             if (foundIndex !== -1) {
               const updatedComments = [...page.comments];
-              updatedComments[foundIndex] = {
-                ...updatedComments[foundIndex],
-                ...data.comment,
-                like: data.like,
-                author: updatedComments[foundIndex].author,
-              };
-              return { ...page, comments: updatedComments };
+
+              if (newComment.commentType === CommentType.PREVIEW_COMMENT) {
+                // Update the nested replies
+                const replyIndex = updatedComments[
+                  foundIndex
+                ].replies.findIndex(
+                  (reply) => reply.id.toString() === newComment.commentId
+                );
+
+                if (replyIndex !== -1) {
+                  const replies = [...updatedComments[foundIndex].replies];
+                  replies[replyIndex] = {
+                    ...replies[replyIndex],
+                    ...data.comment,
+                    like: data.like,
+                  };
+
+                  updatedComments[foundIndex] = {
+                    ...updatedComments[foundIndex],
+                    replies,
+                  };
+
+                  return { ...page, comments: updatedComments };
+                } else {
+                  updatedComments[foundIndex] = {
+                    ...updatedComments[foundIndex],
+                    ...data.comment,
+                    like: data.like,
+                    author: updatedComments[foundIndex].author,
+                  };
+                  return { ...page, comments: updatedComments };
+                }
+              }
             }
 
             return page;

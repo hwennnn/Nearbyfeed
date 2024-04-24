@@ -14,6 +14,7 @@ import { stringUtils } from '@/utils/string-utils';
 type Props = Comment & {
   onPressCard?: () => void;
   isChildComment?: boolean;
+  isPreviewComment?: boolean;
 };
 
 export const CommentCard = ({
@@ -27,6 +28,7 @@ export const CommentCard = ({
   id,
   repliesCount,
   isChildComment,
+  isPreviewComment,
   parentCommentId,
   replies,
 }: Props) => {
@@ -49,10 +51,11 @@ export const CommentCard = ({
       value: value,
       postId: postId.toString(),
       commentId: id.toString(),
-      commentType:
-        isChildComment !== true
-          ? CommentType.PARENT_COMMENT
-          : CommentType.REPLY_COMMENT,
+      commentType: isPreviewComment
+        ? CommentType.PREVIEW_COMMENT
+        : isChildComment !== true
+        ? CommentType.PARENT_COMMENT
+        : CommentType.REPLY_COMMENT,
       parentCommentId,
     });
   };
@@ -68,11 +71,20 @@ export const CommentCard = ({
   };
 
   return (
-    <Pressable className="flex-1" onPress={() => onPressReply(true)}>
+    <Pressable
+      className="flex-1"
+      onPress={() => {
+        if (parentCommentId === null) {
+          onPressReply(true);
+        }
+      }}
+    >
       <View className="flex-1">
         <View
           className={`space-y-1 rounded-xl ${
-            isChildComment !== true ? 'bg-charcoal-900' : 'bg-black'
+            isPreviewComment !== true && isChildComment !== true
+              ? 'bg-charcoal-900'
+              : 'bg-black'
           } py-3 shadow-xl`}
         >
           <View className="flex-row  items-center justify-between px-4">
@@ -141,7 +153,7 @@ export const CommentCard = ({
                     </View>
                   </Pressable>
 
-                  {isChildComment !== true && (
+                  {isPreviewComment !== true && isChildComment !== true && (
                     <Pressable
                       onPress={() => onPressReply()}
                       className="flex-row items-center space-x-1"
@@ -170,7 +182,7 @@ export const CommentCard = ({
           <View className="flex-1 flex-col bg-black pb-2 pl-6 pr-4">
             {replies.map((reply) => (
               <View className="py-2" key={reply.id}>
-                <CommentCard {...reply} isChildComment={true} />
+                <CommentCard {...reply} isPreviewComment={true} />
                 <Divider />
               </View>
             ))}
