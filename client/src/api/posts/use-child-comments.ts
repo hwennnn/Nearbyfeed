@@ -24,7 +24,6 @@ export const useChildComments = createInfiniteQuery<
     // in case if variables is needed, we can use destructuring to get it from queryKey array like this: ({ queryKey: [primaryKey, variables] })
     // primaryKey is 'posts' in this case
     const cursor = pageParam !== undefined ? pageParam.toString() : pageParam;
-
     const response = await client
       .get(
         `posts/${variables.postId}/${primaryKey}/${variables.commentId}/replies`,

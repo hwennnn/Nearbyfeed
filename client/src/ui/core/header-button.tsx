@@ -4,7 +4,9 @@ import React from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import type { RootNavigatorProp } from '@/navigation';
-import { colors, TouchableOpacity } from '@/ui';
+import colors from '@/ui/theme/colors';
+
+import { TouchableOpacity } from './touchable-opacity';
 
 export const HeaderButton = ({ iconName }: { iconName: string }) => {
   const { colorScheme } = useColorScheme();

@@ -3,7 +3,7 @@ import { useColorScheme } from 'nativewind';
 import React from 'react';
 
 import type { Comment } from '@/api';
-import { useVoteComment } from '@/api/posts/use-vote-comment';
+import { CommentType, useVoteComment } from '@/api/posts/use-vote-comment';
 import type { RootNavigatorProp } from '@/navigation';
 import { Image, Pressable, Text, TimeWidget, View } from '@/ui';
 import { Ionicons } from '@/ui/icons/ionicons';
@@ -26,6 +26,7 @@ export const CommentCard = ({
   id,
   repliesCount,
   isChildComment,
+  parentCommentId,
 }: Props) => {
   const { navigate } = useNavigation<RootNavigatorProp>();
 
@@ -46,6 +47,11 @@ export const CommentCard = ({
       value: value,
       postId: postId.toString(),
       commentId: id.toString(),
+      commentType:
+        isChildComment !== true
+          ? CommentType.PARENT_COMMENT
+          : CommentType.REPLY_COMMENT,
+      parentCommentId,
     });
   };
 
@@ -64,7 +70,7 @@ export const CommentCard = ({
     >
       <View
         className={`space-y-1 rounded-xl ${
-          isChildComment !== true ? 'bg-charcoal-900' : ''
+          isChildComment !== true ? 'bg-charcoal-900' : 'bg-black'
         } px-4 py-3 shadow-xl`}
       >
         <View className="flex-row items-center justify-between">

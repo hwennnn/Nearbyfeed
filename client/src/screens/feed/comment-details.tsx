@@ -79,7 +79,7 @@ export const CommentsDetails = () => {
   }
 
   return (
-    <View className="flex-1">
+    <View className="flex-1 bg-black">
       <ScrollView
         className="mb-24 flex-1"
         refreshControl={

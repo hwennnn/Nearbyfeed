@@ -7,10 +7,17 @@ import { useCommentKeys } from '@/core/comments';
 
 import { client, queryClient } from '../common';
 
+export enum CommentType {
+  PARENT_COMMENT = 0,
+  REPLY_COMMENT = 1,
+}
+
 type Variables = {
   postId: string;
   commentId: string;
   value: number;
+  commentType: CommentType;
+  parentCommentId: number | null;
 };
 type Response = {
   like: CommentLike;
@@ -50,12 +57,17 @@ export const useVoteComment = createMutation<
       }),
   // When mutate is called:
   onMutate: async (newComment) => {
-    // 1. Handle the infinite comments
-    const commentsQueryKey = retrieveUseCommentsKey(
-      +newComment.postId,
-      useCommentKeys.getState().commentsQueryKey.sort
-    );
-
+    // 1. Handle the infinite comments (either from the base comments or child comments)
+    const commentsQueryKey =
+      newComment.commentType === CommentType.PARENT_COMMENT
+        ? retrieveUseCommentsKey(
+            +newComment.postId,
+            useCommentKeys.getState().commentsQueryKey.sort
+          )
+        : retrieveUseChildCommentsKey(
+            +newComment.postId,
+            +newComment.parentCommentId!
+          );
     // Cancel any outgoing refetches
     // (so they don't overwrite our optimistic update)
     await queryClient.cancelQueries({ queryKey: commentsQueryKey });
@@ -95,61 +107,78 @@ export const useVoteComment = createMutation<
     });
 
     // 2. Handle the single comment query
-    const commentQueryKey = [
-      'posts',
-      { postId: +newComment.postId, commentId: +newComment.commentId },
-    ];
+    let previousComment;
+    if (newComment.commentType === CommentType.PARENT_COMMENT) {
+      const commentQueryKey = [
+        'posts',
+        { postId: +newComment.postId, commentId: +newComment.parentCommentId! },
+      ];
 
-    // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
-    await queryClient.cancelQueries({ queryKey: commentQueryKey });
+      // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
+      await queryClient.cancelQueries({ queryKey: commentQueryKey });
 
-    // Snapshot the previous value
-    const previousComment = queryClient.getQueryData<Comment>(commentQueryKey);
+      // Snapshot the previous value
+      previousComment = queryClient.getQueryData<Comment>(commentQueryKey);
 
-    queryClient.setQueryData<Comment>(commentQueryKey, (oldData) => {
-      if (oldData) {
-        const newOptimisticComment = retrieveNewOptimisticComment(
-          oldData,
-          newComment.value
-        );
+      queryClient.setQueryData<Comment>(commentQueryKey, (oldData) => {
+        if (oldData) {
+          const newOptimisticComment = retrieveNewOptimisticComment(
+            oldData,
+            newComment.value
+          );
 
-        return { ...newOptimisticComment };
-      }
+          return { ...newOptimisticComment };
+        }
 
-      return oldData;
-    });
+        return oldData;
+      });
+    }
 
     // Return a context with the previous and new todo
     return { previousComments, newComment, previousComment };
   },
   // If the mutation fails, use the context we returned above
   onError: (_err, newComment, context) => {
-    const commentsQueryKey = retrieveUseCommentsKey(
-      +newComment.postId,
-      useCommentKeys.getState().commentsQueryKey.sort
-    );
+    const commentsQueryKey =
+      newComment.commentType === CommentType.PARENT_COMMENT
+        ? retrieveUseCommentsKey(
+            +newComment.postId,
+            useCommentKeys.getState().commentsQueryKey.sort
+          )
+        : retrieveUseChildCommentsKey(
+            +newComment.postId,
+            +newComment.parentCommentId!
+          );
 
     queryClient.setQueryData<InfiniteComments>(
       commentsQueryKey,
       context?.previousComments
     );
 
-    const commentQueryKey = [
-      'posts',
-      { postId: +newComment.postId, commentId: +newComment.commentId },
-    ];
+    if (newComment.commentType === CommentType.PARENT_COMMENT) {
+      const commentQueryKey = [
+        'posts',
+        { postId: +newComment.postId, commentId: +newComment.commentId },
+      ];
 
-    queryClient.setQueryData<Comment>(
-      commentQueryKey,
-      context?.previousComment
-    );
+      queryClient.setQueryData<Comment>(
+        commentQueryKey,
+        context?.previousComment
+      );
+    }
   },
   // Update the cache after success:
   onSuccess: (data, newComment) => {
-    const commentsQueryKey = retrieveUseCommentsKey(
-      +newComment.postId,
-      useCommentKeys.getState().commentsQueryKey.sort
-    );
+    const commentsQueryKey =
+      newComment.commentType === CommentType.PARENT_COMMENT
+        ? retrieveUseCommentsKey(
+            +newComment.postId,
+            useCommentKeys.getState().commentsQueryKey.sort
+          )
+        : retrieveUseChildCommentsKey(
+            +newComment.postId,
+            +newComment.commentId
+          );
 
     queryClient.setQueryData<InfiniteComments>(commentsQueryKey, (oldData) => {
       if (oldData) {
@@ -177,22 +206,24 @@ export const useVoteComment = createMutation<
       return oldData;
     });
 
-    const commentQueryKey = [
-      'posts',
-      { postId: +newComment.postId, commentId: +newComment.commentId },
-    ];
+    if (newComment.commentType === CommentType.PARENT_COMMENT) {
+      const commentQueryKey = [
+        'posts',
+        { postId: +newComment.postId, commentId: +newComment.commentId },
+      ];
 
-    queryClient.setQueryData<Comment>(commentQueryKey, (oldData) => {
-      if (oldData) {
-        return {
-          author: oldData.author,
-          ...data.comment,
-          like: data.like,
-        };
-      }
+      queryClient.setQueryData<Comment>(commentQueryKey, (oldData) => {
+        if (oldData) {
+          return {
+            author: oldData.author,
+            ...data.comment,
+            like: data.like,
+          };
+        }
 
-      return oldData;
-    });
+        return oldData;
+      });
+    }
   },
 });
 
@@ -248,6 +279,19 @@ export const retrieveUseCommentsKey = (
     {
       postId,
       sort: commentsSort.toString(),
+    },
+  ];
+};
+
+export const retrieveUseChildCommentsKey = (
+  postId: number,
+  commentId: number
+): any => {
+  return [
+    'comments',
+    {
+      postId,
+      commentId,
     },
   ];
 };
