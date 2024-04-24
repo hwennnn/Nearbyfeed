@@ -62,7 +62,7 @@ export const CommentsDetails = () => {
         repliesCount
       )}`,
       // eslint-disable-next-line react/no-unstable-nested-components
-      headerLeft: () => <HeaderButton iconName="chevron-back-outline" />,
+      headerLeft: () => <HeaderButton iconName="close-outline" />,
     });
   }, [navigation, repliesCount]);
 

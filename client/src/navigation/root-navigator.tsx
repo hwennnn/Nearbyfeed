@@ -80,6 +80,8 @@ export const Root = () => {
                   name="CommentDetails"
                   component={CommentsDetails}
                   options={{
+                    presentation: 'modal',
+                    animation: 'default',
                     headerTitle: 'Comment',
                     headerLeft: () => (
                       <HeaderButton iconName="chevron-back-outline" />
