@@ -31,6 +31,7 @@ export type Comment = {
   parentCommentId: number | null;
   like?: CommentLike;
   repliesCount: number;
+  replies: Comment[];
 };
 
 export type User = {

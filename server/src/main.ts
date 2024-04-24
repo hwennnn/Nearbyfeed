@@ -20,6 +20,8 @@ async function bootstrap(): Promise<void> {
   app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
   app.enableCors();
 
+  app.enableShutdownHooks();
+
   await app.listen(3000);
 }
 

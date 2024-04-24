@@ -234,6 +234,31 @@ export class CommentsService {
           parentCommentId: true,
           repliesCount: true,
           likes: selectLikes,
+          replies: {
+            orderBy: [
+              {
+                points: 'desc',
+              },
+              {
+                createdAt: 'desc',
+              },
+            ],
+            take: 3,
+            select: {
+              id: true,
+              content: true,
+              createdAt: true,
+              updatedAt: true,
+              postId: true,
+              points: true,
+              authorId: true,
+              author: true,
+              isDeleted: true,
+              parentCommentId: true,
+              repliesCount: true,
+              likes: selectLikes,
+            },
+          },
         },
       })
       .catch((e) => {
@@ -255,10 +280,23 @@ export class CommentsService {
     const parsedComments = comments.map((comment) => {
       const p = {
         ...comment,
-        like: comment.likes.length > 0 ? comment.likes[0] : undefined,
+        like:
+          comment.likes !== undefined && comment.likes.length > 0
+            ? comment.likes[0]
+            : undefined,
       };
 
       const { likes: _, ...parsedComment } = p;
+
+      parsedComment.replies = parsedComment.replies.map((reply) => {
+        return {
+          ...reply,
+          like:
+            reply.likes !== undefined && reply.likes.length > 0
+              ? reply.likes[0]
+              : undefined,
+        };
+      });
 
       return parsedComment;
     });

@@ -65,6 +65,8 @@ model Comment {
   parentCommentId Int?
   repliesCount    Int           @default(0)
   likes           CommentLike[]
+  parentComment   Comment?      @relation("ChildComments", fields: [parentCommentId], references: [id])
+  replies         Comment[]     @relation("ChildComments")
 }
 
 model PostLike {

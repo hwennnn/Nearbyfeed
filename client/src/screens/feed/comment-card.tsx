@@ -6,6 +6,7 @@ import type { Comment } from '@/api';
 import { CommentType, useVoteComment } from '@/api/posts/use-vote-comment';
 import type { RootNavigatorProp } from '@/navigation';
 import { Image, Pressable, Text, TimeWidget, View } from '@/ui';
+import Divider from '@/ui/core/divider';
 import { Ionicons } from '@/ui/icons/ionicons';
 import { getInitials } from '@/utils/get-initials';
 import { stringUtils } from '@/utils/string-utils';
@@ -27,6 +28,7 @@ export const CommentCard = ({
   repliesCount,
   isChildComment,
   parentCommentId,
+  replies,
 }: Props) => {
   const { navigate } = useNavigation<RootNavigatorProp>();
 
@@ -55,25 +57,24 @@ export const CommentCard = ({
     });
   };
 
+  const onPressReply = () => {
+    if (isChildComment !== true) {
+      navigate('CommentDetails', {
+        commentId: id,
+        postId: postId,
+        repliesCount,
+      });
+    }
+  };
+
   return (
-    <Pressable
-      className="flex-1"
-      onPress={() => {
-        if (isChildComment !== true) {
-          navigate('CommentDetails', {
-            commentId: id,
-            postId: postId,
-            repliesCount,
-          });
-        }
-      }}
-    >
+    <View className="flex-1">
       <View
         className={`space-y-1 rounded-xl ${
           isChildComment !== true ? 'bg-charcoal-900' : 'bg-black'
-        } px-4 py-3 shadow-xl`}
+        } py-3 shadow-xl`}
       >
-        <View className="flex-row items-center justify-between">
+        <View className="flex-row  items-center justify-between px-4">
           <View className="flex-row items-start space-x-3">
             <View className="h-[36px] w-[36px] items-center justify-center rounded-full bg-gray-100 dark:bg-gray-600">
               {author?.image === null && (
@@ -136,7 +137,10 @@ export const CommentCard = ({
                 </Pressable>
 
                 {isChildComment !== true && (
-                  <View className="flex-row items-center space-x-1">
+                  <Pressable
+                    onPress={onPressReply}
+                    className="flex-row items-center space-x-1"
+                  >
                     <Ionicons
                       name="chatbox-outline"
                       size={12}
@@ -149,13 +153,46 @@ export const CommentCard = ({
                     >
                       Reply
                     </Text>
-                  </View>
+                  </Pressable>
                 )}
               </View>
             </View>
           </View>
         </View>
       </View>
-    </Pressable>
+
+      {replies !== undefined && replies.length > 0 && (
+        <View className="flex-1 flex-col bg-black pb-2 pl-6 pr-4">
+          {replies.map((reply) => (
+            <View className="py-2">
+              <CommentCard key={reply.id} {...reply} isChildComment={true} />
+              <Divider />
+            </View>
+          ))}
+
+          {replies !== undefined &&
+            replies.length === 3 &&
+            repliesCount - 3 > 0 && (
+              <Pressable className="flex-row pl-6" onPress={onPressReply}>
+                <Text
+                  className="font-bold text-gray-600 dark:text-gray-300"
+                  variant="sm"
+                >{`View ${stringUtils.formatSingularPlural(
+                  'more reply',
+                  'more replies',
+                  'more reply',
+                  repliesCount - 3
+                )}`}</Text>
+
+                <Ionicons
+                  name="chevron-forward-outline"
+                  size={20}
+                  className={iconColor}
+                />
+              </Pressable>
+            )}
+        </View>
+      )}
+    </View>
   );
 };
