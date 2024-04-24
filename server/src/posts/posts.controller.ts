@@ -159,7 +159,7 @@ export class PostsController {
     return await this.commentsService.findComments(+postId, parsedDto);
   }
 
-  @Get(':postId/comments/:commentId')
+  @Get(':postId/comments/:commentId/replies')
   @UseGuards(OptionalJwtAuthGuard)
   async findChildComments(
     @Param('postId') postId: string,

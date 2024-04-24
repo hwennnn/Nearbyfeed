@@ -20,13 +20,14 @@ type CommentsResponse = {
   comments: Comment[];
   hasMore: boolean;
 };
-type InfiniteComments = {
+export type InfiniteComments = {
   pages: CommentsResponse[];
   pageParams: unknown[];
 };
 type Context = {
   previousComments?: InfiniteComments;
   newComment: Variables;
+  previousComment?: Comment;
 };
 
 export const useVoteComment = createMutation<
@@ -49,21 +50,22 @@ export const useVoteComment = createMutation<
       }),
   // When mutate is called:
   onMutate: async (newComment) => {
-    const queryKey = retrieveUseCommentsKey(
+    // 1. Handle the infinite comments
+    const commentsQueryKey = retrieveUseCommentsKey(
       +newComment.postId,
       useCommentKeys.getState().commentsQueryKey.sort
     );
 
     // Cancel any outgoing refetches
     // (so they don't overwrite our optimistic update)
-    await queryClient.cancelQueries({ queryKey });
+    await queryClient.cancelQueries({ queryKey: commentsQueryKey });
 
     // Snapshot the previous value
     const previousComments =
-      queryClient.getQueryData<InfiniteComments>(queryKey);
+      queryClient.getQueryData<InfiniteComments>(commentsQueryKey);
 
     // Update the cache optimistically by modifying the points value on the existing list
-    queryClient.setQueryData<InfiniteComments>(queryKey, (oldData) => {
+    queryClient.setQueryData<InfiniteComments>(commentsQueryKey, (oldData) => {
       if (oldData) {
         return {
           pageParams: oldData.pageParams,
@@ -92,29 +94,64 @@ export const useVoteComment = createMutation<
       return oldData;
     });
 
+    // 2. Handle the single comment query
+    const commentQueryKey = [
+      'posts',
+      { postId: +newComment.postId, commentId: +newComment.commentId },
+    ];
+
+    // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
+    await queryClient.cancelQueries({ queryKey: commentQueryKey });
+
+    // Snapshot the previous value
+    const previousComment = queryClient.getQueryData<Comment>(commentQueryKey);
+
+    queryClient.setQueryData<Comment>(commentQueryKey, (oldData) => {
+      if (oldData) {
+        const newOptimisticComment = retrieveNewOptimisticComment(
+          oldData,
+          newComment.value
+        );
+
+        return { ...newOptimisticComment };
+      }
+
+      return oldData;
+    });
+
     // Return a context with the previous and new todo
-    return { previousComments, newComment };
+    return { previousComments, newComment, previousComment };
   },
   // If the mutation fails, use the context we returned above
   onError: (_err, newComment, context) => {
-    const queryKey = retrieveUseCommentsKey(
+    const commentsQueryKey = retrieveUseCommentsKey(
       +newComment.postId,
       useCommentKeys.getState().commentsQueryKey.sort
     );
 
     queryClient.setQueryData<InfiniteComments>(
-      queryKey,
+      commentsQueryKey,
       context?.previousComments
+    );
+
+    const commentQueryKey = [
+      'posts',
+      { postId: +newComment.postId, commentId: +newComment.commentId },
+    ];
+
+    queryClient.setQueryData<Comment>(
+      commentQueryKey,
+      context?.previousComment
     );
   },
   // Update the cache after success:
   onSuccess: (data, newComment) => {
-    const queryKey = retrieveUseCommentsKey(
+    const commentsQueryKey = retrieveUseCommentsKey(
       +newComment.postId,
       useCommentKeys.getState().commentsQueryKey.sort
     );
 
-    queryClient.setQueryData<InfiniteComments>(queryKey, (oldData) => {
+    queryClient.setQueryData<InfiniteComments>(commentsQueryKey, (oldData) => {
       if (oldData) {
         return {
           pageParams: oldData.pageParams,
@@ -137,6 +174,23 @@ export const useVoteComment = createMutation<
           }),
         };
       }
+      return oldData;
+    });
+
+    const commentQueryKey = [
+      'posts',
+      { postId: +newComment.postId, commentId: +newComment.commentId },
+    ];
+
+    queryClient.setQueryData<Comment>(commentQueryKey, (oldData) => {
+      if (oldData) {
+        return {
+          author: oldData.author,
+          ...data.comment,
+          like: data.like,
+        };
+      }
+
       return oldData;
     });
   },
@@ -185,7 +239,7 @@ const retrieveNewOptimisticComment = (
   };
 };
 
-const retrieveUseCommentsKey = (
+export const retrieveUseCommentsKey = (
   postId: number,
   commentsSort: CommentsSort
 ): any => {

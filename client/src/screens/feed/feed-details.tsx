@@ -110,7 +110,7 @@ export const FeedDetails = () => {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        <View className="flex-1 space-y-3 bg-charcoal-900 pt-2">
+        <View className="flex-1 space-y-3 bg-charcoal-900 pt-4">
           <View className="flex-row items-center space-x-2 px-4">
             <View className="h-[36px] w-[36px] items-center justify-center rounded-full bg-gray-100 dark:bg-gray-600">
               {author?.image === null && (

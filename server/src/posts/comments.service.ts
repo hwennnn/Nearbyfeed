@@ -60,94 +60,35 @@ export class CommentsService {
       parentCommentId,
     };
 
-    const [resultComment] = await this.prismaService
-      .$transaction([
-        this.prismaService.comment.create({
-          data,
-          include: {
-            author: true,
+    const transactionItems: any = [
+      this.prismaService.comment.create({
+        data,
+        include: {
+          author: true,
+        },
+      }),
+      this.prismaService.post.update({
+        where: { id: postId },
+        data: {
+          commentsCount: {
+            increment: 1,
           },
-        }),
-        this.prismaService.post.update({
-          where: { id: postId },
-          data: {
-            commentsCount: {
-              increment: 1,
+        },
+      }),
+      parentCommentId !== undefined
+        ? this.prismaService.comment.update({
+            where: { id: parentCommentId },
+            data: {
+              repliesCount: {
+                increment: 1,
+              },
             },
-          },
-        }),
-      ])
-      .catch((e) => {
-        this.logger.error(
-          'Failed to create comment',
-          e instanceof Error ? e.stack : undefined,
-          CommentsService.name,
-        );
-
-        throw new BadRequestException('Failed to create comment');
-      });
-
-    return resultComment;
-  }
-
-  async replyComment(
-    createCommentDto: CreateCommentDto,
-    postId: number,
-    authorId: number,
-    parentCommentId?: number,
-  ): Promise<CommentWithLike> {
-    if (parentCommentId !== undefined) {
-      const parentComment = await this.prismaService.comment
-        .findUnique({
-          where: {
-            id: parentCommentId,
-          },
-        })
-        .catch((e) => {
-          this.logger.error(
-            'Failed to find parent comment',
-            e instanceof Error ? e.stack : undefined,
-            CommentsService.name,
-          );
-          throw new BadRequestException('Failed to find parent comment');
-        });
-
-      if (parentComment?.parentCommentId !== null) {
-        this.logger.error(
-          'Only one level of comments is allowed',
-          undefined,
-          CommentsService.name,
-        );
-
-        throw new BadRequestException('Only one level of comments is allowed');
-      }
-    }
-
-    const data = {
-      ...createCommentDto,
-      postId,
-      authorId,
-      content: this.filterService.filterText(createCommentDto.content),
-      parentCommentId,
-    };
+          })
+        : null,
+    ].filter((item) => item !== null);
 
     const [resultComment] = await this.prismaService
-      .$transaction([
-        this.prismaService.comment.create({
-          data,
-          include: {
-            author: true,
-          },
-        }),
-        this.prismaService.post.update({
-          where: { id: postId },
-          data: {
-            commentsCount: {
-              increment: 1,
-            },
-          },
-        }),
-      ])
+      .$transaction(transactionItems)
       .catch((e) => {
         this.logger.error(
           'Failed to create comment',
@@ -274,6 +215,7 @@ export class CommentsService {
         where: {
           postId,
           isDeleted: false,
+          parentCommentId: null,
         },
         cursor,
         take: limit + 1,
@@ -412,7 +354,10 @@ export class CommentsService {
     const parsedComments = comments.map((comment) => {
       const p = {
         ...comment,
-        like: comment.likes.length > 0 ? comment.likes[0] : undefined,
+        like:
+          comment.likes !== undefined && comment.likes.length > 0
+            ? comment.likes[0]
+            : undefined,
       };
 
       const { likes: _, ...parsedComment } = p;

@@ -9,6 +9,7 @@ export type RootStackParamList = {
   Onboarding: undefined;
   AddFeed: undefined;
   FeedDetails: { postId: number };
+  CommentDetails: { commentId: number; postId: number; repliesCount: number };
 };
 
 // very important to type check useNavigation hook

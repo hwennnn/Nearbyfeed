@@ -1,4 +1,5 @@
 import { useActionSheet } from '@expo/react-native-action-sheet';
+import { useNavigation } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import React, { useCallback, useEffect } from 'react';
 import { ActivityIndicator } from 'react-native';
@@ -7,6 +8,7 @@ import { type Comment } from '@/api';
 import { useComments } from '@/api/posts/use-comments';
 import type { CommentsSort } from '@/core/comments';
 import { setCommentsQueryKey, useCommentKeys } from '@/core/comments';
+import type { RootNavigatorProp } from '@/navigation';
 import { CommentCard } from '@/screens/feed/comment-card';
 import { Pressable, Text, View } from '@/ui';
 import Divider from '@/ui/core/divider';
@@ -16,6 +18,8 @@ type Props = { postId: number; onRefetchDone: () => void; refreshing: boolean };
 
 export const CommentList = ({ postId, refreshing, onRefetchDone }: Props) => {
   const sort = useCommentKeys().commentsQueryKey!.sort;
+
+  const { navigate } = useNavigation<RootNavigatorProp>();
 
   const { showActionSheetWithOptions } = useActionSheet();
 
@@ -42,8 +46,22 @@ export const CommentList = ({ postId, refreshing, onRefetchDone }: Props) => {
   }, [onRefetch]);
 
   const renderItem = React.useCallback(
-    ({ item }: { item: Comment }) => <CommentCard {...item} />,
-    []
+    ({ item }: { item: Comment }) => {
+      return (
+        <CommentCard
+          {...item}
+          onPressCard={() =>
+            navigate('CommentDetails', {
+              commentId: item.id,
+              postId: postId,
+              repliesCount: item.repliesCount,
+            })
+          }
+        />
+      );
+    },
+
+    [navigate, postId]
   );
 
   if (isLoading) {
