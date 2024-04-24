@@ -19,7 +19,6 @@ export const useComments = createInfiniteQuery<Response, Variables, AxiosError>(
   async ({ queryKey: [primaryKey, variables], pageParam }) => {
     // in case if variables is needed, we can use destructuring to get it from queryKey array like this: ({ queryKey: [primaryKey, variables] })
     // primaryKey is 'posts' in this case
-
     const cursor = pageParam !== undefined ? pageParam.toString() : pageParam;
 
     const response = await client

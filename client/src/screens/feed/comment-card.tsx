@@ -6,6 +6,7 @@ import { useVoteComment } from '@/api/posts/use-vote-comment';
 import { Image, Pressable, Text, TimeWidget, View } from '@/ui';
 import { Ionicons } from '@/ui/icons/ionicons';
 import { getInitials } from '@/utils/get-initials';
+import { stringUtils } from '@/utils/string-utils';
 
 type Props = Comment;
 
@@ -77,27 +78,32 @@ export const CommentCard = ({
             <Text variant="sm">{`${content}`}</Text>
 
             <View className="flex-row items-center space-x-5">
-              <View className="flex-row items-center space-x-1">
-                <Pressable onPress={() => handleVote(isLiked ? 0 : 1)}>
+              <Pressable onPress={() => handleVote(isLiked ? 0 : 1)}>
+                <View className="min-w-[58px] flex-row items-center space-x-1">
                   <Ionicons
-                    name={isLiked ? 'heart' : 'heart-outline'}
+                    name="thumbs-up"
                     size={16}
                     className={isLiked ? 'text-primary-400' : iconColor}
                   />
-                </Pressable>
 
-                <Text
-                  className={`font-semibold
+                  <Text
+                    className={`font-semibold
                   ${
                     isLiked
                       ? 'text-primary-400'
                       : 'text-gray-600 dark:text-gray-300'
                   }`}
-                  variant="sm"
-                >
-                  {points}
-                </Text>
-              </View>
+                    variant="sm"
+                  >
+                    {stringUtils.formatSingularPlural(
+                      'Like',
+                      'Likes',
+                      'Like',
+                      points
+                    )}
+                  </Text>
+                </View>
+              </Pressable>
 
               <View className="flex-row items-center space-x-1">
                 <Ionicons

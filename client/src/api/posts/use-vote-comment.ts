@@ -2,6 +2,7 @@ import type { AxiosError } from 'axios';
 import { createMutation } from 'react-query-kit';
 
 import type { Comment, CommentLike } from '@/api/types';
+import type { CommentsSort } from '@/core/comments';
 import { useCommentKeys } from '@/core/comments';
 
 import { client, queryClient } from '../common';
@@ -48,7 +49,10 @@ export const useVoteComment = createMutation<
       }),
   // When mutate is called:
   onMutate: async (newComment) => {
-    const queryKey = ['comments', useCommentKeys.getState().commentsQueryKey];
+    const queryKey = retrieveUseCommentsKey(
+      +newComment.postId,
+      useCommentKeys.getState().commentsQueryKey.sort
+    );
 
     // Cancel any outgoing refetches
     // (so they don't overwrite our optimistic update)
@@ -65,7 +69,7 @@ export const useVoteComment = createMutation<
           pageParams: oldData.pageParams,
           pages: oldData.pages.map((page) => {
             const foundIndex = page.comments.findIndex(
-              (comment) => comment.id.toString() === newComment.postId
+              (comment) => comment.id.toString() === newComment.commentId
             );
 
             if (foundIndex !== -1) {
@@ -74,6 +78,7 @@ export const useVoteComment = createMutation<
                 updatedComments[foundIndex],
                 newComment.value
               );
+
               updatedComments[foundIndex] = {
                 ...newOptimisticComment,
               };
@@ -91,8 +96,11 @@ export const useVoteComment = createMutation<
     return { previousComments, newComment };
   },
   // If the mutation fails, use the context we returned above
-  onError: (_err, _newComment, context) => {
-    const queryKey = ['comments', useCommentKeys.getState().commentsQueryKey];
+  onError: (_err, newComment, context) => {
+    const queryKey = retrieveUseCommentsKey(
+      +newComment.postId,
+      useCommentKeys.getState().commentsQueryKey.sort
+    );
 
     queryClient.setQueryData<InfiniteComments>(
       queryKey,
@@ -101,7 +109,10 @@ export const useVoteComment = createMutation<
   },
   // Update the cache after success:
   onSuccess: (data, newComment) => {
-    const queryKey = ['comments', useCommentKeys.getState().commentsQueryKey];
+    const queryKey = retrieveUseCommentsKey(
+      +newComment.postId,
+      useCommentKeys.getState().commentsQueryKey.sort
+    );
 
     queryClient.setQueryData<InfiniteComments>(queryKey, (oldData) => {
       if (oldData) {
@@ -109,7 +120,7 @@ export const useVoteComment = createMutation<
           pageParams: oldData.pageParams,
           pages: oldData.pages.map((page) => {
             const foundIndex = page.comments.findIndex(
-              (comment) => comment.id.toString() === newComment.postId
+              (comment) => comment.id.toString() === newComment.commentId
             );
 
             if (foundIndex !== -1) {
@@ -172,4 +183,17 @@ const retrieveNewOptimisticComment = (
             userId: -1,
           },
   };
+};
+
+const retrieveUseCommentsKey = (
+  postId: number,
+  commentsSort: CommentsSort
+): any => {
+  return [
+    'comments',
+    {
+      postId,
+      sort: commentsSort.toString(),
+    },
+  ];
 };

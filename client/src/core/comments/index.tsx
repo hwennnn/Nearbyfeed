@@ -9,7 +9,7 @@ interface CommentsQueryKey {
 }
 
 interface CommentsKeyState {
-  commentsQueryKey: CommentsQueryKey | null;
+  commentsQueryKey: CommentsQueryKey;
   setCommentsQueryKey: (data: CommentsQueryKey) => void;
 }
 

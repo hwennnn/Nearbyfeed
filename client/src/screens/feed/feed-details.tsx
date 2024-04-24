@@ -184,27 +184,27 @@ export const FeedDetails = () => {
           )}
 
           <View className="flex-row justify-between px-10 py-4">
-            <View className="flex-row items-center space-x-1">
-              <Pressable onPress={() => handleVote(isLiked ? 0 : 1)}>
+            <Pressable onPress={() => handleVote(isLiked ? 0 : 1)}>
+              <View className="flex-row items-center space-x-1">
                 <Ionicons
                   name={isLiked ? 'heart' : 'heart-outline'}
                   size={18}
                   className={isLiked ? 'text-primary-400' : iconColor}
                 />
-              </Pressable>
 
-              <Text
-                className={`font-semibold
-                  ${
-                    isLiked
-                      ? 'text-primary-400'
-                      : 'text-gray-600 dark:text-gray-300'
-                  }`}
-                variant="sm"
-              >
-                {points}
-              </Text>
-            </View>
+                <Text
+                  className={`min-w-[28px] font-semibold
+                ${
+                  isLiked
+                    ? 'text-primary-400'
+                    : 'text-gray-600 dark:text-gray-300'
+                }`}
+                  variant="sm"
+                >
+                  {points > 0 ? points : 'Like'}
+                </Text>
+              </View>
+            </Pressable>
 
             <View className="flex-row items-center space-x-1">
               <Ionicons
