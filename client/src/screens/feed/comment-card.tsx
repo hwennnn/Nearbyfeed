@@ -19,7 +19,6 @@ export const CommentCard = ({
   isOptimistic,
   postId,
   id,
-  repliesCount,
 }: Props) => {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
@@ -77,12 +76,12 @@ export const CommentCard = ({
 
             <Text variant="sm">{`${content}`}</Text>
 
-            <View className="flex-row items-center space-x-5">
+            <View className="flex-row items-center space-x-4">
               <Pressable onPress={() => handleVote(isLiked ? 0 : 1)}>
                 <View className="min-w-[58px] flex-row items-center space-x-1">
                   <Ionicons
                     name="thumbs-up"
-                    size={16}
+                    size={12}
                     className={isLiked ? 'text-primary-400' : iconColor}
                   />
 
@@ -93,7 +92,7 @@ export const CommentCard = ({
                       ? 'text-primary-400'
                       : 'text-gray-600 dark:text-gray-300'
                   }`}
-                    variant="sm"
+                    variant="xs"
                   >
                     {stringUtils.formatSingularPlural(
                       'Like',
@@ -108,15 +107,15 @@ export const CommentCard = ({
               <View className="flex-row items-center space-x-1">
                 <Ionicons
                   name="chatbox-outline"
-                  size={16}
+                  size={12}
                   className={iconColor}
                 />
 
                 <Text
                   className="font-semibold text-gray-600 dark:text-gray-300"
-                  variant="sm"
+                  variant="xs"
                 >
-                  {repliesCount}
+                  Reply
                 </Text>
               </View>
             </View>
