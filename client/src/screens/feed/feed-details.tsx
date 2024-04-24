@@ -142,7 +142,7 @@ export const FeedDetails = () => {
                 />
               </View>
 
-              <Text className="text-gray-600 dark:text-gray-300" variant="sm">
+              <Text className="text-gray-600 dark:text-gray-300" variant="xs">
                 {locationName}
               </Text>
             </View>
@@ -165,7 +165,7 @@ export const FeedDetails = () => {
                 className="mt-1"
               >
                 <Image
-                  className="h-56 w-full object-cover"
+                  className="h-64 w-full object-cover"
                   source={{
                     uri: image,
                   }}

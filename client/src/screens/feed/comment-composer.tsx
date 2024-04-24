@@ -14,7 +14,7 @@ export class CreateCommentDto {
   @IsString()
   @MinLength(2)
   @MaxLength(1000)
-  @Transform(({ value }) => value?.trim())
+  @Transform(({ value }: { value: string }) => value.trim())
   content: string;
 }
 
@@ -25,12 +25,15 @@ type Props = { postId: number };
 export const CommentComposer = ({ postId }: Props) => {
   const { control, handleSubmit, reset, formState } = useForm<CreateCommentDto>(
     {
+      defaultValues: {
+        content: '',
+      },
       reValidateMode: 'onChange',
       resolver,
     }
   );
 
-  const isFormValid = formState.isValid && formState.isDirty;
+  const isFormValid = formState.isValid;
 
   const { mutate: addComment, isLoading: isCreateCommentLoading } =
     useAddComment();
@@ -38,6 +41,7 @@ export const CommentComposer = ({ postId }: Props) => {
   const onSubmitComment = (dto: CreateCommentDto) => {
     reset();
 
+    dto.content = dto.content.trim();
     const sort = useCommentKeys.getState().commentsQueryKey!.sort;
 
     addComment(
