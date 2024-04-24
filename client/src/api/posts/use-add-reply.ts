@@ -48,9 +48,11 @@ export const useAddReply = createMutation<
       'comments',
       {
         postId: newComment.postId,
-        commmentId: newComment.commentId,
+        commentId: newComment.commentId,
       },
     ];
+
+    console.log(queryKey);
 
     // Cancel any outgoing refetches
     // (so they don't overwrite our optimistic update)
@@ -73,6 +75,7 @@ export const useAddReply = createMutation<
       parentCommentId: newComment.commentId,
       points: 0,
       repliesCount: 0,
+      replies: [],
     };
 
     // Update the cache optimistically by adding the new Comment to the existing list
@@ -100,7 +103,7 @@ export const useAddReply = createMutation<
       'comments',
       {
         postId: newComment.postId,
-        commmentId: newComment.commentId,
+        commentId: newComment.commentId,
       },
     ];
 
@@ -114,7 +117,7 @@ export const useAddReply = createMutation<
       'comments',
       {
         postId: variables.postId,
-        commmentId: variables.commentId,
+        commentId: variables.commentId,
       },
     ];
     const optimisticCommentId = context?.optimisticCommentId;

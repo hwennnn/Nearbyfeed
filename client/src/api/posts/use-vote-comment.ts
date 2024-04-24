@@ -192,9 +192,10 @@ export const useVoteComment = createMutation<
             if (foundIndex !== -1) {
               const updatedComments = [...page.comments];
               updatedComments[foundIndex] = {
-                author: updatedComments[foundIndex].author,
+                ...updatedComments[foundIndex],
                 ...data.comment,
                 like: data.like,
+                author: updatedComments[foundIndex].author,
               };
               return { ...page, comments: updatedComments };
             }

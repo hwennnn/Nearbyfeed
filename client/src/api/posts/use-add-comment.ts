@@ -73,6 +73,7 @@ export const useAddComment = createMutation<
       parentCommentId: null,
       points: 0,
       repliesCount: 0,
+      replies: [],
     };
 
     // Update the cache optimistically by adding the new Comment to the existing list

@@ -3,11 +3,10 @@ import { Transform } from 'class-transformer';
 import { IsString, MaxLength, MinLength } from 'class-validator';
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { showMessage } from 'react-native-flash-message';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import { useAddReply } from '@/api/posts/use-add-reply';
-import { ControlledInput, Pressable, showErrorMessage, View } from '@/ui';
+import { ControlledInput, Pressable, View } from '@/ui';
 
 export class CreateCommentDto {
   @IsString()
@@ -43,18 +42,19 @@ export const ReplyComposer = ({ postId, commentId }: Props) => {
     dto.content = dto.content.trim();
 
     addComment(
-      { ...dto, postId, commentId },
-      {
-        onSuccess: () => {
-          showMessage({
-            message: 'Reply added successfully',
-            type: 'success',
-          });
-        },
-        onError: () => {
-          showErrorMessage('Error adding reply');
-        },
-      }
+      { ...dto, postId, commentId }
+      // TODO: Flash message is underneath the modal
+      // {
+      //   onSuccess: () => {
+      //     showMessage({
+      //       message: 'Reply added successfully',
+      //       type: 'success',
+      //     });
+      //   },
+      //   onError: () => {
+      //     showErrorMessage('Error adding reply');
+      //   },
+      // }
     );
   };
 

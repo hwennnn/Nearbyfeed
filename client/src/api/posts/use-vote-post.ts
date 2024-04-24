@@ -141,8 +141,9 @@ export const useVotePost = createMutation<
             if (foundIndex !== -1) {
               const updatedPosts = [...page.posts];
               updatedPosts[foundIndex] = {
-                author: updatedPosts[foundIndex].author,
+                ...updatedPosts[foundIndex],
                 ...data.post,
+                author: updatedPosts[foundIndex].author,
                 like: data.like,
               };
               return { ...page, posts: updatedPosts };
