@@ -99,6 +99,7 @@ export const CommentList = ({ postId, refreshing, onRefetchDone }: Props) => {
         options,
         cancelButtonIndex,
         title: 'View Comments Sort',
+        destructiveButtonIndex: values.findIndex((value) => value === sort),
       },
       (selectedIndex: number | undefined) => {
         switch (selectedIndex) {

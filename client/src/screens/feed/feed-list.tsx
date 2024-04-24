@@ -58,6 +58,7 @@ const LocationHeader = ({
         options,
         cancelButtonIndex,
         title: 'Select Distance Range',
+        destructiveButtonIndex: values.findIndex((value) => value === distance),
       },
       (selectedIndex: number | undefined) => {
         switch (selectedIndex) {
