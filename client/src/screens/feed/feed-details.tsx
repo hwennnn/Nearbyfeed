@@ -6,7 +6,7 @@ import * as React from 'react';
 import { RefreshControl } from 'react-native';
 
 import type { InfinitePosts } from '@/api';
-import { usePost } from '@/api';
+import { usePost, useVotePost } from '@/api';
 import { usePostKeys } from '@/core/posts';
 import type { RootStackParamList } from '@/navigation';
 import { CommentComposer } from '@/screens/feed/comment-composer';
@@ -14,6 +14,7 @@ import { CommentList } from '@/screens/feed/comment-list';
 import {
   Image,
   NoData,
+  Pressable,
   ScrollView,
   Text,
   TimeWidget,
@@ -36,7 +37,6 @@ export const FeedDetails = () => {
     variables: {
       id: postId,
     },
-
     initialData: () => {
       // Populate initial data from the cache
       const queryKey = ['posts', usePostKeys.getState().postsQueryKey];
@@ -53,6 +53,8 @@ export const FeedDetails = () => {
       return undefined;
     },
   });
+
+  const { mutate } = useVotePost();
 
   const [imageModalVisible, setImageModalVisible] = React.useState(false);
 
@@ -90,6 +92,15 @@ export const FeedDetails = () => {
   } = post;
 
   const isLiked = like !== undefined && like.value === 1;
+
+  const handleVote = (voteValue: number) => {
+    let value = voteValue === like?.value ? 0 : voteValue;
+
+    mutate({
+      value: value,
+      postId: id.toString(),
+    });
+  };
 
   return (
     <View className="flex-1">
@@ -174,11 +185,13 @@ export const FeedDetails = () => {
 
           <View className="flex-row justify-between px-10 py-4">
             <View className="flex-row items-center space-x-1">
-              <Ionicons
-                name={isLiked ? 'heart' : 'heart-outline'}
-                size={18}
-                className={isLiked ? 'text-primary-400' : iconColor}
-              />
+              <Pressable onPress={() => handleVote(isLiked ? 0 : 1)}>
+                <Ionicons
+                  name={isLiked ? 'heart' : 'heart-outline'}
+                  size={18}
+                  className={isLiked ? 'text-primary-400' : iconColor}
+                />
+              </Pressable>
 
               <Text
                 className={`font-semibold

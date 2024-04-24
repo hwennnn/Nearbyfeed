@@ -25,6 +25,7 @@ type InfinitePosts = {
 type Context = {
   previousPosts?: InfinitePosts;
   newPost: Variables;
+  previousPost?: Post;
 };
 
 export const useVotePost = createMutation<
@@ -47,17 +48,18 @@ export const useVotePost = createMutation<
       }),
   // When mutate is called:
   onMutate: async (newPost) => {
-    const queryKey = ['posts', usePostKeys.getState().postsQueryKey];
+    // 1. Handle the infinite posts
+    const postsQueryKey = ['posts', usePostKeys.getState().postsQueryKey];
 
-    // Cancel any outgoing refetches
-    // (so they don't overwrite our optimistic update)
-    await queryClient.cancelQueries({ queryKey });
+    // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
+    await queryClient.cancelQueries({ queryKey: postsQueryKey });
 
     // Snapshot the previous value
-    const previousPosts = queryClient.getQueryData<InfinitePosts>(queryKey);
+    const previousPosts =
+      queryClient.getQueryData<InfinitePosts>(postsQueryKey);
 
     // Update the cache optimistically by modifying the points value on the existing list
-    queryClient.setQueryData<InfinitePosts>(queryKey, (oldData) => {
+    queryClient.setQueryData<InfinitePosts>(postsQueryKey, (oldData) => {
       if (oldData) {
         return {
           pageParams: oldData.pageParams,
@@ -85,14 +87,43 @@ export const useVotePost = createMutation<
       return oldData;
     });
 
+    // 2. Handle the single post query
+    const postQueryKey = ['posts', { id: +newPost.postId }];
+
+    // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
+    await queryClient.cancelQueries({ queryKey: postQueryKey });
+
+    // Snapshot the previous value
+    const previousPost = queryClient.getQueryData<Post>(postQueryKey);
+
+    queryClient.setQueryData<Post>(postQueryKey, (oldData) => {
+      if (oldData) {
+        const newOptimisticPost = retrieveNewOptimisticPost(
+          oldData,
+          newPost.value
+        );
+
+        return { ...newOptimisticPost };
+      }
+
+      return oldData;
+    });
+
     // Return a context with the previous and new todo
-    return { previousPosts, newPost };
+    return { previousPosts, newPost, previousPost };
   },
   // If the mutation fails, use the context we returned above
-  onError: (_err, _newPost, context) => {
-    const queryKey = ['posts', usePostKeys.getState().postsQueryKey];
+  onError: (_err, newPost, context) => {
+    const postsQueryKey = ['posts', usePostKeys.getState().postsQueryKey];
 
-    queryClient.setQueryData<InfinitePosts>(queryKey, context?.previousPosts);
+    queryClient.setQueryData<InfinitePosts>(
+      postsQueryKey,
+      context?.previousPosts
+    );
+
+    const postQueryKey = ['posts', { id: +newPost.postId }];
+
+    queryClient.setQueryData<Post>(postQueryKey, context?.previousPost);
   },
   // Update the cache after success:
   onSuccess: (data, newPost) => {
@@ -121,6 +152,20 @@ export const useVotePost = createMutation<
           }),
         };
       }
+      return oldData;
+    });
+
+    const postQueryKey = ['posts', { id: +newPost.postId }];
+
+    queryClient.setQueryData<Post>(postQueryKey, (oldData) => {
+      if (oldData) {
+        return {
+          author: oldData.author,
+          ...data.post,
+          like: data.like,
+        };
+      }
+
       return oldData;
     });
   },
