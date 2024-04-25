@@ -28,6 +28,7 @@ export class UsersController {
   ) {}
 
   @Get('self')
+  @UseGuards(JwtAuthGuard)
   async getSelf(
     @GetUser('userId') userId: string,
   ): Promise<UserWithoutPassword> {

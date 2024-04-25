@@ -1,7 +1,7 @@
 import { Env } from '@env';
 import axios from 'axios';
 
-import { signOut } from '@/core';
+import { signOut } from '@/core/auth';
 import {
   checkAndClearExpiredToken,
   getAccessToken,
@@ -9,6 +9,7 @@ import {
   isRefreshingTokenRequired,
   setAccessToken,
 } from '@/core/auth/utils';
+import { resetUser } from '@/core/user';
 
 const client = axios.create({
   baseURL: Env.API_URL,
@@ -66,6 +67,7 @@ client.interceptors.response.use(
   async (error) => {
     if (error.response?.status === 401) {
       signOut();
+      resetUser();
       console.log('res error : Session expired.');
       // could be showing popup alert -> your session has expired, please login to continue.
       const errorMessage =

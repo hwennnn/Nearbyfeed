@@ -61,7 +61,10 @@ export const CommentCard = ({
   };
 
   const onPressReply = (shouldNavigate?: boolean) => {
-    if (isChildComment !== true || shouldNavigate === true) {
+    if (
+      (isChildComment !== true || shouldNavigate === true) &&
+      isOptimistic !== true
+    ) {
       navigate('CommentDetails', {
         commentId: id,
         postId: postId,

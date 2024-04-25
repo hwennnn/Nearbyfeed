@@ -1,8 +1,10 @@
 import type { AxiosError } from 'axios';
 import { createMutation } from 'react-query-kit';
 
+import { useUser } from '@/core/user';
+
 import { client, queryClient } from '../common';
-import type { Comment } from '../types';
+import type { Comment, User } from '../types';
 
 type Variables = {
   content: string;
@@ -61,6 +63,8 @@ export const useAddComment = createMutation<
       queryClient.getQueryData<InfiniteComments>(queryKey);
 
     const optimisticCommentId = new Date().getTime();
+    const currentUser = useUser.getState().user as User;
+
     const optimisticComment: Comment = {
       id: optimisticCommentId,
       content: newComment.content,
@@ -68,12 +72,13 @@ export const useAddComment = createMutation<
       updatedAt: new Date(),
       isDeleted: false,
       postId: newComment.postId,
-      authorId: 1,
       isOptimistic: true,
       parentCommentId: null,
       points: 0,
       repliesCount: 0,
       replies: [],
+      author: currentUser,
+      authorId: currentUser.id,
     };
 
     // Update the cache optimistically by adding the new Comment to the existing list

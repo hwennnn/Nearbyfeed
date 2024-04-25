@@ -1,14 +1,14 @@
 import { create } from 'zustand';
 
-import type { TokenType } from '@/core/auth/utils';
+import type { AuthToken } from '@/core/auth/utils';
 import { getTokens, removeTokens, setTokens } from '@/core/auth/utils';
 
 import { createSelectors } from '../utils';
 
 interface AuthState {
-  token: TokenType | null;
+  token: AuthToken | null;
   status: 'idle' | 'signOut' | 'signIn';
-  signIn: (data: TokenType) => void;
+  signIn: (data: AuthToken) => void;
   signOut: () => void;
   hydrate: () => void;
 }
@@ -24,7 +24,7 @@ const _useAuth = create<AuthState>((set, get) => ({
     removeTokens();
     set({ status: 'signOut', token: null });
   },
-  hydrate: () => {
+  hydrate: async () => {
     try {
       const userToken = getTokens();
       if (userToken !== null) {
@@ -43,5 +43,5 @@ const _useAuth = create<AuthState>((set, get) => ({
 export const useAuth = createSelectors(_useAuth);
 
 export const signOut = () => _useAuth.getState().signOut();
-export const signIn = (token: TokenType) => _useAuth.getState().signIn(token);
+export const signIn = (token: AuthToken) => _useAuth.getState().signIn(token);
 export const hydrateAuth = () => _useAuth.getState().hydrate();

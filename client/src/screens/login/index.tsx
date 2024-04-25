@@ -4,6 +4,7 @@ import React from 'react';
 
 import { useLogin } from '@/api/auth';
 import { useAuth } from '@/core';
+import { setUser } from '@/core/user';
 import type { AuthStackParamList } from '@/navigation/auth-navigator';
 import { Layout } from '@/ui/core/layout';
 
@@ -21,13 +22,15 @@ export const Login = () => {
   const signIn = useAuth.use.signIn();
 
   const onSubmit: LoginFormProps['onSubmit'] = async (data) => {
-    const token = await mutateLogin(data);
+    const result = await mutateLogin(data);
+    const tokens = result.tokens;
 
-    signIn({ access: token.accessToken, refresh: token.refreshToken });
+    signIn(tokens);
+    setUser(result.user);
   };
 
   return (
-    <Layout>
+    <Layout className="flex-1">
       <LoginForm
         onSubmit={onSubmit}
         isLoading={isLoading}

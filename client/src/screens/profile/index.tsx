@@ -5,7 +5,8 @@ import * as React from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import { useSelf } from '@/api/users';
-import { useAuth } from '@/core';
+import { signOut } from '@/core';
+import { resetUser } from '@/core/user';
 import type { ProfileNavigatorProp } from '@/navigation/profile-navigator';
 import {
   ActivityIndicator,
@@ -27,7 +28,6 @@ import { LanguageItem } from './language-item';
 import { ThemeItem } from './theme-item';
 
 export const Profile = () => {
-  const signOut = useAuth.use.signOut();
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
   const iconColor = isDark ? colors.neutral[400] : colors.neutral[500];
@@ -51,6 +51,11 @@ export const Profile = () => {
       </Layout>
     );
   }
+
+  const signOutUser = (): void => {
+    signOut();
+    resetUser();
+  };
 
   return (
     <SafeAreaView className="flex-1 ">
@@ -137,7 +142,7 @@ export const Profile = () => {
 
         <View className="my-8">
           <ItemsContainer>
-            <Item text="settings.logout" onPress={signOut} />
+            <Item text="settings.logout" onPress={signOutUser} />
           </ItemsContainer>
         </View>
       </ScrollView>

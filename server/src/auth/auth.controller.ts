@@ -12,7 +12,7 @@ import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import { AuthDto, ForgotPasswordDto, ResetPasswordDto } from 'src/auth/dto';
-import { type AuthToken } from 'src/auth/entities';
+import { type LoginResult } from 'src/auth/entities';
 import JwtAuthGuard from 'src/auth/guards/jwt-auth.guard';
 import JwtRefreshGuard from 'src/auth/guards/jwt-refresh.guard';
 import { CreateUserDto } from 'src/users/dto';
@@ -36,10 +36,10 @@ export class AuthController {
   }
 
   @Post('login')
-  async login(@Body() authDto: AuthDto): Promise<AuthToken> {
-    const tokens = await this.authService.login(authDto);
+  async login(@Body() authDto: AuthDto): Promise<LoginResult> {
+    const result = await this.authService.login(authDto);
 
-    return tokens;
+    return result;
   }
 
   @Get('logout')

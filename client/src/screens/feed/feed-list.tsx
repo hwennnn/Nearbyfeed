@@ -157,7 +157,10 @@ export const FeedList = ({
     ({ item }: { item: Post }) => (
       <FeedCard
         {...item}
-        onPress={() => navigate('FeedDetails', { postId: item.id })}
+        onPress={() => {
+          if (item.isOptimistic === true) return;
+          navigate('FeedDetails', { postId: item.id });
+        }}
       />
     ),
     [navigate]

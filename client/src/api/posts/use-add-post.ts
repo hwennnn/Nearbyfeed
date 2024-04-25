@@ -3,9 +3,10 @@ import type * as ImagePicker from 'expo-image-picker';
 import { createMutation } from 'react-query-kit';
 
 import { usePostKeys } from '@/core/posts';
+import { useUser } from '@/core/user';
 
 import { client, queryClient } from '../common';
-import type { Post } from '../types';
+import type { Post, User } from '../types';
 
 type Variables = {
   title: string;
@@ -73,6 +74,7 @@ export const useAddPost = createMutation<
     // Snapshot the previous value
     const previousPosts = queryClient.getQueryData<InfinitePosts>(queryKey);
     const optimisticPostId = new Date().getTime();
+    const currentUser = useUser.getState().user as User;
 
     const optimisticPost: Post = {
       id: optimisticPostId,
@@ -83,6 +85,8 @@ export const useAddPost = createMutation<
       points: 0,
       isOptimistic: true,
       commentsCount: 0,
+      author: currentUser,
+      authorId: currentUser.id,
     };
 
     // Update the cache optimistically by adding the new post to the existing list

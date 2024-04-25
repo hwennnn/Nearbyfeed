@@ -7,7 +7,11 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { type AuthDto, type ResetPasswordDto } from 'src/auth/dto';
-import { type AuthToken, type TokenPayload } from 'src/auth/entities';
+import {
+  type AuthToken,
+  type LoginResult,
+  type TokenPayload,
+} from 'src/auth/entities';
 import { MailService } from 'src/mail/mail.service';
 import { RedisService } from 'src/redis/redis.service';
 import { type CreateUserDto } from 'src/users/dto';
@@ -60,7 +64,7 @@ export class AuthService {
     return pendingUser;
   }
 
-  async login(authDto: AuthDto): Promise<AuthToken> {
+  async login(authDto: AuthDto): Promise<LoginResult> {
     const user = await this.usersService.findOneByEmail(authDto.email);
     const hasPendingUser = await this.usersService.findPendingUsersWithEmail(
       authDto.email,
@@ -81,7 +85,10 @@ export class AuthService {
 
     const tokens = await this.getTokens(user.id.toString(), user.email);
 
-    return tokens;
+    return {
+      tokens,
+      user,
+    };
   }
 
   async logout(sessionId: string): Promise<void> {
