@@ -13,6 +13,8 @@ import { ChildCommentList } from '@/screens/feed/child-comment-list';
 import { CommentCard } from '@/screens/feed/comment-card';
 import { ReplyComposer } from '@/screens/feed/reply-composer';
 import { HeaderButton, NoData, ScrollView, View } from '@/ui';
+import Divider from '@/ui/core/divider';
+import { Layout } from '@/ui/core/layout';
 import { stringUtils } from '@/utils/string-utils';
 
 type Props = RouteProp<RootStackParamList, 'CommentDetails'>;
@@ -79,9 +81,13 @@ export const CommentsDetails = () => {
   }
 
   return (
-    <View className="flex-1 bg-black">
+    <Layout
+      className="flex-1 bg-black"
+      hasHorizontalPadding={false}
+      verticalPadding={108}
+    >
       <ScrollView
-        className="mb-24 flex-1"
+        className="flex-1"
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
@@ -100,11 +106,14 @@ export const CommentsDetails = () => {
             onRefetchDone={() => setRefreshing(false)}
           />
         </View>
+
+        <View className="h-[60px]" />
       </ScrollView>
 
-      <View className="absolute bottom-0 z-50 h-fit w-full bg-charcoal-900 px-4">
+      <View className="absolute bottom-0 z-50 h-fit w-full bg-charcoal-950">
+        <Divider />
         <ReplyComposer postId={postId} commentId={parentComment.id} />
       </View>
-    </View>
+    </Layout>
   );
 };

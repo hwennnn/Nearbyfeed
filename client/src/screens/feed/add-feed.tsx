@@ -106,44 +106,46 @@ export const AddFeed = () => {
   }, [handleSubmit, isLoading, navigation, onSubmit]);
 
   return (
-    <Layout className="flex-1 p-4">
-      <ControlledInput
-        name="title"
-        control={control}
-        placeholder="Title"
-        className="border-none text-[24px] font-bold dark:text-charcoal-100"
-      />
+    <Layout className="flex-1" hasHorizontalPadding={true}>
+      <View className="p-4">
+        <ControlledInput
+          name="title"
+          control={control}
+          placeholder="Title"
+          className="border-none text-[24px] font-bold dark:text-charcoal-100"
+        />
 
-      {image === null && (
-        <TouchableOpacity
-          onPress={pickImage}
-          className="my-4 h-[150px] w-[150px] items-center justify-center border-[1px] border-dotted border-charcoal-700 dark:border-white"
-        >
-          <Icon name="add" color={colors.primary[400]} size={48} />
-        </TouchableOpacity>
-      )}
-
-      {image !== null && (
-        <View className="my-4 h-[150px] w-[150px]">
-          <Image source={{ uri: image.uri }} className="h-full w-full" />
-
-          <Pressable
-            className="absolute top-2 right-2 rounded-full border bg-black"
-            onPress={() => setImage(null)}
+        {image === null && (
+          <TouchableOpacity
+            onPress={pickImage}
+            className="my-4 h-[150px] w-[150px] items-center justify-center border-[1px] border-dotted border-charcoal-700 dark:border-white"
           >
-            <Icon name="close" color="white" size={16} />
-          </Pressable>
-        </View>
-      )}
+            <Icon name="add" color={colors.primary[400]} size={48} />
+          </TouchableOpacity>
+        )}
 
-      <ControlledInput
-        name="content"
-        placeholder="Body Content (optional)"
-        // max of 6 lines
-        className="max-h-64 border-none text-[16px] dark:text-charcoal-100"
-        control={control}
-        multiline
-      />
+        {image !== null && (
+          <View className="my-4 h-[150px] w-[150px]">
+            <Image source={{ uri: image.uri }} className="h-full w-full" />
+
+            <Pressable
+              className="absolute top-2 right-2 rounded-full border bg-black"
+              onPress={() => setImage(null)}
+            >
+              <Icon name="close" color="white" size={16} />
+            </Pressable>
+          </View>
+        )}
+
+        <ControlledInput
+          name="content"
+          placeholder="Body Content (optional)"
+          // max of 6 lines
+          className="max-h-64 border-none text-[16px] dark:text-charcoal-100"
+          control={control}
+          multiline
+        />
+      </View>
     </Layout>
   );
 };

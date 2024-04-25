@@ -59,7 +59,7 @@ export const ReplyComposer = ({ postId, commentId }: Props) => {
   };
 
   return (
-    <View className="flex-1 py-4">
+    <View className="flex-1 p-4">
       <ControlledInput
         error={undefined}
         disabled={isCreateCommentLoading}

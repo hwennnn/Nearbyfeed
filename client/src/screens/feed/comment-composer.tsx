@@ -3,6 +3,7 @@ import { Transform } from 'class-transformer';
 import { IsString, MaxLength, MinLength } from 'class-validator';
 import React from 'react';
 import { useForm } from 'react-hook-form';
+import { Keyboard } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
@@ -44,6 +45,8 @@ export const CommentComposer = ({ postId }: Props) => {
     dto.content = dto.content.trim();
     const sort = useCommentKeys.getState().commentsQueryKey!.sort;
 
+    Keyboard.dismiss();
+
     addComment(
       { ...dto, postId, sort },
       {
@@ -61,7 +64,7 @@ export const CommentComposer = ({ postId }: Props) => {
   };
 
   return (
-    <View className="flex-1 py-4">
+    <View className="flex-1 p-4">
       <ControlledInput
         error={undefined}
         disabled={isCreateCommentLoading}

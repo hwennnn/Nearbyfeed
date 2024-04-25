@@ -147,7 +147,7 @@ export const useAddComment = createMutation<
 
             if (foundIndex !== -1) {
               const updatedComments = [...page.comments];
-              updatedComments[foundIndex] = data;
+              updatedComments[foundIndex] = { ...data };
               return { ...page, comments: updatedComments };
             }
 

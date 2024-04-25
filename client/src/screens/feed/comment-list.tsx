@@ -45,7 +45,7 @@ export const CommentList = ({ postId, refreshing, onRefetchDone }: Props) => {
     onRefetch();
   }, [onRefetch]);
 
-  const renderItem = React.useCallback(
+  const renderItem = useCallback(
     ({ item }: { item: Comment }) => {
       return (
         <CommentCard

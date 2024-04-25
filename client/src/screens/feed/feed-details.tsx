@@ -21,6 +21,8 @@ import {
   TouchableOpacity,
   View,
 } from '@/ui';
+import Divider from '@/ui/core/divider';
+import { Layout } from '@/ui/core/layout';
 import { Ionicons } from '@/ui/icons/ionicons';
 import { ImageViewer } from '@/ui/image-viewer';
 import { getInitials } from '@/utils/get-initials';
@@ -103,9 +105,9 @@ export const FeedDetails = () => {
   };
 
   return (
-    <View className="flex-1">
+    <Layout className="flex-1" hasHorizontalPadding={false}>
       <ScrollView
-        className="mb-24 flex-1"
+        className="flex-1"
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
@@ -239,11 +241,13 @@ export const FeedDetails = () => {
             onRefetchDone={() => setRefreshing(false)}
           />
         </View>
+        <View className="h-[60px]" />
       </ScrollView>
 
-      <View className="absolute bottom-0 z-50 h-fit w-full bg-charcoal-900 px-4">
+      <View className="absolute bottom-0 z-50 h-fit w-full bg-charcoal-950">
+        <Divider />
         <CommentComposer postId={id} />
       </View>
-    </View>
+    </Layout>
   );
 };

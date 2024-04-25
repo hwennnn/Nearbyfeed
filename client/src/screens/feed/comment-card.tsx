@@ -87,7 +87,7 @@ export const CommentCard = ({
               : 'bg-black'
           } py-3 shadow-xl`}
         >
-          <View className="flex-row  items-center justify-between px-4">
+          <View className="flex-row items-center justify-between px-4">
             <View className="flex-row items-start space-x-3">
               <View className="h-[36px] w-[36px] items-center justify-center rounded-full bg-gray-100 dark:bg-gray-600">
                 {author?.image === null && (
