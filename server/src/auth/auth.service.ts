@@ -1,8 +1,8 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   Logger,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -71,7 +71,7 @@ export class AuthService {
     );
 
     if (user === null && hasPendingUser) {
-      throw new UnauthorizedException(
+      throw new ForbiddenException(
         'Please verify your email address before proceeding. You are unable to log in with unverified credentials',
       );
     }
@@ -80,7 +80,7 @@ export class AuthService {
       user === null ||
       !(await compareHash(authDto.password, user.password))
     ) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new ForbiddenException('Invalid credentials');
     }
 
     const tokens = await this.getTokens(user.id.toString(), user.email);
@@ -99,7 +99,7 @@ export class AuthService {
         AuthService.name,
       );
 
-      throw new UnauthorizedException('Invalid credentials');
+      throw new ForbiddenException('Invalid credentials');
     });
   }
 
@@ -154,7 +154,7 @@ export class AuthService {
       storedRefreshToken === null ||
       !(await compareHash(refreshToken, storedRefreshToken))
     ) {
-      throw new UnauthorizedException('Invalid refresh token');
+      throw new ForbiddenException('Invalid refresh token');
     }
 
     const userId = payload.sub;
@@ -247,13 +247,13 @@ export class AuthService {
     const storedEmail = await this.redisService.get<string>(key);
 
     if (storedEmail === null) {
-      throw new UnauthorizedException('Token is not valid or already expired');
+      throw new ForbiddenException('Token is not valid or already expired');
     }
 
     const user = await this.usersService.findOneByEmail(storedEmail);
 
     if (user === null) {
-      throw new UnauthorizedException('User not found');
+      throw new ForbiddenException('User not found');
     }
 
     if (await compareHash(resetPasswordDto.newPassword, user.password)) {
@@ -275,13 +275,13 @@ export class AuthService {
     const storedEmail = await this.redisService.get<string>(key);
 
     if (storedEmail === null) {
-      throw new UnauthorizedException('Token is not valid or already expired');
+      throw new ForbiddenException('Token is not valid or already expired');
     }
 
     const user = await this.usersService.findOneByEmail(storedEmail);
 
     if (user === null) {
-      throw new UnauthorizedException('User not found');
+      throw new ForbiddenException('User not found');
     }
   }
 }

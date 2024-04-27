@@ -1,10 +1,10 @@
 import {
   Body,
   Controller,
+  ForbiddenException,
   Get,
   Param,
   Patch,
-  UnauthorizedException,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -54,7 +54,7 @@ export class UsersController {
     @UploadedFile() file: Express.Multer.File,
   ): Promise<UserWithoutPassword> {
     if (id !== userId) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new ForbiddenException('Invalid credentials');
     }
 
     let image: string | undefined;

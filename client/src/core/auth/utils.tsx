@@ -1,8 +1,4 @@
-import type { JwtPayload } from 'jwt-decode';
-import jwtDecode from 'jwt-decode';
-
 import { getItem, removeItem, setItem } from '@/core/storage';
-import { timeUtils } from '@/utils/time-utils';
 
 const ACCESS_TOKEN = 'access_token';
 const REFRESH_TOKEN = 'refresh_token';
@@ -42,46 +38,6 @@ export const setTokens = (token: AuthToken) => {
   setRefreshToken(token.refreshToken);
 };
 
-const isTokenExpired = (token: string): boolean => {
-  const { exp } = jwtDecode<JwtPayload>(token);
-  const currentTime = timeUtils.getCurrentTimeInMs();
-
-  return exp === undefined || currentTime >= exp * 1000;
-};
-
-export const isRefreshingTokenRequired = (): boolean => {
-  const accessToken = getAccessToken();
-  const refreshToken = getRefreshToken();
-
-  return (
-    accessToken !== null &&
-    isTokenExpired(accessToken) &&
-    refreshToken !== null &&
-    !isTokenExpired(refreshToken)
-  );
-};
-
-export const checkAndClearExpiredToken = (): void => {
-  const accessToken = getAccessToken();
-  const refreshToken = getRefreshToken();
-
-  const hasAllExpired =
-    accessToken !== null &&
-    isTokenExpired(accessToken) &&
-    refreshToken !== null &&
-    isTokenExpired(refreshToken);
-
-  if (hasAllExpired) {
-    removeTokens();
-  }
-};
-
-export const decodeUidFromToken = (): string | null => {
-  const accessToken = getAccessToken();
-
-  if (accessToken === null) return null;
-
-  const { sub } = jwtDecode<JwtPayload>(accessToken);
-
-  return sub === undefined ? null : sub.toString();
+export const isRefreshTokenEmpty = (): boolean => {
+  return getRefreshToken() === null;
 };

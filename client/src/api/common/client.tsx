@@ -1,12 +1,12 @@
 import { Env } from '@env';
 import axios from 'axios';
+import { Alert } from 'react-native';
 
 import { signOut } from '@/core/auth';
 import {
-  checkAndClearExpiredToken,
   getAccessToken,
   getRefreshToken,
-  isRefreshingTokenRequired,
+  isRefreshTokenEmpty,
   setAccessToken,
 } from '@/core/auth/utils';
 import { resetUser } from '@/core/user';
@@ -23,32 +23,37 @@ const refreshAuthToken = async (): Promise<void> => {
 
   if (refreshToken === null) return;
 
-  const response = await axios.post(
-    `${Env.API_URL}/auth/refresh-token`,
-    {},
-    {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${refreshToken}`,
-      },
-    }
-  );
-  const tokens = response.data;
-  const access = tokens.accessToken;
+  try {
+    const response = await axios.post(
+      `${Env.API_URL}/auth/refresh-token`,
+      {},
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${refreshToken}`,
+        },
+      }
+    );
 
-  setAccessToken(access);
+    const tokens = response.data;
+    const access = tokens.accessToken;
+
+    setAccessToken(access);
+  } catch (error: any) {
+    if (error.response?.status === 401 || error.response?.status === 403) {
+      console.error('There was an error when refreshing the token');
+      Alert.alert('You have been signed out');
+      signOut();
+      resetUser();
+    }
+  }
 };
 
 client.interceptors.request.use(
   async (config) => {
-    checkAndClearExpiredToken();
+    const newToken = getAccessToken();
 
-    if (getAccessToken() !== null) {
-      if (isRefreshingTokenRequired()) {
-        await refreshAuthToken();
-      }
-
-      const newToken = getAccessToken();
+    if (newToken !== null) {
       config.headers.Authorization = `Bearer ${newToken}`;
     }
 
@@ -65,16 +70,30 @@ client.interceptors.response.use(
     return response;
   },
   async (error) => {
+    const originalRequest = error.config;
+
     if (error.response?.status === 401) {
-      signOut();
-      resetUser();
-      console.log('res error : Session expired.');
-      // could be showing popup alert -> your session has expired, please login to continue.
-      const errorMessage =
-        error.response?.data?.message ?? 'Session expired. User not authorized';
-      return await Promise.reject(errorMessage);
+      if (!isRefreshTokenEmpty()) {
+        await refreshAuthToken();
+
+        const newToken = getAccessToken();
+
+        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+
+        return axios(originalRequest);
+      } else {
+        Alert.alert('You have been signed out');
+        signOut();
+        resetUser();
+        console.log('res error : Session expired.');
+        // could be showing popup alert -> your session has expired, please login to continue.
+        const errorMessage =
+          error.response?.data?.message ??
+          'Session expired. User not authorized';
+        return await Promise.reject(errorMessage);
+      }
     } else {
-      console.log(
+      console.error(
         'res error',
         error.response?.data?.message ?? 'Error happened. Please try again.'
       );
