@@ -30,6 +30,7 @@ model User {
   comments      Comment[]
   likedPosts    PostLike[]
   likedComments CommentLike[]
+  PollVote      PollVote[]
 }
 
 model Post {
@@ -49,6 +50,7 @@ model Post {
   commentsCount    Int        @default(0)
   comments         Comment[]
   likes            PostLike[]
+  Poll             Poll[]
 }
 
 model Comment {
@@ -93,4 +95,41 @@ model CommentLike {
   userId    Int
 
   @@id([commentId, userId])
+}
+
+model Poll {
+  id           Int          @id @default(autoincrement())
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  postId       Int
+  post         Post         @relation(fields: [postId], references: [id], onDelete: Cascade)
+  votingLength Int
+  participants Int          @default(0)
+  options      PollOption[]
+  PollVote     PollVote[]
+}
+
+model PollOption {
+  id        Int        @id @default(autoincrement())
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  text      String
+  pollId    Int
+  voteCount Int        @default(0)
+  poll      Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  PollVote  PollVote[]
+}
+
+model PollVote {
+  id           Int        @id @default(autoincrement())
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  userId       Int
+  user         User       @relation(fields: [userId], references: [id])
+  pollId       Int
+  poll         Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  pollOptionId Int
+  pollOption   PollOption @relation(fields: [pollOptionId], references: [id], onDelete: Cascade)
+
+  @@unique([pollId, userId])
 }

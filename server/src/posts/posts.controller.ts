@@ -15,6 +15,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import {
   type Comment as CommentEntity,
   type CommentLike,
+  type Poll,
   type Post as PostEntity,
   type PostLike,
 } from '@prisma/client';
@@ -32,9 +33,11 @@ import {
   UpdateCommentDto,
   UpdatePostDto,
 } from 'src/posts/dto';
+import { CreatePollDto } from 'src/posts/dto/create-poll.dto';
 import { CreatePostDto } from 'src/posts/dto/create-post.dto';
 import { LikeDto } from 'src/posts/dto/like.dto';
 import { type CommentWithLike, type PostWithLike } from 'src/posts/entities';
+import { PollService } from 'src/posts/poll.service';
 import { CommentsService } from './comments.service';
 import { PostsService } from './posts.service';
 
@@ -43,6 +46,7 @@ export class PostsController {
   constructor(
     private readonly postsService: PostsService,
     private readonly commentsService: CommentsService,
+    private readonly pollService: PollService,
     private readonly imagesService: ImagesService,
   ) {}
 
@@ -212,5 +216,15 @@ export class PostsController {
       +commentId,
       likeDto.value,
     );
+  }
+
+  @Post(':id/polls')
+  @UseGuards(JwtAuthGuard)
+  async createPoll(
+    @Body() createPollDto: CreatePollDto,
+    @GetUser('userId') userId: string,
+    @Param('id') postId: string,
+  ): Promise<Poll> {
+    return await this.pollService.createPoll(createPollDto, +postId);
   }
 }
