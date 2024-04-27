@@ -39,7 +39,7 @@
     "@nestjs/passport": "^9.0.3",
     "@nestjs/platform-express": "^9.0.0",
     "@prisma/client": "^5.13.0",
-    "axios": "^1.4.0",
+    "axios": "^1.6.0",
     "bad-words": "^3.0.4",
     "bcrypt": "^5.1.0",
     "class-transformer": "^0.5.1",
