@@ -107,7 +107,7 @@ export const CommentsDetails = () => {
           />
         </View>
 
-        <View className="h-[60px]" />
+        <View className="h-[95px]" />
       </ScrollView>
 
       <View className="absolute bottom-0 z-50 h-fit w-full bg-charcoal-950">

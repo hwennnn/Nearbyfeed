@@ -105,7 +105,11 @@ export const FeedDetails = () => {
   };
 
   return (
-    <Layout className="flex-1" hasHorizontalPadding={false}>
+    <Layout
+      className="flex-1"
+      hasHorizontalPadding={false}
+      verticalPadding={80}
+    >
       <ScrollView
         className="flex-1"
         refreshControl={
@@ -241,7 +245,7 @@ export const FeedDetails = () => {
             onRefetchDone={() => setRefreshing(false)}
           />
         </View>
-        <View className="h-[60px]" />
+        <View className="h-[95px]" />
       </ScrollView>
 
       <View className="absolute bottom-0 z-50 h-fit w-full bg-charcoal-950">
