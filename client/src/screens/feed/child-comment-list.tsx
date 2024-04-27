@@ -49,7 +49,7 @@ export const ChildCommentList = ({
 
   if (isLoading) {
     return (
-      <View className="flex-1 justify-center">
+      <View className="flex-1 items-center justify-center">
         <ActivityIndicator />
       </View>
     );

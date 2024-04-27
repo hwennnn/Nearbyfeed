@@ -3,7 +3,7 @@ import { useRoute } from '@react-navigation/native';
 import { useQueryClient } from '@tanstack/react-query';
 import { useColorScheme } from 'nativewind';
 import * as React from 'react';
-import { RefreshControl } from 'react-native';
+import { ActivityIndicator, RefreshControl } from 'react-native';
 
 import type { InfinitePosts } from '@/api';
 import { usePost, useVotePost } from '@/api';
@@ -13,7 +13,6 @@ import { CommentComposer } from '@/screens/feed/comment-composer';
 import { CommentList } from '@/screens/feed/comment-list';
 import {
   Image,
-  NoData,
   Pressable,
   ScrollView,
   Text,
@@ -75,7 +74,7 @@ export const FeedDetails = () => {
   if (isLoading || post === undefined) {
     return (
       <View className="flex-1 items-center justify-center">
-        <NoData />
+        <ActivityIndicator />
       </View>
     );
   }

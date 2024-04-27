@@ -74,7 +74,7 @@ export const CommentsDetails = () => {
 
   if (isLoading || parentComment === undefined) {
     return (
-      <View className="flex-1 justify-center">
+      <View className="flex-1 items-center justify-center">
         <ActivityIndicator />
       </View>
     );

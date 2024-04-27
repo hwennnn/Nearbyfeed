@@ -155,7 +155,7 @@ export const EditProfile = () => {
 
   if (isLoading) {
     return (
-      <Layout className="flex-1 justify-center">
+      <Layout className="flex-1 items-center justify-center">
         <ActivityIndicator />
       </Layout>
     );
