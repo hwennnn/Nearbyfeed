@@ -23,7 +23,7 @@ export const Register = () => {
   };
 
   return (
-    <Layout>
+    <Layout className="flex-1" verticalPadding={80}>
       <RegisterForm onSubmit={onSubmit} isLoading={isLoading} error={error} />
     </Layout>
   );

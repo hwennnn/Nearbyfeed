@@ -33,6 +33,7 @@ export function ControlledInput<T extends FieldValues>(
   const { name, control, rules, ...inputProps } = props;
 
   const { field, fieldState } = useController({ control, name, rules });
+
   return (
     <Input
       ref={field.ref}

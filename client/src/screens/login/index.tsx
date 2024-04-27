@@ -30,7 +30,7 @@ export const Login = () => {
   };
 
   return (
-    <Layout className="flex-1">
+    <Layout className="flex-1" verticalPadding={0}>
       <LoginForm
         onSubmit={onSubmit}
         isLoading={isLoading}

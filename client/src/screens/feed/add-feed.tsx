@@ -113,6 +113,7 @@ export const AddFeed = () => {
           control={control}
           placeholder="Title"
           className="border-none text-[24px] font-bold dark:text-charcoal-100"
+          numberOfLines={3}
         />
 
         {image === null && (

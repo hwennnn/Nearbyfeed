@@ -6,7 +6,14 @@ import React from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
 
-import { Button, ControlledInput, Pressable, Text, View } from '@/ui';
+import {
+  Button,
+  ControlledInput,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from '@/ui';
 
 export class RegisterDto {
   @IsNotEmpty({ message: 'Username is required' })
@@ -51,7 +58,11 @@ export const RegisterForm = ({
   });
 
   return (
-    <View className="flex-1 justify-center px-4">
+    <ScrollView
+      className="flex-1 px-4"
+      contentContainerStyle="flex-1 grow justify-center"
+    >
+      <View className="h-6" />
       <Text testID="form-title" variant="h1" className="pb-2 text-center">
         Register
       </Text>
@@ -97,6 +108,8 @@ export const RegisterForm = ({
           <Text className="text-primary-400">Login</Text>
         </Pressable>
       </View>
-    </View>
+
+      <View className="h-6" />
+    </ScrollView>
   );
 };

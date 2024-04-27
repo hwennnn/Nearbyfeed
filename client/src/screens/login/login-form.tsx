@@ -11,6 +11,7 @@ import {
   Button,
   ControlledInput,
   Pressable,
+  ScrollView,
   Text,
   TouchableOpacity,
   View,
@@ -59,8 +60,11 @@ export const LoginForm = ({
   };
 
   return (
-    <View className="flex-1 justify-center px-4">
-      <Text testID="form-title" variant="h1" className="pb-2 text-center">
+    <ScrollView
+      className="flex-1 px-4"
+      contentContainerStyle="flex-1 grow justify-center"
+    >
+      <Text variant="h1" className="pb-2 text-center">
         Sign In
       </Text>
 
@@ -120,6 +124,6 @@ export const LoginForm = ({
           <Text className="text-primary-400">Register now</Text>
         </Pressable>
       </View>
-    </View>
+    </ScrollView>
   );
 };
