@@ -61,7 +61,6 @@ export const Root = () => {
                   name="AddFeed"
                   component={AddFeed}
                   options={{
-                    presentation: 'modal',
                     headerTitle: 'Create a Feed',
                     headerLeft: () => <HeaderButton iconName="close-outline" />,
                   }}

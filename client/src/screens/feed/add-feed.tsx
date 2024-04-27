@@ -19,7 +19,7 @@ import {
   TouchableOpacity,
   View,
 } from '@/ui';
-import { Layout } from '@/ui/core/layout';
+import { ScrollLayout } from '@/ui/core/scroll-layout';
 import { retrieveCurrentPosition } from '@/utils/geolocation-utils';
 
 export class CreatePostDto {
@@ -98,7 +98,7 @@ export const AddFeed = () => {
       headerRight: () => (
         <TouchableOpacity onPress={handleSubmit(onSubmit)} disabled={isLoading}>
           <Text variant="md" className="text-primary-400">
-            Create
+            Post
           </Text>
         </TouchableOpacity>
       ),
@@ -106,14 +106,20 @@ export const AddFeed = () => {
   }, [handleSubmit, isLoading, navigation, onSubmit]);
 
   return (
-    <Layout className="flex-1" hasHorizontalPadding={true}>
-      <View className="p-4">
+    <ScrollLayout
+      className="flex-1"
+      showsVerticalScrollIndicator={false}
+      extraScrollHeight={25}
+    >
+      <View className="flex-1 p-4">
         <ControlledInput
           name="title"
           control={control}
           placeholder="Title"
           className="border-none text-[24px] font-bold dark:text-charcoal-100"
           numberOfLines={3}
+          maxLength={70}
+          multiline
         />
 
         {image === null && (
@@ -141,12 +147,12 @@ export const AddFeed = () => {
         <ControlledInput
           name="content"
           placeholder="Body Content (optional)"
-          // max of 6 lines
-          className="max-h-64 border-none text-[16px] dark:text-charcoal-100"
+          className="border-none text-[16px] dark:text-charcoal-100"
           control={control}
           multiline
+          maxLength={1000}
         />
       </View>
-    </Layout>
+    </ScrollLayout>
   );
 };

@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { Linking } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/Octicons';
 
 import { useLocationName } from '@/api/posts/use-location-name';
 import { setPostsQueryKey } from '@/core/posts';
@@ -91,9 +91,9 @@ export const Feed = () => {
     <Layout className="flex-1" hasHorizontalPadding={false}>
       <TouchableOpacity
         onPress={() => navigate('AddFeed')}
-        className="absolute right-3 bottom-3 z-10 items-center justify-center rounded-full bg-primary-400 p-2"
+        className="absolute right-3 bottom-3 z-10 items-center justify-center rounded-full bg-primary-400 p-[14px]"
       >
-        <Icon name="ios-add" size={36} color="white" />
+        <Icon name="pencil" size={24} color="white" />
       </TouchableOpacity>
 
       <FeedList
