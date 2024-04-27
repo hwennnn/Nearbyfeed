@@ -100,7 +100,7 @@ const LocationHeader = ({
 
   return (
     <TouchableOpacity
-      className="m-2 block flex-row items-center rounded-md border-[1px] border-neutral-400 p-4 shadow-xl dark:border-charcoal-700 dark:bg-charcoal-800"
+      className="mt-2 mb-4 block flex-row items-center rounded-md border-[1px] border-neutral-400 p-4 shadow-xl dark:border-charcoal-700 dark:bg-charcoal-800"
       onPress={() => setShowFullName((prev) => !prev)}
     >
       <Icon name="location-arrow" color={iconColor} size={24} />

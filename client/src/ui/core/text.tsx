@@ -19,7 +19,7 @@ export const textVariants = {
   defaults: 'text-base text-black dark:text-white font-inter font-normal',
   h1: 'text-[32px] leading-[48px] font-medium',
   h2: 'text-[28px] leading-[42px] font-medium',
-  h3: 'text-[24px] leading-[36px] font-medium',
+  h3: 'text-[24px] leading-[30px] font-medium',
   xl: 'text-[20px] leading-[30px]',
   lg: 'text-[18px] leading-[30px]',
   md: 'text-[16px] leading-[24px]',

@@ -108,7 +108,7 @@ export const FeedCard = ({
         )}
 
         {image !== null && (
-          <>
+          <View>
             <TouchableOpacity
               onPress={() => setImageModalVisible(true)}
               className="mt-1"
@@ -129,7 +129,7 @@ export const FeedCard = ({
               visible={imageModalVisible}
               onClose={() => setImageModalVisible(false)}
             />
-          </>
+          </View>
         )}
 
         <View className="flex-row justify-between px-10 pt-2">
