@@ -11,6 +11,7 @@ import type { GeolocationName, Post } from '@/api';
 import { usePosts } from '@/api';
 import type { RootNavigatorProp } from '@/navigation/root-navigator';
 import { colors, EmptyList, Text, TouchableOpacity, View } from '@/ui';
+import Divider from '@/ui/core/divider';
 
 import { FeedCard } from './feed-card';
 
@@ -199,6 +200,7 @@ export const FeedList = ({
   return (
     <View className="flex-1">
       <FlashList
+        ItemSeparatorComponent={Divider}
         ListHeaderComponent={header}
         data={allPosts}
         renderItem={renderItem}

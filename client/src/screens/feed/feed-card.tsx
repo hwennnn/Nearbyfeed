@@ -30,6 +30,7 @@ export const FeedCard = ({
   isOptimistic,
   image,
   createdAt,
+  commentsCount,
 }: Props) => {
   const [imageModalVisible, setImageModalVisible] = useState(false);
 
@@ -55,13 +56,56 @@ export const FeedCard = ({
 
   return (
     <TouchableOpacity
-      className="m-2 block overflow-hidden rounded-xl bg-neutral-200 p-2 shadow-xl dark:bg-charcoal-900"
+      className="block overflow-hidden bg-neutral-200 p-4 shadow-xl dark:bg-charcoal-900"
       onPress={onPress}
     >
       <View className="flex-1 space-y-3">
-        <Text variant="md" numberOfLines={2} className="font-bold">
+        <View className="flex-row items-center space-x-2">
+          <View className="h-[36px] w-[36px] items-center justify-center rounded-full bg-gray-100 dark:bg-gray-600">
+            {author?.image === null && (
+              <Text
+                className="font-medium text-gray-600 dark:text-gray-300"
+                variant="xs"
+              >
+                {getInitials(author.username)}
+              </Text>
+            )}
+            {author?.image !== null && (
+              <Image
+                source={{ uri: author?.image }}
+                className="h-[36px] w-[36px] rounded-full"
+              />
+            )}
+          </View>
+
+          <View className="flex-col justify-between">
+            <View className="flex-row items-center space-x-2">
+              <Text className="font-semibold" variant="sm" numberOfLines={3}>
+                {author?.username ?? ''}
+              </Text>
+
+              <TimeWidget
+                className="text-gray-600 dark:text-gray-500"
+                variant="xs"
+                time={createdAt!}
+              />
+            </View>
+
+            <Text className="text-gray-600 dark:text-gray-300" variant="xs">
+              {locationName}
+            </Text>
+          </View>
+        </View>
+
+        <Text variant="md" numberOfLines={2} className="font-semibold">
           {`${title}`}
         </Text>
+
+        {content !== null && content !== undefined && content.length > 0 && (
+          <Text variant="sm" numberOfLines={4}>
+            {content}
+          </Text>
+        )}
 
         {image !== null && (
           <>
@@ -88,81 +132,49 @@ export const FeedCard = ({
           </>
         )}
 
-        {content !== null && content !== undefined && content.length > 0 && (
-          <Text variant="sm" numberOfLines={4}>
-            {content}
-          </Text>
-        )}
+        <View className="flex-row justify-between px-10 pt-2">
+          <Pressable onPress={() => handleVote(isLiked ? 0 : 1)}>
+            <View className="flex-row items-center space-x-1">
+              <Ionicons
+                name={isLiked ? 'heart' : 'heart-outline'}
+                size={18}
+                className={isLiked ? 'text-primary-400' : iconColor}
+              />
 
-        <View className="flex-row justify-between">
-          <View className="flex-col space-y-2">
-            <View className="flex-row items-center space-x-2">
-              <View className="h-[24px] w-[24px] items-center justify-center rounded-full bg-gray-100 dark:bg-gray-600">
-                {author?.image === null && (
-                  <Text
-                    className="font-medium text-gray-600 dark:text-gray-300"
-                    variant="xs"
-                  >
-                    {getInitials(author.username)}
-                  </Text>
-                )}
-                {author?.image !== null && (
-                  <Image
-                    source={{ uri: author?.image }}
-                    className="h-[24px] w-[24px] rounded-full"
-                  />
-                )}
-              </View>
-
-              <Text variant="sm" numberOfLines={3}>
-                {author?.username ?? ''}
+              <Text
+                className={`min-w-[28px] font-semibold
+                ${
+                  isLiked
+                    ? 'text-primary-400'
+                    : 'text-gray-600 dark:text-gray-300'
+                }`}
+                variant="sm"
+              >
+                {points > 0 ? points : 'Like'}
               </Text>
             </View>
+          </Pressable>
 
-            <View className="flex-row items-center space-x-2">
-              <View className="flex-row items-center space-x-[2px]">
-                <Pressable onPress={() => handleVote(isLiked ? 0 : 1)}>
-                  <Ionicons
-                    name={isLiked ? 'heart' : 'heart-outline'}
-                    size={16}
-                    className={isLiked ? 'text-primary-400' : iconColor}
-                  />
-                </Pressable>
+          <View className="flex-row items-center space-x-1">
+            <Ionicons name="chatbox-outline" size={16} className={iconColor} />
 
-                <Text
-                  className={
-                    isLiked
-                      ? 'text-primary-400'
-                      : 'text-gray-600 dark:text-gray-300'
-                  }
-                  variant="sm"
-                >
-                  {points}
-                </Text>
-              </View>
+            <Text
+              className="font-semibold text-gray-600 dark:text-gray-300"
+              variant="sm"
+            >
+              {commentsCount}
+            </Text>
+          </View>
 
-              <View className="flex-row items-center space-x-[2px]">
-                <Ionicons name="time" size={16} className={iconColor} />
+          <View className="flex-row items-center space-x-1">
+            <Ionicons name="share-outline" size={16} className={iconColor} />
 
-                <TimeWidget
-                  className="text-gray-600 dark:text-gray-300"
-                  variant="sm"
-                  time={createdAt!}
-                />
-              </View>
-
-              <View className="flex-row items-center space-x-[2px]">
-                <Ionicons
-                  name="location-sharp"
-                  size={16}
-                  className={iconColor}
-                />
-
-                <Text className="text-gray-600 dark:text-gray-300" variant="sm">
-                  {locationName}
-                </Text>
-              </View>
-            </View>
+            <Text
+              className="font-semibold text-gray-600 dark:text-gray-300"
+              variant="sm"
+            >
+              Share
+            </Text>
           </View>
         </View>
 
