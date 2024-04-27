@@ -79,7 +79,7 @@ export const ChildCommentList = ({
         data={allComments}
         renderItem={renderItem}
         keyExtractor={(_, index) => `item-${index}`}
-        estimatedItemSize={100}
+        estimatedItemSize={50}
         onEndReached={handleEndReached}
         onEndReachedThreshold={0.1}
       />

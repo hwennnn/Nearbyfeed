@@ -145,7 +145,7 @@ export const CommentList = ({ postId, refreshing, onRefetchDone }: Props) => {
           data={allComments}
           renderItem={renderItem}
           keyExtractor={(_, index) => `item-${index}`}
-          estimatedItemSize={150}
+          estimatedItemSize={100}
           onEndReached={handleEndReached}
           onEndReachedThreshold={0.1}
         />
