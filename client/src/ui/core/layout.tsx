@@ -23,7 +23,6 @@ export const Layout = ({
       className="flex-1"
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? verticalPadding : 0}
-      // style={{ flex: 1 }}
     >
       <Pressable onPress={Keyboard.dismiss} className="flex-1">
         <SafeAreaView

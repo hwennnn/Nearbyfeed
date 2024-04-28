@@ -10,6 +10,7 @@ import {
 import * as ImagePicker from 'expo-image-picker';
 import React from 'react';
 import { useForm } from 'react-hook-form';
+import { Keyboard } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 import Icon from 'react-native-vector-icons/Ionicons';
 
@@ -104,9 +105,10 @@ const EditImageButton = ({
 };
 
 export const EditProfile = () => {
-  const { control, handleSubmit, watch, setValue } = useForm<UpdateProfileDto>({
-    resolver,
-  });
+  const { control, handleSubmit, watch, setValue, formState } =
+    useForm<UpdateProfileDto>({
+      resolver,
+    });
 
   const [image, setImage] = React.useState<string | null>(null);
 
@@ -123,14 +125,13 @@ export const EditProfile = () => {
 
   const onSubmit = React.useCallback(
     async (data: UpdateProfileDto) => {
+      Keyboard.dismiss();
       const dto = {
         userId: user!.id,
         username: data.username,
         image: user?.image !== image ? image : null,
         shouldSetImageNull: user?.image !== null && image === null,
       };
-
-      console.log(dto);
 
       updateProfile(
         { ...dto },
@@ -151,7 +152,9 @@ export const EditProfile = () => {
   );
 
   const hasChanges =
-    user?.image !== image || user?.username !== watch().username;
+    !isLoading &&
+    formState.isDirty &&
+    (user?.image !== image || user?.username !== watch().username);
 
   if (isLoading) {
     return (
@@ -162,7 +165,7 @@ export const EditProfile = () => {
   }
 
   return (
-    <Layout className="flex-1 space-y-10 pt-4">
+    <Layout className="mx-4 mt-4 flex-1 space-y-10">
       <View className="items-center space-y-1">
         <View className="h-[80px] w-[80px] items-center justify-center rounded-full bg-gray-100 dark:bg-gray-600">
           {image === null && (
@@ -194,16 +197,8 @@ export const EditProfile = () => {
         </Text>
       </View>
 
-      <View className="flex-1 space-y-10">
-        <View className="pb-4">
-          <Text>Email</Text>
-          <View className="order-charcoal-700 mt-0 rounded-md border-[1px] bg-charcoal-300 py-4 px-2 text-[16px] dark:bg-charcoal-800 dark:text-charcoal-100">
-            <Text>{user?.email}</Text>
-          </View>
-        </View>
-
+      <View className="flex-1 space-y-5">
         <ControlledInput
-          disabled
           label="Username"
           name="username"
           control={control}
@@ -215,6 +210,7 @@ export const EditProfile = () => {
           label="Update Profile"
           onPress={handleSubmit(onSubmit)}
           loading={isLoadingEditProfile}
+          variant="secondary"
         />
       </View>
     </Layout>

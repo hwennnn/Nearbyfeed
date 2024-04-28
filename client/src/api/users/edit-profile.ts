@@ -50,8 +50,6 @@ export const useEditProfile = createMutation<
       }
     }
 
-    console.log(needUploadImage ? formData : dto);
-
     const response = await client({
       url: `users/${variables.userId}`,
       method: 'PATCH',

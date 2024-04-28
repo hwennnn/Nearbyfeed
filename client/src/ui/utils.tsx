@@ -11,7 +11,6 @@ export const showSuccessMessage = (message: string) => {
 
 // for onError react queries and mutations
 export const showError = (error: AxiosError) => {
-  console.log(JSON.stringify(error?.response?.data));
   const description = extractError(error?.response?.data).trimEnd();
 
   showMessage({

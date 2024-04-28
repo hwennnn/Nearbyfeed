@@ -2,6 +2,7 @@ import type { AxiosError } from 'axios';
 import { createQuery } from 'react-query-kit';
 
 import type { User } from '@/api/posts';
+import { setUser, useUser } from '@/core/user';
 
 import { client } from '../common';
 
@@ -16,5 +17,17 @@ export const useSelf = createQuery<Response, Variables, AxiosError>(
     });
 
     return response.data;
+  },
+  {
+    initialData: () => {
+      const userFromStorage = useUser.getState().user;
+
+      if (userFromStorage !== null) {
+        return userFromStorage;
+      }
+    },
+    onSuccess: (data) => {
+      setUser(data);
+    },
   }
 );

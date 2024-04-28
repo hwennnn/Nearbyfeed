@@ -1,2 +1,2 @@
 export * from './edit-profile';
-export * from './self';
+export * from './use-self';

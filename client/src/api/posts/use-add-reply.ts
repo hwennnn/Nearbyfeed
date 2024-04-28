@@ -52,8 +52,6 @@ export const useAddReply = createMutation<
       },
     ];
 
-    console.log(queryKey);
-
     // Cancel any outgoing refetches
     // (so they don't overwrite our optimistic update)
     await queryClient.cancelQueries({ queryKey });
