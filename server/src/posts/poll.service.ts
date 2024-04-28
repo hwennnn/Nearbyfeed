@@ -1,9 +1,10 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { FilterService } from 'src/filter/filter.service';
-import { type CreatePollDto } from 'src/posts/dto';
-import { type PollWithOptions } from 'src/posts/entities';
+import { type CreatePollDto, type VotePollDto } from 'src/posts/dto';
+import { type PollWithOptions, type VotePollResult } from 'src/posts/entities';
 
 import { PrismaService } from 'src/prisma/prisma.service';
+import { isPollExpired } from 'src/utils';
 
 @Injectable()
 export class PollService {
@@ -69,6 +70,7 @@ export class PollService {
       .findFirst({
         where: {
           id: pollId,
+          postId,
         },
         select: {
           id: true,
@@ -107,5 +109,85 @@ export class PollService {
     const { pollVotes: _, ...result } = parsedPoll;
 
     return result;
+  }
+
+  async votePoll(
+    votePollDto: VotePollDto,
+    postId: number,
+    pollId: number,
+    userId: number,
+  ): Promise<VotePollResult> {
+    const pollOptionId = votePollDto.pollOptionId;
+
+    const poll = await this.prismaService.poll
+      .findFirst({
+        where: {
+          id: pollId,
+        },
+      })
+      .catch((e) => {
+        this.logger.error(
+          'Failed to vote the poll',
+          e instanceof Error ? e.stack : undefined,
+          PollService.name,
+        );
+
+        throw new BadRequestException('Failed to vote the poll');
+      });
+
+    if (
+      poll === null ||
+      isPollExpired(poll.createdAt.getTime(), poll.votingLength)
+    ) {
+      throw new BadRequestException('Failed to vote the poll');
+    }
+
+    const [resultVote, resultPoll, resultPollOption] = await this.prismaService
+      .$transaction([
+        this.prismaService.pollVote.create({
+          data: {
+            pollOptionId,
+            userId,
+            pollId,
+          },
+        }),
+        this.prismaService.poll.update({
+          data: {
+            participantsCount: {
+              increment: 1,
+            },
+          },
+          where: {
+            id: pollId,
+            postId,
+          },
+        }),
+        this.prismaService.pollOption.update({
+          data: {
+            voteCount: {
+              increment: 1,
+            },
+          },
+          where: {
+            id: pollOptionId,
+            pollId,
+          },
+        }),
+      ])
+      .catch((e) => {
+        this.logger.error(
+          'Failed to vote the poll',
+          e instanceof Error ? e.stack : undefined,
+          PollService.name,
+        );
+
+        throw new BadRequestException('Failed to vote the poll');
+      });
+
+    return {
+      vote: resultVote,
+      poll: resultPoll,
+      pollOption: resultPollOption,
+    };
   }
 }

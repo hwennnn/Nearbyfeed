@@ -4,3 +4,9 @@ export type PollWithOptions = Poll & {
   options: PollOption[];
   vote?: PollVote;
 };
+
+export interface VotePollResult {
+  vote: PollVote;
+  poll: Poll;
+  pollOption: PollOption;
+}

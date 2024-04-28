@@ -121,7 +121,7 @@ model PollOption {
 }
 
 model PollVote {
-  id           Int        @id @default(autoincrement())
+  id           Int        @default(autoincrement())
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
   userId       Int
@@ -131,5 +131,5 @@ model PollVote {
   pollOptionId Int
   pollOption   PollOption @relation(fields: [pollOptionId], references: [id], onDelete: Cascade)
 
-  @@unique([pollId, userId])
+  @@id([pollId, userId])
 }

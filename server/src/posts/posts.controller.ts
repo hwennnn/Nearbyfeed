@@ -31,6 +31,7 @@ import {
   GetPostsDto,
   UpdateCommentDto,
   UpdatePostDto,
+  VotePollDto,
 } from 'src/posts/dto';
 import { CreatePollDto } from 'src/posts/dto/create-poll.dto';
 import { CreatePostDto } from 'src/posts/dto/create-post.dto';
@@ -39,6 +40,7 @@ import {
   type CommentWithLike,
   type PollWithOptions,
   type PostWithLike,
+  type VotePollResult,
 } from 'src/posts/entities';
 import { PollService } from 'src/posts/poll.service';
 import { CommentsService } from './comments.service';
@@ -239,5 +241,21 @@ export class PostsController {
     @GetUser() user: TokenUser | null,
   ): Promise<PollWithOptions | null> {
     return await this.pollService.findPoll(+postId, +pollId, user?.userId);
+  }
+
+  @Post(':postId/polls/:pollId/vote')
+  @UseGuards(JwtAuthGuard)
+  async votePoll(
+    @Body() votePollDto: VotePollDto,
+    @GetUser('userId') userId: string,
+    @Param('postId') postId: string,
+    @Param('pollId') pollId: string,
+  ): Promise<VotePollResult> {
+    return await this.pollService.votePoll(
+      votePollDto,
+      +postId,
+      +pollId,
+      +userId,
+    );
   }
 }
