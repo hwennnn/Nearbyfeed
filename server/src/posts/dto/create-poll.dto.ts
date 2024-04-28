@@ -16,7 +16,7 @@ export class CreatePollDto {
 
   @IsArray()
   @IsString({ each: true })
-  @Length(2, 120, { each: true })
+  @Length(1, 120, { each: true })
   @ArrayMinSize(1)
   @ArrayMaxSize(7)
   options: string[];

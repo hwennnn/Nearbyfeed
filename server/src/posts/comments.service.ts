@@ -157,7 +157,9 @@ export class CommentsService {
           : undefined,
     };
 
-    return parsedComment;
+    const { likes: _, ...result } = parsedComment;
+
+    return result;
   }
 
   async findComments(

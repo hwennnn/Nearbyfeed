@@ -226,7 +226,9 @@ export class PostsService {
           : undefined,
     };
 
-    return parsedPost;
+    const { likes: _, ...result } = parsedPost;
+
+    return result;
   }
 
   async updatePost(id: number, updatePostDto: UpdatePostDto): Promise<Post> {

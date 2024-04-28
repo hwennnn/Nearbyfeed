@@ -98,15 +98,15 @@ model CommentLike {
 }
 
 model Poll {
-  id           Int          @id @default(autoincrement())
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-  postId       Int
-  post         Post         @relation(fields: [postId], references: [id], onDelete: Cascade)
-  votingLength Int
-  participants Int          @default(0)
-  options      PollOption[]
-  PollVote     PollVote[]
+  id                Int          @id @default(autoincrement())
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  postId            Int
+  post              Post         @relation(fields: [postId], references: [id], onDelete: Cascade)
+  votingLength      Int
+  participantsCount Int          @default(0)
+  options           PollOption[]
+  pollVotes         PollVote[]
 }
 
 model PollOption {
@@ -117,7 +117,7 @@ model PollOption {
   pollId    Int
   voteCount Int        @default(0)
   poll      Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
-  PollVote  PollVote[]
+  pollVotes PollVote[]
 }
 
 model PollVote {
