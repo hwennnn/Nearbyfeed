@@ -1,5 +1,6 @@
 import { Env } from '@env';
 import axios from 'axios';
+import Constants from 'expo-constants';
 import { Alert } from 'react-native';
 
 import { signOut } from '@/core/auth';
@@ -10,22 +11,31 @@ import {
   setAccessToken,
 } from '@/core/auth/utils';
 import { resetUser } from '@/core/user';
+const { manifest } = Constants;
+
+export const API_URL =
+  manifest !== null &&
+  typeof manifest.packagerOpts === `object` &&
+  manifest.packagerOpts.dev &&
+  manifest.debuggerHost !== undefined
+    ? `http://${manifest.debuggerHost.split(':').shift()}:3000`
+    : Env.API_URL;
 
 const client = axios.create({
-  baseURL: Env.API_URL,
+  baseURL: API_URL,
   headers: { 'Content-Type': 'application/json' },
 });
 
 const refreshAuthToken = async (): Promise<void> => {
-  console.log('refreshing token...');
-
   const refreshToken = getRefreshToken();
+
+  console.log('refreshing token..., ', refreshToken);
 
   if (refreshToken === null) return;
 
   try {
     const response = await axios.post(
-      `${Env.API_URL}/auth/refresh-token`,
+      `${API_URL}/auth/refresh-token`,
       {},
       {
         headers: {
@@ -93,10 +103,7 @@ client.interceptors.response.use(
         return await Promise.reject(errorMessage);
       }
     } else {
-      console.error(
-        'res error',
-        error.response?.data?.message ?? 'Error happened. Please try again.'
-      );
+      console.error('res error', error.toJSON().message);
       return await Promise.reject(
         error.response?.data?.message ?? 'Error happened. Please try again.'
       );

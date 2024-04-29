@@ -48,16 +48,20 @@ export const CommentList = ({ postId, refreshing, onRefetchDone }: Props) => {
   const renderItem = useCallback(
     ({ item }: { item: Comment }) => {
       return (
-        <CommentCard
-          {...item}
-          onPressCard={() =>
-            navigate('CommentDetails', {
-              commentId: item.id,
-              postId: postId,
-              repliesCount: item.repliesCount,
-            })
-          }
-        />
+        <View>
+          <CommentCard
+            {...item}
+            onPressCard={() =>
+              navigate('CommentDetails', {
+                commentId: item.id,
+                postId: postId,
+                repliesCount: item.repliesCount,
+              })
+            }
+          />
+
+          <Divider />
+        </View>
       );
     },
 
@@ -140,12 +144,11 @@ export const CommentList = ({ postId, refreshing, onRefetchDone }: Props) => {
 
       <View className="min-h-[2px] flex-1">
         <FlashList
-          ItemSeparatorComponent={Divider}
           refreshing={false}
           data={allComments}
           renderItem={renderItem}
-          keyExtractor={(_, index) => `item-${index}`}
           estimatedItemSize={100}
+          keyExtractor={(_, index) => `item-${index}`}
           onEndReached={handleEndReached}
           onEndReachedThreshold={0.1}
         />

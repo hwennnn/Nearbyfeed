@@ -6,7 +6,6 @@ import { type Comment } from '@/api';
 import { useChildComments } from '@/api/posts/use-child-comments';
 import { CommentCard } from '@/screens/feed/comment-card';
 import { Text, View } from '@/ui';
-import Divider from '@/ui/core/divider';
 
 type Props = {
   postId: number;
@@ -74,7 +73,6 @@ export const ChildCommentList = ({
   return (
     <View className="mt-2 min-h-[2px] flex-1">
       <FlashList
-        ItemSeparatorComponent={Divider}
         refreshing={false}
         data={allComments}
         renderItem={renderItem}

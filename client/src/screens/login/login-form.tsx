@@ -90,6 +90,8 @@ export const LoginForm = ({
         control={control}
         name="email"
         label="Email"
+        placeholder="Email"
+        keyboardType="email-address"
       />
 
       <ControlledInput

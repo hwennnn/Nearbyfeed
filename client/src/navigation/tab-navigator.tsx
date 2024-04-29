@@ -1,9 +1,11 @@
+import NetInfo from '@react-native-community/netinfo';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import type { RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useColorScheme } from 'nativewind';
 import type { ComponentType } from 'react';
 import * as React from 'react';
+import { hideMessage, showMessage } from 'react-native-flash-message';
 import type { SvgProps } from 'react-native-svg';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
@@ -77,6 +79,32 @@ const BarIcon = ({ color, name, ...reset }: BarIconType) => {
 
 export const TabNavigator = () => {
   const { colorScheme } = useColorScheme();
+  const [isConnected, setIsConnected] = React.useState(true);
+
+  React.useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener((currentState) => {
+      if (currentState.isConnected !== null) {
+        setIsConnected(currentState.isConnected);
+        console.log('The network is connected: ' + currentState.isConnected);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  React.useEffect(() => {
+    if (!isConnected) {
+      showMessage({
+        message: 'No internet connection',
+        type: 'danger',
+
+        autoHide: false,
+      });
+    } else {
+      hideMessage();
+    }
+  }, [isConnected]);
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
