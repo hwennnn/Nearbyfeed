@@ -53,6 +53,32 @@ export const FeedDetails = () => {
 
       return undefined;
     },
+    onSuccess: (data) => {
+      const queryKey = ['posts', usePostKeys.getState().postsQueryKey];
+
+      queryClient.setQueryData<InfinitePosts>(queryKey, (oldData) => {
+        if (oldData) {
+          return {
+            pageParams: oldData.pageParams,
+            pages: oldData.pages.map((page) => {
+              const foundIndex = page.posts.findIndex((p) => p.id === postId);
+
+              if (foundIndex !== -1) {
+                const updatedPosts = [...page.posts];
+                updatedPosts[foundIndex] = {
+                  ...updatedPosts[foundIndex],
+                  ...data,
+                };
+                return { ...page, posts: updatedPosts };
+              }
+
+              return page;
+            }),
+          };
+        }
+        return oldData;
+      });
+    },
   });
 
   const { mutate } = useVotePost();

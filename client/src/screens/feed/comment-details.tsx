@@ -51,6 +51,42 @@ export const CommentsDetails = () => {
 
       return undefined;
     },
+    onSuccess: (data) => {
+      const commentsQueryKey = retrieveUseCommentsKey(
+        postId,
+        useCommentKeys.getState().commentsQueryKey.sort
+      );
+
+      queryClient.setQueryData<InfiniteComments>(
+        commentsQueryKey,
+        (oldData) => {
+          if (oldData) {
+            return {
+              pageParams: oldData.pageParams,
+              pages: oldData.pages.map((page) => {
+                const foundIndex = page.comments.findIndex(
+                  (comment) => comment.id === commentId
+                );
+
+                if (foundIndex !== -1) {
+                  const updatedComments = [...page.comments];
+
+                  updatedComments[foundIndex] = {
+                    ...updatedComments[foundIndex],
+                    ...data,
+                  };
+                  return { ...page, comments: updatedComments };
+                }
+
+                return page;
+              }),
+            };
+          }
+
+          return oldData;
+        }
+      );
+    },
   });
 
   const [refreshing, setRefreshing] = React.useState(false);
