@@ -5,6 +5,7 @@ import type { Post } from '@/api';
 import { useVotePost } from '@/api/posts/use-vote-post';
 import {
   ActivityIndicator,
+  Button,
   Image,
   Pressable,
   Text,
@@ -31,6 +32,7 @@ export const FeedCard = ({
   image,
   createdAt,
   commentsCount,
+  poll,
 }: Props) => {
   const [imageModalVisible, setImageModalVisible] = useState(false);
 
@@ -177,6 +179,43 @@ export const FeedCard = ({
             </Text>
           </View>
         </View>
+
+        {poll !== null && (
+          <View className="space-y-2 rounded-lg border-[0.5px] border-gray-300 p-4">
+            <View className="align-center flex-1 flex-row space-x-2">
+              <Text
+                className="font-semibold text-gray-600 dark:text-gray-300"
+                variant="sm"
+              >
+                Poll
+              </Text>
+
+              <Text
+                className="font-semibold text-black dark:text-white"
+                variant="xs"
+              >
+                {`${poll.participantsCount} Participants`}
+              </Text>
+            </View>
+
+            <Text className="text-gray-600 dark:text-gray-300" variant="xs">
+              Select only one answer
+            </Text>
+
+            <View className="space-y-2">
+              {poll.options.map((option) => {
+                return (
+                  <View key={option.id}>
+                    <Text>{option.text}</Text>
+                  </View>
+                );
+              })}
+            </View>
+
+            <Button label="Vote" variant="primary" />
+            <Button label="View Results" variant="secondary" />
+          </View>
+        )}
 
         {isOptimistic === true && (
           <View className="flex-row space-x-2">

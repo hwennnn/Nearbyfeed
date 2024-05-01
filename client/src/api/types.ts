@@ -15,6 +15,8 @@ export type Post = {
   like?: PostLike;
   isOptimistic?: boolean;
   commentsCount: number;
+
+  poll: PollWithOptions | null;
 };
 
 export type Comment = {
@@ -87,4 +89,43 @@ export interface Place {
     country_code: string;
   };
   boundingbox: string[];
+}
+
+export type Poll = {
+  id: number;
+  createdAt: Date;
+  updatedAt: Date;
+  postId: number;
+  votingLength: number;
+  participantsCount: number;
+};
+
+export type PollOption = {
+  id: number;
+  createdAt: Date;
+  updatedAt: Date;
+  text: string;
+  pollId: number;
+  voteCount: number;
+  order: number;
+};
+
+export type PollVote = {
+  id: number;
+  createdAt: Date;
+  updatedAt: Date;
+  userId: number;
+  pollId: number;
+  pollOptionId: number;
+};
+
+export type PollWithOptions = Poll & {
+  options: PollOption[];
+  vote?: PollVote;
+};
+
+export interface VotePollResult {
+  vote: PollVote;
+  poll: Poll;
+  pollOption: PollOption;
 }
