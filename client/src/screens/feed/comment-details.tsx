@@ -1,6 +1,7 @@
 import type { RouteProp } from '@react-navigation/native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useQueryClient } from '@tanstack/react-query';
+import { useColorScheme } from 'nativewind';
 import * as React from 'react';
 import { ActivityIndicator, RefreshControl } from 'react-native';
 
@@ -12,7 +13,7 @@ import type { RootStackParamList } from '@/navigation';
 import { ChildCommentList } from '@/screens/feed/child-comment-list';
 import { CommentCard } from '@/screens/feed/comment-card';
 import { ReplyComposer } from '@/screens/feed/reply-composer';
-import { HeaderButton, ScrollView, View } from '@/ui';
+import { colors, HeaderButton, Pressable, ScrollView, View } from '@/ui';
 import Divider from '@/ui/core/divider';
 import { Layout } from '@/ui/core/layout';
 import { stringUtils } from '@/utils/string-utils';
@@ -22,6 +23,11 @@ type Props = RouteProp<RootStackParamList, 'CommentDetails'>;
 export const CommentsDetails = () => {
   const { params } = useRoute<Props>();
   const { commentId, postId, repliesCount } = params;
+
+  const { colorScheme } = useColorScheme();
+
+  const refreshColor =
+    colorScheme === 'dark' ? colors.neutral[400] : colors.neutral[500];
 
   const navigation = useNavigation();
 
@@ -125,25 +131,29 @@ export const CommentsDetails = () => {
       <ScrollView
         className="flex-1"
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            title="Pull down to refresh"
+            tintColor={refreshColor}
+            titleColor={refreshColor}
+          />
         }
       >
-        <View className="flex-1 space-y-3 bg-charcoal-900 pt-2">
-          <View className="flex-row items-center space-x-2">
-            <CommentCard {...parentComment} />
+        <Pressable className="flex-1">
+          <View className="flex-1 space-y-3 bg-charcoal-900 pt-2">
+            <View className="flex-row items-center space-x-2">
+              <CommentCard {...parentComment} />
+            </View>
           </View>
-        </View>
 
-        <View className="flex-1 pl-6 pr-4">
           <ChildCommentList
             commentId={commentId}
             postId={postId}
             refreshing={refreshing}
             onRefetchDone={() => setRefreshing(false)}
           />
-        </View>
-
-        <View className="h-[95px]" />
+        </Pressable>
       </ScrollView>
 
       <View className="absolute bottom-0 z-50 h-fit w-full bg-charcoal-950">

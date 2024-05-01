@@ -46,6 +46,10 @@ export const ChildCommentList = ({
     return <CommentCard {...item} isChildComment={true} />;
   }, []);
 
+  const footer = React.useCallback(() => {
+    return <View className="h-[95px]" />;
+  }, []);
+
   if (isLoading) {
     return (
       <View className="flex-1 items-center justify-center">
@@ -71,7 +75,7 @@ export const ChildCommentList = ({
   };
 
   return (
-    <View className="mt-2 min-h-[2px] flex-1">
+    <View className="mt-2 min-h-[2px] flex-1 pl-6 pr-4">
       <FlashList
         refreshing={false}
         data={allComments}
@@ -80,6 +84,7 @@ export const ChildCommentList = ({
         estimatedItemSize={50}
         onEndReached={handleEndReached}
         onEndReachedThreshold={0.1}
+        ListFooterComponent={footer}
       />
     </View>
   );

@@ -100,7 +100,7 @@ const LocationHeader = ({
 
   return (
     <TouchableOpacity
-      className="mt-2 mb-4 block flex-row items-center rounded-md border-[1px] border-neutral-400 p-4 shadow-xl dark:border-charcoal-700 dark:bg-charcoal-800"
+      className="my-4 block flex-row items-center rounded-md border-[1px] border-neutral-400 p-4 shadow-xl dark:border-charcoal-700 dark:bg-charcoal-800"
       onPress={() => setShowFullName((prev) => !prev)}
     >
       <Icon name="location-arrow" color={iconColor} size={24} />
@@ -128,6 +128,11 @@ export const FeedList = ({
   setDistanceCallback,
 }: Props) => {
   const [refreshing, setRefreshing] = useState(false);
+
+  const { colorScheme } = useColorScheme();
+
+  const refreshColor =
+    colorScheme === 'dark' ? colors.neutral[400] : colors.neutral[500];
 
   const {
     data,
@@ -208,7 +213,13 @@ export const FeedList = ({
         estimatedItemSize={200}
         ListEmptyComponent={<EmptyList isLoading={isLoading} />}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            title="Pull down to refresh"
+            tintColor={refreshColor}
+            titleColor={refreshColor}
+          />
         }
         onEndReached={handleEndReached}
         onEndReachedThreshold={0.1}

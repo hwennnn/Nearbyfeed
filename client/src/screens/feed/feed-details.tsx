@@ -12,6 +12,7 @@ import type { RootStackParamList } from '@/navigation';
 import { CommentComposer } from '@/screens/feed/comment-composer';
 import { CommentList } from '@/screens/feed/comment-list';
 import {
+  colors,
   Image,
   Pressable,
   ScrollView,
@@ -93,6 +94,8 @@ export const FeedDetails = () => {
 
   const iconColor = isDark ? 'text-neutral-400' : 'text-neutral-500';
 
+  const refreshColor = isDark ? colors.neutral[400] : colors.neutral[500];
+
   const onRefresh = async () => {
     setRefreshing(true);
   };
@@ -138,10 +141,16 @@ export const FeedDetails = () => {
       <ScrollView
         className="flex-1"
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            title="Pull down to refresh"
+            tintColor={refreshColor}
+            titleColor={refreshColor}
+          />
         }
       >
-        <View className="flex-1 space-y-3 bg-charcoal-900 pt-4">
+        <Pressable className="flex-1 space-y-3 bg-charcoal-900 pt-4">
           <View className="flex-row items-center space-x-2 px-4">
             <View className="h-[36px] w-[36px] items-center justify-center rounded-full bg-gray-100 dark:bg-gray-600">
               {author?.image === null && (
@@ -269,7 +278,7 @@ export const FeedDetails = () => {
             refreshing={refreshing}
             onRefetchDone={() => setRefreshing(false)}
           />
-        </View>
+        </Pressable>
         <View className="h-[95px]" />
       </ScrollView>
 

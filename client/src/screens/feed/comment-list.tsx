@@ -144,7 +144,6 @@ export const CommentList = ({ postId, refreshing, onRefetchDone }: Props) => {
 
       <View className="min-h-[2px] flex-1">
         <FlashList
-          refreshing={false}
           data={allComments}
           renderItem={renderItem}
           estimatedItemSize={100}
