@@ -40,7 +40,6 @@ export const Text = ({
   return (
     <SText
       className={`
-
       ${textVariants.defaults}
       ${textVariants[variant]}
       ${className}

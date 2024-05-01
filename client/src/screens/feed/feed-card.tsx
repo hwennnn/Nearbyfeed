@@ -3,9 +3,9 @@ import React, { useState } from 'react';
 
 import type { Post } from '@/api';
 import { useVotePost } from '@/api/posts/use-vote-post';
+import { PollCard } from '@/screens/feed/poll-card';
 import {
   ActivityIndicator,
-  Button,
   Image,
   Pressable,
   Text,
@@ -57,8 +57,8 @@ export const FeedCard = ({
   };
 
   return (
-    <TouchableOpacity
-      className="block overflow-hidden bg-neutral-200 p-4 shadow-xl dark:bg-charcoal-900"
+    <Pressable
+      className="block overflow-hidden bg-neutral-200 p-4 shadow-xl dark:bg-black"
       onPress={onPress}
     >
       <View className="flex-1 space-y-3">
@@ -134,6 +134,8 @@ export const FeedCard = ({
           </View>
         )}
 
+        {poll !== null && <PollCard poll={poll} />}
+
         <View className="flex-row justify-between px-10 pt-2">
           <Pressable onPress={() => handleVote(isLiked ? 0 : 1)}>
             <View className="flex-row items-center space-x-1">
@@ -180,43 +182,6 @@ export const FeedCard = ({
           </View>
         </View>
 
-        {poll !== null && (
-          <View className="space-y-2 rounded-lg border-[0.5px] border-gray-300 p-4">
-            <View className="align-center flex-1 flex-row space-x-2">
-              <Text
-                className="font-semibold text-gray-600 dark:text-gray-300"
-                variant="sm"
-              >
-                Poll
-              </Text>
-
-              <Text
-                className="font-semibold text-black dark:text-white"
-                variant="xs"
-              >
-                {`${poll.participantsCount} Participants`}
-              </Text>
-            </View>
-
-            <Text className="text-gray-600 dark:text-gray-300" variant="xs">
-              Select only one answer
-            </Text>
-
-            <View className="space-y-2">
-              {poll.options.map((option) => {
-                return (
-                  <View key={option.id}>
-                    <Text>{option.text}</Text>
-                  </View>
-                );
-              })}
-            </View>
-
-            <Button label="Vote" variant="primary" />
-            <Button label="View Results" variant="secondary" />
-          </View>
-        )}
-
         {isOptimistic === true && (
           <View className="flex-row space-x-2">
             <Text>Creating post....</Text>
@@ -225,6 +190,6 @@ export const FeedCard = ({
           </View>
         )}
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 };

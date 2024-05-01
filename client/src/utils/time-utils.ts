@@ -1,5 +1,7 @@
 import dateFormat from 'dateformat';
 
+import { stringUtils } from '@/utils/string-utils';
+
 const getCurrentTimeInMs = (): number => {
   return new Date().getTime();
 };
@@ -41,11 +43,56 @@ const formatCreatedTime = (createdTime: Date, currentTime?: Date): string => {
   }
 };
 
+const formatCreatedTimeInFull = (
+  createdTime: Date,
+  currentTime?: Date
+): string => {
+  currentTime ??= new Date();
+  const timeDiff = Math.abs(currentTime.getTime() - createdTime.getTime());
+  const seconds = Math.floor(timeDiff / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+  const months = Math.floor(days / 30);
+  const years = Math.floor(months / 12);
+
+  if (years > 0) {
+    return stringUtils.formatSingularPlural('year', 'years', 'years', years);
+  } else if (months > 0) {
+    return stringUtils.formatSingularPlural(
+      'month',
+      'months',
+      'months',
+      months
+    );
+  } else if (days > 0) {
+    return stringUtils.formatSingularPlural('day', 'days', 'days', days);
+  } else if (hours > 0) {
+    return stringUtils.formatSingularPlural('hour', 'hours', 'hours', hours);
+  } else {
+    return stringUtils.formatSingularPlural(
+      'minute',
+      'minutes',
+      'minutes',
+      minutes
+    );
+  }
+};
+
+const addDays = (date: Date, days: number): Date => {
+  const d = new Date(date);
+  d.setDate(d.getDate() + days);
+
+  return d;
+};
+
 const timeUtils = {
   getCurrentTimeInMs,
   formatDateStringToMonthYear,
   formatDateStringToDateMonthYear,
   formatCreatedTime,
+  formatCreatedTimeInFull,
+  addDays,
 };
 
 export { timeUtils };

@@ -5,6 +5,7 @@ export * from './header-button';
 export * from './image';
 export * from './input';
 export * from './list';
+export * from './loading-button';
 export * from './pressable';
 export * from './scroll-view';
 export * from './select';

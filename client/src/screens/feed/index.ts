@@ -5,3 +5,4 @@ export * from './feed';
 export * from './feed-card';
 export * from './feed-details';
 export * from './feed-list';
+export * from './poll-card';
