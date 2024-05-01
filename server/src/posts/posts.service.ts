@@ -47,6 +47,7 @@ export class PostsService {
       fullLocationName: geolocationName?.displayName,
     };
 
+    console.log(data);
     // await sleep(15000);
 
     const post = await this.prismaService.post
@@ -128,6 +129,22 @@ export class PostsService {
           likes: selectLikes,
           author: true,
           commentsCount: true,
+          poll: {
+            select: {
+              options: {
+                orderBy: {
+                  order: 'asc',
+                },
+              },
+              pollVotes: selectLikes,
+              id: true,
+              createdAt: true,
+              updatedAt: true,
+              postId: true,
+              votingLength: true,
+              participantsCount: true,
+            },
+          },
         },
         orderBy: {
           createdAt: 'desc',
@@ -159,6 +176,22 @@ export class PostsService {
       };
 
       const { likes: _, ...parsedPost } = p;
+
+      const poll = parsedPost.poll;
+
+      if (poll !== null) {
+        const p = {
+          ...poll,
+          vote:
+            poll.pollVotes !== undefined && poll.pollVotes.length > 0
+              ? poll.pollVotes[0]
+              : undefined,
+        };
+
+        const { pollVotes: _, ...parsedPoll } = p;
+
+        return { ...parsedPost, poll: parsedPoll };
+      }
 
       return parsedPost;
     });
@@ -203,6 +236,22 @@ export class PostsService {
           likes: selectLikes,
           author: true,
           commentsCount: true,
+          poll: {
+            select: {
+              options: {
+                orderBy: {
+                  order: 'asc',
+                },
+              },
+              pollVotes: selectLikes,
+              id: true,
+              createdAt: true,
+              updatedAt: true,
+              postId: true,
+              votingLength: true,
+              participantsCount: true,
+            },
+          },
         },
       })
       .catch((e) => {
@@ -227,6 +276,22 @@ export class PostsService {
     };
 
     const { likes: _, ...result } = parsedPost;
+
+    const poll = result.poll;
+
+    if (poll !== null) {
+      const p = {
+        ...poll,
+        vote:
+          poll.pollVotes !== undefined && poll.pollVotes.length > 0
+            ? poll.pollVotes[0]
+            : undefined,
+      };
+
+      const { pollVotes: _, ...parsedPoll } = p;
+
+      return { ...result, poll: parsedPoll };
+    }
 
     return result;
   }

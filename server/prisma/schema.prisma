@@ -50,7 +50,7 @@ model Post {
   commentsCount    Int        @default(0)
   comments         Comment[]
   likes            PostLike[]
-  Poll             Poll[]
+  poll             Poll?
 }
 
 model Comment {
@@ -101,7 +101,7 @@ model Poll {
   id                Int          @id @default(autoincrement())
   createdAt         DateTime     @default(now())
   updatedAt         DateTime     @updatedAt
-  postId            Int
+  postId            Int          @unique
   post              Post         @relation(fields: [postId], references: [id], onDelete: Cascade)
   votingLength      Int
   participantsCount Int          @default(0)
@@ -114,8 +114,9 @@ model PollOption {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   text      String
-  pollId    Int
   voteCount Int        @default(0)
+  order     Int
+  pollId    Int
   poll      Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
   pollVotes PollVote[]
 }

@@ -29,8 +29,9 @@ export class PollService {
           ...dto,
           options: {
             createMany: {
-              data: createPollDto.options.map((option) => ({
+              data: createPollDto.options.map((option, index) => ({
                 text: this.filterService.filterText(option),
+                order: index,
               })),
             },
           },
