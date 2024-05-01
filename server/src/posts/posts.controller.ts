@@ -33,7 +33,6 @@ import {
   UpdatePostDto,
   VotePollDto,
 } from 'src/posts/dto';
-import { CreatePollDto } from 'src/posts/dto/create-poll.dto';
 import { CreatePostDto } from 'src/posts/dto/create-post.dto';
 import { LikeDto } from 'src/posts/dto/like.dto';
 import {
@@ -221,16 +220,6 @@ export class PostsController {
       +commentId,
       likeDto.value,
     );
-  }
-
-  @Post(':id/polls')
-  @UseGuards(JwtAuthGuard)
-  async createPoll(
-    @Body() createPollDto: CreatePollDto,
-    @GetUser('userId') userId: string,
-    @Param('id') postId: string,
-  ): Promise<PollWithOptions> {
-    return await this.pollService.createPoll(createPollDto, +postId);
   }
 
   @Get(':postId/polls/:pollId')

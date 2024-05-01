@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { FilterService } from 'src/filter/filter.service';
-import { type CreatePollDto, type VotePollDto } from 'src/posts/dto';
+import { type VotePollDto } from 'src/posts/dto';
 import { type PollWithOptions, type VotePollResult } from 'src/posts/entities';
 
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -13,45 +13,6 @@ export class PollService {
     private readonly logger: Logger,
     private readonly filterService: FilterService,
   ) {}
-
-  async createPoll(
-    createPollDto: CreatePollDto,
-    postId: number,
-  ): Promise<PollWithOptions> {
-    const dto = {
-      votingLength: createPollDto.votingLength,
-      postId,
-    };
-
-    const pollWithOptions = await this.prismaService.poll
-      .create({
-        data: {
-          ...dto,
-          options: {
-            createMany: {
-              data: createPollDto.options.map((option, index) => ({
-                text: this.filterService.filterText(option),
-                order: index,
-              })),
-            },
-          },
-        },
-        include: {
-          options: true,
-        },
-      })
-      .catch((e) => {
-        this.logger.error(
-          'Failed to create poll',
-          e instanceof Error ? e.stack : undefined,
-          PollService.name,
-        );
-
-        throw new BadRequestException('Failed to create poll');
-      });
-
-    return pollWithOptions;
-  }
 
   async findPoll(
     postId: number,

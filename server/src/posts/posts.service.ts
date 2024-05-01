@@ -32,8 +32,12 @@ export class PostsService {
       +createPostDto.longitude,
     );
 
+    const hasPollData =
+      createPostDto.votingLength !== undefined &&
+      createPostDto.options !== undefined &&
+      createPostDto.options.length > 0;
+
     const data = {
-      ...createPostDto,
       authorId,
       image,
       latitude: +createPostDto.latitude,
@@ -45,16 +49,35 @@ export class PostsService {
           : null,
       locationName: geolocationName?.locationName,
       fullLocationName: geolocationName?.displayName,
+      poll: hasPollData
+        ? {
+            create: {
+              votingLength: createPostDto.votingLength,
+              options: {
+                createMany: {
+                  data: createPostDto.options.map((option, index) => ({
+                    text: this.filterService.filterText(option),
+                    order: index,
+                  })),
+                },
+              },
+            },
+          }
+        : undefined,
     };
-
-    console.log(data);
-    // await sleep(15000);
 
     const post = await this.prismaService.post
       .create({
         data,
         include: {
           author: true,
+          poll: hasPollData
+            ? {
+                include: {
+                  options: true,
+                },
+              }
+            : false,
         },
       })
       .catch((e) => {

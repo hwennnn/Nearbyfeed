@@ -1,11 +1,18 @@
 import {
+  ArrayMaxSize,
+  ArrayMinSize,
+  IsArray,
   IsLatitude,
   IsLongitude,
+  IsNumber,
   IsOptional,
   IsString,
+  Length,
   MaxLength,
   MinLength,
+  Validate,
 } from 'class-validator';
+import { ValidNumberRangeValue } from 'src/posts/decorators';
 
 export class CreatePostDto {
   @IsString()
@@ -24,4 +31,17 @@ export class CreatePostDto {
 
   @IsLongitude()
   longitude: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Validate(ValidNumberRangeValue, [1, 7])
+  votingLength: number;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  @Length(1, 120, { each: true })
+  @ArrayMinSize(1)
+  @ArrayMaxSize(7)
+  options: string[];
 }
