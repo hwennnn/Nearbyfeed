@@ -1,7 +1,9 @@
+import { useColorScheme } from 'nativewind';
 import React from 'react';
 
 import type { PollWithOptions } from '@/api';
 import { LoadingButton, Pressable, Text, View } from '@/ui';
+import { FontAwesome5 } from '@/ui/icons/ionicons';
 import { stringUtils } from '@/utils/string-utils';
 import { timeUtils } from '@/utils/time-utils';
 
@@ -10,6 +12,11 @@ type Props = {
 };
 
 export const PollCard = ({ poll }: Props) => {
+  const { colorScheme } = useColorScheme();
+
+  const isDark = colorScheme === 'dark';
+  const iconColor = isDark ? 'text-neutral-400' : 'text-neutral-500';
+
   const [selectedVoteOption, setSelectedVoteOption] = React.useState<
     number | null
   >(null);
@@ -24,12 +31,16 @@ export const PollCard = ({ poll }: Props) => {
   return (
     <View className="mt-4 space-y-2 rounded-lg border-[0.5px] bg-charcoal-850 p-4">
       <View className="flex-1 flex-row items-center space-x-2">
+        <FontAwesome5 name="poll-h" size={20} className={iconColor} />
+
         <Text
           className="font-semibold text-gray-600 dark:text-gray-300"
           variant="sm"
         >
           Poll
         </Text>
+
+        <View className="mx-1 h-[80%] w-[0.5px] bg-white" />
 
         <Text className="font-semibold text-black dark:text-white" variant="xs">
           {stringUtils.formatSingularPlural(

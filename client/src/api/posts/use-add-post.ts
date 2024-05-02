@@ -14,6 +14,8 @@ type Variables = {
   latitude: number;
   longitude: number;
   image: ImagePicker.ImagePickerAsset | null;
+  votingLength?: number;
+  options?: string[];
 };
 type Response = Post;
 type PostsResponse = {
@@ -53,6 +55,11 @@ export const useAddPost = createMutation<
     formData.append('latitude', variables.latitude.toString());
     formData.append('longitude', variables.longitude.toString());
 
+    // if (variables.options !== undefined && variables.votingLength !== undefined) {
+    //   formData.append('options', variables.latitude.toString());
+    //   formData.append('votingLength', variables.longitude.toString());
+    // }
+
     const response = await client({
       url: 'posts',
       method: 'POST',
@@ -87,6 +94,7 @@ export const useAddPost = createMutation<
       commentsCount: 0,
       author: currentUser,
       authorId: currentUser.id,
+      poll: null,
     };
 
     // Update the cache optimistically by adding the new post to the existing list

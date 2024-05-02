@@ -61,6 +61,8 @@ export const Input = React.forwardRef<TextInput, NInputProps>((props, ref) => {
       )}
       <View className="items-between flex-row items-center space-x-2">
         <STextInput
+          autoCapitalize="none"
+          // autoCorrect={false}
           testID="STextInput"
           ref={ref}
           placeholderTextColor={colors.neutral[400]}

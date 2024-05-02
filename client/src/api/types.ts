@@ -16,7 +16,7 @@ export type Post = {
   isOptimistic?: boolean;
   commentsCount: number;
 
-  poll: PollWithOptions | null;
+  poll?: PollWithOptions | null;
 };
 
 export type Comment = {

@@ -1,4 +1,6 @@
 import { styled } from 'nativewind';
-import Icon from 'react-native-vector-icons/Ionicons';
+import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
+import IoniIcon from 'react-native-vector-icons/Ionicons';
 
-export const Ionicons = styled(Icon);
+export const Ionicons = styled(IoniIcon);
+export const FontAwesome5 = styled(FontAwesome5Icon);

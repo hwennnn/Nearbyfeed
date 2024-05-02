@@ -11,6 +11,7 @@ import { usePostKeys } from '@/core/posts';
 import type { RootStackParamList } from '@/navigation';
 import { CommentComposer } from '@/screens/feed/comment-composer';
 import { CommentList } from '@/screens/feed/comment-list';
+import { PollCard } from '@/screens/feed/poll-card';
 import {
   colors,
   Image,
@@ -119,6 +120,7 @@ export const FeedDetails = () => {
     locationName,
     createdAt,
     commentsCount,
+    poll,
   } = post;
 
   const isLiked = like !== undefined && like.value === 1;
@@ -220,6 +222,12 @@ export const FeedDetails = () => {
                 visible={imageModalVisible}
                 onClose={() => setImageModalVisible(false)}
               />
+            </View>
+          )}
+
+          {poll !== null && poll !== undefined && (
+            <View className="mx-4">
+              <PollCard poll={poll} />
             </View>
           )}
 

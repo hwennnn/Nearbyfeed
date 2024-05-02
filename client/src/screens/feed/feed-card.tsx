@@ -58,7 +58,7 @@ export const FeedCard = ({
 
   return (
     <Pressable
-      className="block overflow-hidden bg-neutral-200 p-4 shadow-xl dark:bg-black"
+      className="block overflow-hidden bg-neutral-200 p-4 shadow-xl dark:bg-charcoal-900"
       onPress={onPress}
     >
       <View className="flex-1 space-y-3">
@@ -134,7 +134,7 @@ export const FeedCard = ({
           </View>
         )}
 
-        {poll !== null && <PollCard poll={poll} />}
+        {poll !== null && poll !== undefined && <PollCard poll={poll} />}
 
         <View className="flex-row justify-between px-10 pt-2">
           <Pressable onPress={() => handleVote(isLiked ? 0 : 1)}>

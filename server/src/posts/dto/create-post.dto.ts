@@ -40,8 +40,8 @@ export class CreatePostDto {
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  @Length(1, 120, { each: true })
-  @ArrayMinSize(1)
+  @Length(1, 70, { each: true })
+  @ArrayMinSize(2)
   @ArrayMaxSize(7)
   options: string[];
 }

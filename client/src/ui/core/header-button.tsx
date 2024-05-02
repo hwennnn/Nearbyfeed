@@ -8,7 +8,12 @@ import colors from '@/ui/theme/colors';
 
 import { TouchableOpacity } from './touchable-opacity';
 
-export const HeaderButton = ({ iconName }: { iconName: string }) => {
+type Props = {
+  iconName: string;
+  disabled?: boolean;
+};
+
+export const HeaderButton = ({ iconName, disabled = false }: Props) => {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
 
@@ -21,7 +26,7 @@ export const HeaderButton = ({ iconName }: { iconName: string }) => {
   };
 
   return (
-    <TouchableOpacity onPress={closeModal} className="">
+    <TouchableOpacity onPress={closeModal} className="" disabled={disabled}>
       <Icon
         name={iconName}
         size={28}

@@ -62,7 +62,6 @@ export const Root = () => {
                   component={AddFeed}
                   options={{
                     headerTitle: 'Create a Feed',
-                    headerLeft: () => <HeaderButton iconName="close-outline" />,
                   }}
                 />
                 <Stack.Screen
