@@ -4,7 +4,7 @@ import {
   IsArray,
   IsLatitude,
   IsLongitude,
-  IsNumber,
+  IsNumberString,
   IsOptional,
   IsString,
   Length,
@@ -33,7 +33,7 @@ export class CreatePostDto {
   longitude: number;
 
   @IsOptional()
-  @IsNumber()
+  @IsNumberString()
   @Validate(ValidNumberRangeValue, [1, 7])
   votingLength: number;
 

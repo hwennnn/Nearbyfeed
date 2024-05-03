@@ -55,10 +55,15 @@ export const useAddPost = createMutation<
     formData.append('latitude', variables.latitude.toString());
     formData.append('longitude', variables.longitude.toString());
 
-    // if (variables.options !== undefined && variables.votingLength !== undefined) {
-    //   formData.append('options', variables.latitude.toString());
-    //   formData.append('votingLength', variables.longitude.toString());
-    // }
+    if (
+      variables.options !== undefined &&
+      variables.votingLength !== undefined
+    ) {
+      for (const option of variables.options) {
+        formData.append('options[]', option);
+      }
+      formData.append('votingLength', variables.votingLength.toString());
+    }
 
     const response = await client({
       url: 'posts',

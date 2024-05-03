@@ -91,7 +91,7 @@ export const AddFeed = () => {
   const isDark = colorScheme === 'dark';
   const iconColor = isDark ? 'text-neutral-400' : 'text-neutral-500';
 
-  const [isPollEnabled, setIsPollEnabled] = React.useState(true);
+  const [isPollEnabled, setIsPollEnabled] = React.useState(false);
   const [selectedVotingLength, setSelectedVotingLength] =
     React.useState<VotingLengthOption>(DEFAULT_VOTING_LENGTH_OPTION);
 

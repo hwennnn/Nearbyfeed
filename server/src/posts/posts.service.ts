@@ -52,11 +52,11 @@ export class PostsService {
       poll: hasPollData
         ? {
             create: {
-              votingLength: createPostDto.votingLength,
+              votingLength: +createPostDto.votingLength,
               options: {
                 createMany: {
                   data: createPostDto.options.map((option, index) => ({
-                    text: this.filterService.filterText(option),
+                    text: option,
                     order: index,
                   })),
                 },
