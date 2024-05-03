@@ -6,7 +6,7 @@ import { translate, useSelectedTheme } from '@/core';
 import type { Option } from '@/ui';
 import { Options } from '@/ui';
 
-import { Item } from './item';
+import { BottomSheetItem } from '../../ui/core/bottom-sheet/bottom-sheet-item';
 
 export const ThemeItem = () => {
   const { selectedTheme, setSelectedTheme } = useSelectedTheme();
@@ -36,7 +36,11 @@ export const ThemeItem = () => {
 
   return (
     <>
-      <Item text="settings.theme.title" value={theme?.label} onPress={open} />
+      <BottomSheetItem
+        text="settings.theme.title"
+        value={theme?.label}
+        onPress={open}
+      />
       <Options
         ref={optionsRef}
         options={themes}

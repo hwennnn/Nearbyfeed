@@ -22,7 +22,7 @@ import { Github, Rate, Share, Support, Website } from '@/ui/icons';
 import colors from '@/ui/theme/colors';
 import { getInitials } from '@/utils/get-initials';
 
-import { Item } from './item';
+import { BottomSheetItem } from '../../ui/core/bottom-sheet/bottom-sheet-item';
 import { ItemsContainer } from './items-container';
 import { LanguageItem } from './language-item';
 import { ThemeItem } from './theme-item';
@@ -103,22 +103,22 @@ export const Profile = () => {
         </ItemsContainer>
 
         <ItemsContainer title="settings.about">
-          <Item text="settings.app_name" value={Env.NAME} />
-          <Item text="settings.version" value={Env.VERSION} />
+          <BottomSheetItem text="settings.app_name" value={Env.NAME} />
+          <BottomSheetItem text="settings.version" value={Env.VERSION} />
         </ItemsContainer>
 
         <ItemsContainer title="settings.support_us">
-          <Item
+          <BottomSheetItem
             text="settings.share"
             icon={<Share color={iconColor} />}
             onPress={() => {}}
           />
-          <Item
+          <BottomSheetItem
             text="settings.rate"
             icon={<Rate color={iconColor} />}
             onPress={() => {}}
           />
-          <Item
+          <BottomSheetItem
             text="settings.support"
             icon={<Support color={iconColor} />}
             onPress={() => {}}
@@ -126,14 +126,14 @@ export const Profile = () => {
         </ItemsContainer>
 
         <ItemsContainer title="settings.links">
-          <Item text="settings.privacy" onPress={() => {}} />
-          <Item text="settings.terms" onPress={() => {}} />
-          <Item
+          <BottomSheetItem text="settings.privacy" onPress={() => {}} />
+          <BottomSheetItem text="settings.terms" onPress={() => {}} />
+          <BottomSheetItem
             text="settings.github"
             icon={<Github color={iconColor} />}
             onPress={() => {}}
           />
-          <Item
+          <BottomSheetItem
             text="settings.website"
             icon={<Website color={iconColor} />}
             onPress={() => {}}
@@ -142,7 +142,7 @@ export const Profile = () => {
 
         <View className="my-8">
           <ItemsContainer>
-            <Item text="settings.logout" onPress={signOutUser} />
+            <BottomSheetItem text="settings.logout" onPress={signOutUser} />
           </ItemsContainer>
         </View>
       </ScrollView>

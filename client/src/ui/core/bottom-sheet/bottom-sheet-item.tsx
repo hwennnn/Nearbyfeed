@@ -10,7 +10,7 @@ type ItemProps = {
   icon?: React.ReactNode;
 };
 
-export const Item = ({ text, value, icon, onPress }: ItemProps) => {
+export const BottomSheetItem = ({ text, value, icon, onPress }: ItemProps) => {
   const isPressable = onPress !== undefined;
   const Container = isPressable ? TouchableOpacity : View;
   return (

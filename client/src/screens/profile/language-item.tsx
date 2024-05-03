@@ -7,7 +7,7 @@ import type { Language } from '@/core/i18n/resources';
 import type { Option } from '@/ui';
 import { Options } from '@/ui';
 
-import { Item } from './item';
+import { BottomSheetItem } from '../../ui/core/bottom-sheet/bottom-sheet-item';
 
 export const LanguageItem = () => {
   const { language, setLanguage } = useSelectedLanguage();
@@ -36,7 +36,7 @@ export const LanguageItem = () => {
 
   return (
     <>
-      <Item
+      <BottomSheetItem
         text="settings.language"
         value={selectedLanguage?.label}
         onPress={open}

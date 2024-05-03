@@ -18,9 +18,14 @@ import * as ImagePicker from 'expo-image-picker';
 import { useColorScheme } from 'nativewind';
 import * as React from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { undefined } from 'zod';
+import { showMessage } from 'react-native-flash-message';
 
 import { useAddPost } from '@/api';
+import type { VotingLengthOption } from '@/screens/feed/poll-voting-length-item';
+import {
+  DEFAULT_VOTING_LENGTH_OPTION,
+  PollVotingLengthItem,
+} from '@/screens/feed/poll-voting-length-item';
 import {
   ActivityIndicator,
   ControlledInput,
@@ -55,7 +60,7 @@ export class CreatePostDto {
       value.length > 0
   )
   @IsString()
-  @Length(15, 100, {
+  @Length(15, 1000, {
     message: 'Content must have at least 15 characters.',
   })
   @Transform(({ value }) => value?.trim())
@@ -87,7 +92,8 @@ export const AddFeed = () => {
   const iconColor = isDark ? 'text-neutral-400' : 'text-neutral-500';
 
   const [isPollEnabled, setIsPollEnabled] = React.useState(true);
-  const [votingLength, setVotingLength] = React.useState(5);
+  const [selectedVotingLength, setSelectedVotingLength] =
+    React.useState<VotingLengthOption>(DEFAULT_VOTING_LENGTH_OPTION);
 
   const { control, handleSubmit, register, unregister } =
     useForm<CreatePostDto>({
@@ -141,25 +147,24 @@ export const AddFeed = () => {
         options: isPollEnabled
           ? data.options.map((option) => option.value)
           : undefined,
-        // votingLength: isPollEnabled ? votingLength : undefined,
+        votingLength: isPollEnabled ? selectedVotingLength.value : undefined,
       };
+      console.log('🚀 ~ dto:', dto);
 
-      console.log(data);
-
-      // addPost(dto, {
-      //   onSuccess: () => {
-      //     showMessage({
-      //       message: 'Post added successfully',
-      //       type: 'success',
-      //     });
-      //     navigation.goBack();
-      //   },
-      //   onError: () => {
-      //     showErrorMessage('Error adding post');
-      //   },
-      // });
+      addPost(dto, {
+        onSuccess: () => {
+          showMessage({
+            message: 'Post added successfully',
+            type: 'success',
+          });
+          navigation.goBack();
+        },
+        onError: () => {
+          showErrorMessage('Error adding post');
+        },
+      });
     },
-    [addPost, image, isPollEnabled, navigation, votingLength]
+    [addPost, image, isPollEnabled, navigation, selectedVotingLength]
   );
 
   const pickImage = async () => {
@@ -248,24 +253,31 @@ export const AddFeed = () => {
           {isPollEnabled && (
             <View className="flex-1 flex-col space-y-1">
               <View className="mt-4 flex-1 space-y-2 rounded-lg border-[0.5px] bg-charcoal-850 p-4">
-                <View className="flex-1 flex-row items-center space-x-2">
-                  <FontAwesome5 name="poll-h" size={20} className={iconColor} />
+                <View className="flex-1 flex-row">
+                  <View className="flex-1 flex-row items-center space-x-2">
+                    <FontAwesome5
+                      name="poll-h"
+                      size={20}
+                      className={iconColor}
+                    />
 
-                  <Text
-                    className="font-semibold text-gray-600 dark:text-gray-300"
-                    variant="sm"
-                  >
-                    Poll ends in
-                  </Text>
-                  <Text
-                    className="font-semibold text-gray-600 dark:text-gray-300"
-                    variant="sm"
-                  >
-                    5 days
-                  </Text>
+                    <Text
+                      className="font-semibold text-gray-600 dark:text-gray-300"
+                      variant="sm"
+                    >
+                      Poll ends in
+                    </Text>
+
+                    <PollVotingLengthItem
+                      selectedOption={selectedVotingLength}
+                      onSelectCallback={(option) =>
+                        setSelectedVotingLength(option as VotingLengthOption)
+                      }
+                    />
+                  </View>
 
                   <Pressable
-                    className="flex-1 items-end"
+                    className="items-end"
                     onPress={() => setIsPollEnabled(false)}
                   >
                     <Ionicons size={30} name="close" className={iconColor} />
