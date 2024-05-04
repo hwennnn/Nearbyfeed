@@ -1,4 +1,5 @@
 import type { AxiosError } from 'axios';
+import { produce } from 'immer';
 import { createMutation } from 'react-query-kit';
 
 import type { Post, PostLike } from '@/api/types';
@@ -7,7 +8,7 @@ import { usePostKeys } from '@/core/posts';
 import { client, queryClient } from '../common';
 
 type Variables = {
-  postId: string;
+  postId: number;
   value: number;
 };
 type Response = {
@@ -24,7 +25,7 @@ type InfinitePosts = {
 };
 type Context = {
   previousPosts?: InfinitePosts;
-  newPost: Variables;
+  variables: Variables;
   previousPost?: Post;
 };
 
@@ -47,7 +48,7 @@ export const useVotePost = createMutation<
         return Promise.reject(error);
       }),
   // When mutate is called:
-  onMutate: async (newPost) => {
+  onMutate: async (variables) => {
     // 1. Handle the infinite posts
     const postsQueryKey = ['posts', usePostKeys.getState().postsQueryKey];
 
@@ -64,23 +65,22 @@ export const useVotePost = createMutation<
         return {
           pageParams: oldData.pageParams,
           pages: oldData.pages.map((page) => {
-            const foundIndex = page.posts.findIndex(
-              (post) => post.id.toString() === newPost.postId
-            );
-
-            if (foundIndex !== -1) {
-              const updatedPosts = [...page.posts];
-              const newOptimisticPost = retrieveNewOptimisticPost(
-                updatedPosts[foundIndex],
-                newPost.value
+            return produce(page, (draftPage) => {
+              const foundIndex = draftPage.posts.findIndex(
+                (post) => post.id === variables.postId
               );
-              updatedPosts[foundIndex] = {
-                ...newOptimisticPost,
-              };
-              return { ...page, posts: updatedPosts };
-            }
 
-            return page;
+              if (foundIndex !== -1) {
+                const post = draftPage.posts[foundIndex];
+                const newOptimisticPost = retrieveNewOptimisticPost(
+                  post,
+                  variables.value
+                );
+
+                post.points = newOptimisticPost.points;
+                post.like = newOptimisticPost.like;
+              }
+            });
           }),
         };
       }
@@ -88,7 +88,7 @@ export const useVotePost = createMutation<
     });
 
     // 2. Handle the single post query
-    const postQueryKey = ['posts', { id: +newPost.postId }];
+    const postQueryKey = ['posts', { id: variables.postId }];
 
     // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
     await queryClient.cancelQueries({ queryKey: postQueryKey });
@@ -98,22 +98,25 @@ export const useVotePost = createMutation<
 
     queryClient.setQueryData<Post>(postQueryKey, (oldData) => {
       if (oldData) {
-        const newOptimisticPost = retrieveNewOptimisticPost(
-          oldData,
-          newPost.value
-        );
+        return produce(oldData, (draftPost) => {
+          const newOptimisticPost = retrieveNewOptimisticPost(
+            oldData,
+            variables.value
+          );
 
-        return { ...newOptimisticPost };
+          draftPost.points = newOptimisticPost.points;
+          draftPost.like = newOptimisticPost.like;
+        });
       }
 
       return oldData;
     });
 
     // Return a context with the previous and new todo
-    return { previousPosts, newPost, previousPost };
+    return { previousPosts, variables: variables, previousPost };
   },
   // If the mutation fails, use the context we returned above
-  onError: (_err, newPost, context) => {
+  onError: (_err, variables, context) => {
     const postsQueryKey = ['posts', usePostKeys.getState().postsQueryKey];
 
     queryClient.setQueryData<InfinitePosts>(
@@ -121,12 +124,12 @@ export const useVotePost = createMutation<
       context?.previousPosts
     );
 
-    const postQueryKey = ['posts', { id: +newPost.postId }];
+    const postQueryKey = ['posts', { id: variables.postId }];
 
     queryClient.setQueryData<Post>(postQueryKey, context?.previousPost);
   },
   // Update the cache after success:
-  onSuccess: (data, newPost) => {
+  onSuccess: (data, variables) => {
     const queryKey = ['posts', usePostKeys.getState().postsQueryKey];
 
     queryClient.setQueryData<InfinitePosts>(queryKey, (oldData) => {
@@ -134,37 +137,32 @@ export const useVotePost = createMutation<
         return {
           pageParams: oldData.pageParams,
           pages: oldData.pages.map((page) => {
-            const foundIndex = page.posts.findIndex(
-              (post) => post.id.toString() === newPost.postId
-            );
+            return produce(page, (draftPage) => {
+              const foundIndex = draftPage.posts.findIndex(
+                (post) => post.id === variables.postId
+              );
 
-            if (foundIndex !== -1) {
-              const updatedPosts = [...page.posts];
-              updatedPosts[foundIndex] = {
-                ...updatedPosts[foundIndex],
-                ...data.post,
-                author: updatedPosts[foundIndex].author,
-                like: data.like,
-              };
-              return { ...page, posts: updatedPosts };
-            }
+              if (foundIndex !== -1) {
+                const post = draftPage.posts[foundIndex];
 
-            return page;
+                post.points = data.post.points;
+                post.like = data.like;
+              }
+            });
           }),
         };
       }
       return oldData;
     });
 
-    const postQueryKey = ['posts', { id: +newPost.postId }];
+    const postQueryKey = ['posts', { id: variables.postId }];
 
     queryClient.setQueryData<Post>(postQueryKey, (oldData) => {
       if (oldData) {
-        return {
-          author: oldData.author,
-          ...data.post,
-          like: data.like,
-        };
+        return produce(oldData, (draftPost) => {
+          draftPost.points = data.post.points;
+          draftPost.like = data.like;
+        });
       }
 
       return oldData;
@@ -207,7 +205,7 @@ const retrieveNewOptimisticPost = (post: Post, value: number): Post => {
             createdAt: new Date(),
             updatedAt: new Date(),
             postId: post.id,
-            userId: -1,
+            userId: post.authorId ?? -1,
           },
   };
 };

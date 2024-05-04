@@ -52,7 +52,7 @@ export const FeedCard = ({
 
     mutate({
       value: value,
-      postId: id.toString(),
+      postId: id,
     });
   };
 
