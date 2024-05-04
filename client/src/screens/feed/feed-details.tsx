@@ -1,6 +1,7 @@
 import type { RouteProp } from '@react-navigation/native';
 import { useRoute } from '@react-navigation/native';
 import { useQueryClient } from '@tanstack/react-query';
+import { produce } from 'immer';
 import { useColorScheme } from 'nativewind';
 import * as React from 'react';
 import { ActivityIndicator, RefreshControl } from 'react-native';
@@ -36,7 +37,11 @@ export const FeedDetails = () => {
 
   const queryClient = useQueryClient();
 
-  const { data: post, isLoading } = usePost({
+  const {
+    data: post,
+    isLoading,
+    refetch: refetchFeed,
+  } = usePost({
     variables: {
       id: postId,
     },
@@ -63,18 +68,15 @@ export const FeedDetails = () => {
           return {
             pageParams: oldData.pageParams,
             pages: oldData.pages.map((page) => {
-              const foundIndex = page.posts.findIndex((p) => p.id === postId);
+              return produce(page, (draftPage) => {
+                const foundIndex = draftPage.posts.findIndex(
+                  (p) => p.id === postId
+                );
 
-              if (foundIndex !== -1) {
-                const updatedPosts = [...page.posts];
-                updatedPosts[foundIndex] = {
-                  ...updatedPosts[foundIndex],
-                  ...data,
-                };
-                return { ...page, posts: updatedPosts };
-              }
-
-              return page;
+                if (foundIndex !== -1) {
+                  draftPage.posts[foundIndex] = data;
+                }
+              });
             }),
           };
         }
@@ -99,6 +101,7 @@ export const FeedDetails = () => {
 
   const onRefresh = async () => {
     setRefreshing(true);
+    refetchFeed();
   };
 
   if (isLoading || post === undefined) {

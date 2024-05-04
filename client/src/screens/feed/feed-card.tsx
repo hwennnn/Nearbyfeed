@@ -125,7 +125,7 @@ export const FeedCard = ({
             <ImageViewer
               images={[
                 {
-                  uri: image!,
+                  uri: image,
                 },
               ]}
               visible={imageModalVisible}
