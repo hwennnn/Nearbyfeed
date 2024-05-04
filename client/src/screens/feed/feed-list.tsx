@@ -36,10 +36,10 @@ const LocationHeader = ({
   setDistanceCallback,
 }: LocationHeaderProps) => {
   const [showFullName, setShowFullName] = useState(false);
-  const { colorScheme } = useColorScheme();
 
-  const iconColor =
-    colorScheme === 'dark' ? colors.neutral[400] : colors.neutral[500];
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
+  const iconColor = isDark ? colors.neutral[400] : colors.neutral[500];
 
   const { showActionSheetWithOptions } = useActionSheet();
 
@@ -56,6 +56,7 @@ const LocationHeader = ({
 
     showActionSheetWithOptions(
       {
+        userInterfaceStyle: isDark ? 'dark' : 'light',
         options,
         cancelButtonIndex,
         title: 'Select Distance Range',

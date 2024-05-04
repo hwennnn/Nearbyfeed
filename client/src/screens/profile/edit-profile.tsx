@@ -8,6 +8,7 @@ import {
   MinLength,
 } from 'class-validator';
 import * as ImagePicker from 'expo-image-picker';
+import { useColorScheme } from 'nativewind';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Keyboard } from 'react-native';
@@ -49,6 +50,9 @@ const EditImageButton = ({
 }: EditImageButtonProps) => {
   const { showActionSheetWithOptions } = useActionSheet();
 
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
+
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -71,6 +75,8 @@ const EditImageButton = ({
 
     showActionSheetWithOptions(
       {
+        userInterfaceStyle: isDark ? 'dark' : 'light',
+
         options,
         cancelButtonIndex,
         title: 'Edit Image Settings',

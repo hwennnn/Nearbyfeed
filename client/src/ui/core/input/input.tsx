@@ -61,6 +61,7 @@ export const Input = React.forwardRef<TextInput, NInputProps>((props, ref) => {
       )}
       <View className="items-between flex-row items-center space-x-2">
         <STextInput
+          keyboardAppearance={isDark ? 'dark' : 'light'}
           autoCapitalize="none"
           autoCorrect={false}
           testID="STextInput"

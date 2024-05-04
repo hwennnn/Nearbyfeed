@@ -1,6 +1,7 @@
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useNavigation } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
+import { useColorScheme } from 'nativewind';
 import React, { useCallback, useEffect } from 'react';
 import { ActivityIndicator } from 'react-native';
 
@@ -22,6 +23,9 @@ export const CommentList = ({ postId, refreshing, onRefetchDone }: Props) => {
   const { navigate } = useNavigation<RootNavigatorProp>();
 
   const { showActionSheetWithOptions } = useActionSheet();
+
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
 
   const {
     data,
@@ -100,6 +104,7 @@ export const CommentList = ({ postId, refreshing, onRefetchDone }: Props) => {
 
     showActionSheetWithOptions(
       {
+        userInterfaceStyle: isDark ? 'dark' : 'light',
         options,
         cancelButtonIndex,
         title: 'View Comments Sort',

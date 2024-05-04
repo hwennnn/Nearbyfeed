@@ -1,8 +1,11 @@
 import type { AxiosError } from 'axios';
+import { produce } from 'immer';
 import { createMutation } from 'react-query-kit';
 
+import { useUser } from '@/core/user';
+
 import { client, queryClient } from '../common';
-import type { Comment } from '../types';
+import type { Comment, User } from '../types';
 
 type Variables = {
   content: string;
@@ -20,7 +23,7 @@ type InfiniteComments = {
 };
 type Context = {
   previousComments?: InfiniteComments;
-  newComment: Variables;
+  variables: Variables;
   optimisticCommentId: number;
 };
 
@@ -43,12 +46,12 @@ export const useAddReply = createMutation<
 
     return response.data;
   },
-  onMutate: async (newComment) => {
+  onMutate: async (variables) => {
     const queryKey = [
       'comments',
       {
-        postId: newComment.postId,
-        commentId: newComment.commentId,
+        postId: variables.postId,
+        commentId: variables.commentId,
       },
     ];
 
@@ -61,47 +64,47 @@ export const useAddReply = createMutation<
       queryClient.getQueryData<InfiniteComments>(queryKey);
 
     const optimisticCommentId = new Date().getTime();
+    const currentUser = useUser.getState().user as User;
+
     const optimisticComment: Comment = {
       id: optimisticCommentId,
-      content: newComment.content,
+      content: variables.content,
       createdAt: new Date(),
       updatedAt: new Date(),
       isDeleted: false,
-      postId: newComment.postId,
-      authorId: 1,
+      postId: variables.postId,
       isOptimistic: true,
-      parentCommentId: newComment.commentId,
+      parentCommentId: variables.commentId,
       points: 0,
       repliesCount: 0,
       replies: [],
+      author: currentUser,
+      authorId: currentUser.id,
     };
 
     // Update the cache optimistically by adding the new Comment to the existing list
     queryClient.setQueryData<InfiniteComments>(queryKey, (oldData) => {
       if (oldData) {
-        const updatedPage = {
-          ...oldData.pages[0],
-          comments: [optimisticComment, ...oldData.pages[0].comments],
-        };
-
         return {
           pageParams: oldData.pageParams,
-          pages: [updatedPage, ...oldData.pages.slice(1)],
+          pages: produce(oldData.pages, (draftPages) => {
+            draftPages[0].comments.unshift(optimisticComment);
+          }),
         };
       }
       return oldData;
     });
 
     // Return a context with the previous and new comment
-    return { previousComments, newComment, optimisticCommentId };
+    return { previousComments, variables, optimisticCommentId };
   },
   // If the mutation fails, use the context we returned above
-  onError: (_err, newComment, context) => {
+  onError: (_err, variables, context) => {
     const queryKey = [
       'comments',
       {
-        postId: newComment.postId,
-        commentId: newComment.commentId,
+        postId: variables.postId,
+        commentId: variables.commentId,
       },
     ];
 
@@ -126,17 +129,15 @@ export const useAddReply = createMutation<
         return {
           pageParams: oldData.pageParams,
           pages: oldData.pages.map((page) => {
-            const foundIndex = page.comments.findIndex(
-              (comment) => comment.id === optimisticCommentId
-            );
+            return produce(page, (draftPage) => {
+              const foundIndex = draftPage.comments.findIndex(
+                (comment) => comment.id === optimisticCommentId
+              );
 
-            if (foundIndex !== -1) {
-              const updatedComments = [...page.comments];
-              updatedComments[foundIndex] = data;
-              return { ...page, comments: updatedComments };
-            }
-
-            return page;
+              if (foundIndex !== -1) {
+                draftPage.comments[foundIndex] = data;
+              }
+            });
           }),
         };
       }

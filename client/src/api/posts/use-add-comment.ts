@@ -96,7 +96,6 @@ export const useAddComment = createMutation<
           // If the sort parameter is not 'latest', you need to determine where to place the optimistic comment
           return {
             pageParams: oldData.pageParams,
-            // [...oldData.pages.slice(0, -1), updatedPage],
             pages: produce(oldData.pages, (draftPages) => {
               draftPages[oldData.pages.length - 1].comments.push(
                 optimisticComment
