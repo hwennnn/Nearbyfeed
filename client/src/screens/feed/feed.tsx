@@ -62,7 +62,7 @@ export const Feed = () => {
 
   if (isLoading) {
     return (
-      <Layout className="items-center justify-center">
+      <Layout className="flex-1 items-center justify-center">
         <ActivityIndicator />
       </Layout>
     );

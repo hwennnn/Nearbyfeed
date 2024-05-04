@@ -1,4 +1,5 @@
 import type { AxiosError } from 'axios';
+import { produce } from 'immer';
 import { createMutation } from 'react-query-kit';
 
 import { useUser } from '@/core/user';
@@ -22,7 +23,7 @@ type InfiniteComments = {
 };
 type Context = {
   previousComments?: InfiniteComments;
-  newComment: Variables;
+  variables: Variables;
   optimisticCommentId: number;
 };
 
@@ -45,12 +46,12 @@ export const useAddComment = createMutation<
 
     return response.data;
   },
-  onMutate: async (newComment) => {
+  onMutate: async (variables) => {
     const queryKey = [
       'comments',
       {
-        postId: newComment.postId,
-        sort: newComment.sort,
+        postId: variables.postId,
+        sort: variables.sort,
       },
     ];
 
@@ -67,11 +68,11 @@ export const useAddComment = createMutation<
 
     const optimisticComment: Comment = {
       id: optimisticCommentId,
-      content: newComment.content,
+      content: variables.content,
       createdAt: new Date(),
       updatedAt: new Date(),
       isDeleted: false,
-      postId: newComment.postId,
+      postId: variables.postId,
       isOptimistic: true,
       parentCommentId: null,
       points: 0,
@@ -84,28 +85,23 @@ export const useAddComment = createMutation<
     // Update the cache optimistically by adding the new Comment to the existing list
     queryClient.setQueryData<InfiniteComments>(queryKey, (oldData) => {
       if (oldData) {
-        if (newComment.sort === 'latest') {
-          const updatedPage = {
-            ...oldData.pages[0],
-            comments: [optimisticComment, ...oldData.pages[0].comments],
-          };
-
+        if (variables.sort === 'latest') {
           return {
             pageParams: oldData.pageParams,
-            pages: [updatedPage, ...oldData.pages.slice(1)],
+            pages: produce(oldData.pages, (draftPages) => {
+              draftPages[0].comments.unshift(optimisticComment);
+            }),
           };
         } else {
           // If the sort parameter is not 'latest', you need to determine where to place the optimistic comment
-
-          const lastPage = oldData.pages[oldData.pages.length - 1];
-          const updatedPage = {
-            ...lastPage,
-            comments: [...lastPage.comments, optimisticComment],
-          };
-
           return {
             pageParams: oldData.pageParams,
-            pages: [...oldData.pages.slice(0, -1), updatedPage],
+            // [...oldData.pages.slice(0, -1), updatedPage],
+            pages: produce(oldData.pages, (draftPages) => {
+              draftPages[oldData.pages.length - 1].comments.push(
+                optimisticComment
+              );
+            }),
           };
         }
       }
@@ -113,15 +109,15 @@ export const useAddComment = createMutation<
     });
 
     // Return a context with the previous and new comment
-    return { previousComments, newComment, optimisticCommentId };
+    return { previousComments, variables, optimisticCommentId };
   },
   // If the mutation fails, use the context we returned above
-  onError: (_err, newComment, context) => {
+  onError: (_err, variables, context) => {
     const queryKey = [
       'comments',
       {
-        postId: newComment.postId,
-        sort: newComment.sort,
+        postId: variables.postId,
+        sort: variables.sort,
       },
     ];
 
@@ -130,12 +126,12 @@ export const useAddComment = createMutation<
       context?.previousComments
     );
   },
-  onSuccess: (data, _variables, context) => {
+  onSuccess: (data, variables, context) => {
     const queryKey = [
       'comments',
       {
-        postId: _variables.postId,
-        sort: _variables.sort,
+        postId: variables.postId,
+        sort: variables.sort,
       },
     ];
     const optimisticCommentId = context?.optimisticCommentId;
@@ -146,17 +142,15 @@ export const useAddComment = createMutation<
         return {
           pageParams: oldData.pageParams,
           pages: oldData.pages.map((page) => {
-            const foundIndex = page.comments.findIndex(
-              (comment) => comment.id === optimisticCommentId
-            );
+            return produce(page, (draftPage) => {
+              const foundIndex = draftPage.comments.findIndex(
+                (comment) => comment.id === optimisticCommentId
+              );
 
-            if (foundIndex !== -1) {
-              const updatedComments = [...page.comments];
-              updatedComments[foundIndex] = { ...data };
-              return { ...page, comments: updatedComments };
-            }
-
-            return page;
+              if (foundIndex !== -1) {
+                draftPage.comments[foundIndex] = data;
+              }
+            });
           }),
         };
       }
