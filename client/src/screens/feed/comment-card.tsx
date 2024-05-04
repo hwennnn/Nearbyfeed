@@ -183,37 +183,37 @@ export const CommentCard = ({
 
         {replies !== undefined && replies.length > 0 && (
           <View className="flex-1 flex-col bg-black pb-2 pl-6 pr-4">
-            {replies.map((reply) => (
-              <View className="py-2" key={reply.id}>
-                <CommentCard {...reply} isPreviewComment={true} />
-                <Divider />
-              </View>
-            ))}
+            <View className="flex-1">
+              {replies.slice(0, 3).map((reply) => (
+                <View className="flex-1 py-2" key={reply.id}>
+                  <CommentCard {...reply} isPreviewComment={true} />
+                  <Divider />
+                </View>
+              ))}
+            </View>
 
-            {replies !== undefined &&
-              replies.length === 3 &&
-              repliesCount - 3 > 0 && (
-                <Pressable
-                  className="flex-row pl-6"
-                  onPress={() => onPressReply()}
-                >
-                  <Text
-                    className="font-bold text-gray-600 dark:text-gray-300"
-                    variant="sm"
-                  >{`View ${stringUtils.formatSingularPlural(
-                    'more reply',
-                    'more replies',
-                    'more reply',
-                    repliesCount - 3
-                  )}`}</Text>
+            {replies !== undefined && replies.length > 3 && (
+              <Pressable
+                className="flex-row pl-6"
+                onPress={() => onPressReply()}
+              >
+                <Text
+                  className="font-bold text-gray-600 dark:text-gray-300"
+                  variant="sm"
+                >{`View ${stringUtils.formatSingularPlural(
+                  'more reply',
+                  'more replies',
+                  'more reply',
+                  repliesCount - 3
+                )}`}</Text>
 
-                  <Ionicons
-                    name="chevron-forward-outline"
-                    size={20}
-                    className={iconColor}
-                  />
-                </Pressable>
-              )}
+                <Ionicons
+                  name="chevron-forward-outline"
+                  size={20}
+                  className={iconColor}
+                />
+              </Pressable>
+            )}
           </View>
         )}
       </View>

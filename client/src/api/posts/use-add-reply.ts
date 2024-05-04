@@ -2,6 +2,11 @@ import type { AxiosError } from 'axios';
 import { produce } from 'immer';
 import { createMutation } from 'react-query-kit';
 
+import {
+  retrieveUseChildCommentsKey,
+  retrieveUseCommentsKey,
+} from '@/api/posts/use-vote-comment';
+import { useCommentKeys } from '@/core/comments';
 import { useUser } from '@/core/user';
 
 import { client, queryClient } from '../common';
@@ -47,13 +52,10 @@ export const useAddReply = createMutation<
     return response.data;
   },
   onMutate: async (variables) => {
-    const queryKey = [
-      'comments',
-      {
-        postId: variables.postId,
-        commentId: variables.commentId,
-      },
-    ];
+    const queryKey = retrieveUseChildCommentsKey(
+      variables.postId,
+      variables.commentId
+    );
 
     // Cancel any outgoing refetches
     // (so they don't overwrite our optimistic update)
@@ -100,13 +102,10 @@ export const useAddReply = createMutation<
   },
   // If the mutation fails, use the context we returned above
   onError: (_err, variables, context) => {
-    const queryKey = [
-      'comments',
-      {
-        postId: variables.postId,
-        commentId: variables.commentId,
-      },
-    ];
+    const queryKey = retrieveUseChildCommentsKey(
+      variables.postId,
+      variables.commentId
+    );
 
     queryClient.setQueryData<InfiniteComments>(
       queryKey,
@@ -114,13 +113,10 @@ export const useAddReply = createMutation<
     );
   },
   onSuccess: (data, variables, context) => {
-    const queryKey = [
-      'comments',
-      {
-        postId: variables.postId,
-        commentId: variables.commentId,
-      },
-    ];
+    const queryKey = retrieveUseChildCommentsKey(
+      variables.postId,
+      variables.commentId
+    );
     const optimisticCommentId = context?.optimisticCommentId;
     // Update the cache with the response data from the API
 
@@ -136,6 +132,38 @@ export const useAddReply = createMutation<
 
               if (foundIndex !== -1) {
                 draftPage.comments[foundIndex] = data;
+              }
+            });
+          }),
+        };
+      }
+      return oldData;
+    });
+
+    // update the inifite comments as well
+    const commentsQueryKey = retrieveUseCommentsKey(
+      variables.postId,
+      useCommentKeys.getState().commentsQueryKey.sort
+    );
+
+    console.log(commentsQueryKey);
+
+    queryClient.setQueryData<InfiniteComments>(commentsQueryKey, (oldData) => {
+      if (oldData) {
+        return {
+          pageParams: oldData.pageParams,
+          pages: oldData.pages.map((page) => {
+            return produce(page, (draftPage) => {
+              const targetId = variables.commentId;
+              const foundIndex = page.comments.findIndex(
+                (comment) => comment.id === targetId
+              );
+
+              if (foundIndex !== -1) {
+                const comment = draftPage.comments[foundIndex];
+                comment.repliesCount += 1;
+                comment.replies ??= [];
+                comment.replies.push(data);
               }
             });
           }),

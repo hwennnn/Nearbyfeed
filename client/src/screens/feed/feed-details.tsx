@@ -74,7 +74,10 @@ export const FeedDetails = () => {
                 );
 
                 if (foundIndex !== -1) {
-                  draftPage.posts[foundIndex] = data;
+                  draftPage.posts[foundIndex] = {
+                    ...draftPage.posts[foundIndex],
+                    ...data,
+                  };
                 }
               });
             }),

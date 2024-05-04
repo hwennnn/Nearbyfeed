@@ -1,6 +1,7 @@
 import type { RouteProp } from '@react-navigation/native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useQueryClient } from '@tanstack/react-query';
+import { produce } from 'immer';
 import { useColorScheme } from 'nativewind';
 import * as React from 'react';
 import { ActivityIndicator, RefreshControl } from 'react-native';
@@ -70,21 +71,18 @@ export const CommentsDetails = () => {
             return {
               pageParams: oldData.pageParams,
               pages: oldData.pages.map((page) => {
-                const foundIndex = page.comments.findIndex(
-                  (comment) => comment.id === commentId
-                );
+                return produce(page, (draftPage) => {
+                  const foundIndex = draftPage.comments.findIndex(
+                    (c) => c.id === commentId
+                  );
 
-                if (foundIndex !== -1) {
-                  const updatedComments = [...page.comments];
-
-                  updatedComments[foundIndex] = {
-                    ...updatedComments[foundIndex],
-                    ...data,
-                  };
-                  return { ...page, comments: updatedComments };
-                }
-
-                return page;
+                  if (foundIndex !== -1) {
+                    draftPage.comments[foundIndex] = {
+                      ...draftPage.comments[foundIndex],
+                      ...data,
+                    };
+                  }
+                });
               }),
             };
           }
