@@ -4,15 +4,16 @@ import React from 'react';
 import { type PollWithOptions, useVotePoll } from '@/api';
 import { useUser } from '@/core/user';
 import { LoadingButton, Pressable, Text, View } from '@/ui';
-import { FontAwesome5 } from '@/ui/icons/ionicons';
+import { FontAwesome5, Ionicons } from '@/ui/icons/ionicons';
 import { stringUtils } from '@/utils/string-utils';
 import { timeUtils } from '@/utils/time-utils';
 
 type Props = {
   poll: PollWithOptions;
+  showAllText?: boolean;
 };
 
-export const PollCard = ({ poll }: Props) => {
+export const PollCard = ({ poll, showAllText = false }: Props) => {
   const { colorScheme } = useColorScheme();
 
   const isDark = colorScheme === 'dark';
@@ -47,7 +48,7 @@ export const PollCard = ({ poll }: Props) => {
   };
 
   return (
-    <View className="mt-4 space-y-2 rounded-lg border-[0.5px] bg-charcoal-850 p-4">
+    <View className="mt-4 flex-1 space-y-2 rounded-lg border-[0.5px] bg-charcoal-850 p-4">
       <View className="flex-1 flex-row items-center space-x-2">
         <FontAwesome5 name="poll-h" size={20} className={iconColor} />
 
@@ -74,7 +75,7 @@ export const PollCard = ({ poll }: Props) => {
         Select only one answer
       </Text>
 
-      <View className="space-y-2">
+      <View className="flex-1 space-y-2">
         {poll.options.map((option) => {
           const isSelected = isPollVoted
             ? option.id === poll.vote?.pollOptionId
@@ -86,24 +87,39 @@ export const PollCard = ({ poll }: Props) => {
               : (option.voteCount / poll.participantsCount) * 100;
 
           return isPollVoted || isPollExpired ? (
-            <View
-              className={`space flex-1 flex-row rounded-md p-2 ${
-                isSelected ? 'bg-primary-600' : 'bg-primary-200'
-              }`}
-              key={option.id}
-            >
-              <Text
-                className="flex-1 text-gray-600 dark:text-white"
-                variant="sm"
-              >
-                {option.text}
-              </Text>
+            <View className="flex-1 flex-row space-x-6" key={option.id}>
+              <View className="flex-1 flex-row items-center space-x-2">
+                <View
+                  className="absolute h-full rounded-md bg-primary-500"
+                  style={{
+                    width: `${percentage}%`,
+                  }}
+                />
+
+                {isSelected && (
+                  <Ionicons
+                    name="checkmark"
+                    size={20}
+                    className={isDark ? 'text-white' : 'text-black'}
+                  />
+                )}
+
+                <Text
+                  className={`p-2 text-gray-600 dark:text-white ${
+                    isSelected ? 'mr-6' : ''
+                  }`}
+                  variant="sm"
+                  numberOfLines={showAllText ? undefined : 1}
+                >
+                  {option.text}
+                </Text>
+              </View>
 
               <Text
-                className="justify-end font-semibold text-gray-600 dark:text-white"
+                className="w-[40px] self-center py-2 font-semibold text-gray-600 dark:text-white"
                 variant="sm"
               >
-                {`${percentage.toFixed(1)}% (${option.voteCount})`}
+                {`${percentage.toFixed(0)}%`}
               </Text>
             </View>
           ) : (
@@ -113,7 +129,7 @@ export const PollCard = ({ poll }: Props) => {
               }}
               disabled={isLoading || isPollVoted || isPollExpired}
               key={option.id}
-              className={`flex-row items-center space-x-2 rounded-lg p-2 ${
+              className={`flex-1 flex-row items-center space-x-2 rounded-lg p-2 ${
                 isSelected ? 'bg-primary-400' : 'bg-charcoal-700'
               }`}
             >
@@ -122,9 +138,9 @@ export const PollCard = ({ poll }: Props) => {
               </View>
 
               <Text
-                className="text-gray-600 dark:text-white"
+                className="pr-6 text-gray-600 dark:text-white"
                 variant="sm"
-                numberOfLines={1}
+                numberOfLines={showAllText ? undefined : 1}
               >
                 {option.text}
               </Text>
@@ -133,7 +149,7 @@ export const PollCard = ({ poll }: Props) => {
         })}
       </View>
 
-      <View className="flex-col space-y-3 pt-2">
+      <View className="flex-1 flex-col space-y-3 pt-2">
         {!isPollVoted && !isPollExpired && (
           <LoadingButton
             onPress={handleVotePoll}
@@ -150,7 +166,7 @@ export const PollCard = ({ poll }: Props) => {
 
         {isPollExpired && (
           <Text variant="sm" className="text-center text-primary-400">
-            The poll has expired.
+            Poll closed
           </Text>
         )}
 

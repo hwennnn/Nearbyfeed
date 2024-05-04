@@ -63,6 +63,7 @@
     "expo-system-ui": "~2.2.1",
     "expo-updates": "~0.16.4",
     "i18next": "^22.4.11",
+    "immer": "^10.1.1",
     "jwt-decode": "^3.1.2",
     "lodash.memoize": "^4.1.2",
     "nativewind": "^2.0.10",

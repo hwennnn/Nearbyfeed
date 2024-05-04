@@ -226,8 +226,8 @@ export const FeedDetails = () => {
           )}
 
           {poll !== null && poll !== undefined && (
-            <View className="mx-4">
-              <PollCard poll={poll} />
+            <View className="mx-4 flex-1">
+              <PollCard poll={poll} showAllText={true} />
             </View>
           )}
 

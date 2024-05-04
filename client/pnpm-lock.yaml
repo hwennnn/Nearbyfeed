@@ -82,6 +82,9 @@ dependencies:
   i18next:
     specifier: ^22.4.11
     version: 22.4.11
+  immer:
+    specifier: ^10.1.1
+    version: 10.1.1
   jwt-decode:
     specifier: ^3.1.2
     version: 3.1.2
@@ -165,7 +168,7 @@ dependencies:
     version: 3.21.4
   zustand:
     specifier: ^4.3.6
-    version: 4.3.6(react@18.2.0)
+    version: 4.3.6(immer@10.1.1)(react@18.2.0)
 
 devDependencies:
   '@babel/core':
@@ -6983,6 +6986,10 @@ packages:
     engines: {node: '>=4.0'}
     hasBin: true
 
+  /immer@10.1.1:
+    resolution: {integrity: sha512-s2MPrmjovJcoMaHtx6K11Ra7oD05NT97w1IC5zpMkT6Atjr7H8LjaDd81iIxUYpMKSRRNMJE703M1Fhr/TctHw==}
+    dev: false
+
   /import-fresh@2.0.0:
     resolution: {integrity: sha512-eZ5H8rcgYazHbKC3PG4ClHNykCSxtAhxSSEM+2mb+7evD2CKF5V7c0dNum7AdpDh0ZdICwZY9sRSn8f+KH96sg==}
     engines: {node: '>=4'}
@@ -12862,7 +12869,7 @@ packages:
     resolution: {integrity: sha512-m46AKbrzKVzOzs/DZgVnG5H55N1sv1M8qZU3A8RIKbs3mrACDNeIOeilDymVb2HdmP8uwshOCF4uJ8uM9rCqJw==}
     dev: false
 
-  /zustand@4.3.6(react@18.2.0):
+  /zustand@4.3.6(immer@10.1.1)(react@18.2.0):
     resolution: {integrity: sha512-6J5zDxjxLE+yukC2XZWf/IyWVKnXT9b9HUv09VJ/bwGCpKNcaTqp7Ws28Xr8jnbvnZcdRaidztAPsXFBIqufiw==}
     engines: {node: '>=12.7.0'}
     peerDependencies:
@@ -12874,6 +12881,7 @@ packages:
       react:
         optional: true
     dependencies:
+      immer: 10.1.1
       react: 18.2.0
       use-sync-external-store: 1.2.0(react@18.2.0)
     dev: false
