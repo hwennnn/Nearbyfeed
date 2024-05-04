@@ -10445,8 +10445,8 @@ packages:
       minimist: 1.2.7
       strip-json-comments: 2.0.1
 
-  /react-devtools-core@4.27.2:
-    resolution: {integrity: sha512-8SzmIkpO87alD7Xr6gWIEa1jHkMjawOZ+6egjazlnjB4UUcbnzGDf/vBJ4BzGuWWEM+pzrxuzsPpcMqlQkYK2g==}
+  /react-devtools-core@4.28.5:
+    resolution: {integrity: sha512-cq/o30z9W2Wb4rzBefjv5fBalHU0rJGZCHAkf/RHSBWSSYwh8PlQTqqOJmgIIbBtpj27T6FIPXeomIjZtCNVqA==}
     dependencies:
       shell-quote: 1.7.4
       ws: 7.5.9
@@ -10769,7 +10769,7 @@ packages:
       pretty-format: 26.6.2
       promise: 8.3.0
       react: 18.2.0
-      react-devtools-core: 4.27.2
+      react-devtools-core: 4.28.5
       react-native-codegen: 0.71.5(@babel/preset-env@7.20.2)
       react-native-gradle-plugin: 0.71.18
       react-refresh: 0.4.3
