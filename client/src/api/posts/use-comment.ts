@@ -8,10 +8,10 @@ type Variables = { postId: number; commentId: number };
 type Response = Comment;
 
 export const useComment = createQuery<Response, Variables, AxiosError>(
-  'posts',
+  'comments',
   async ({ queryKey: [primaryKey, variables] }) => {
     const response = await client
-      .get(`${primaryKey}/${variables.postId}/comments/${variables.commentId}`)
+      .get(`posts/${variables.postId}/${primaryKey}/${variables.commentId}`)
       .catch((error) => {
         return Promise.reject(error);
       });

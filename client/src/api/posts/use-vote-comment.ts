@@ -1,4 +1,5 @@
 import type { AxiosError } from 'axios';
+import { produce } from 'immer';
 import { createMutation } from 'react-query-kit';
 
 import type { Comment, CommentLike } from '@/api/types';
@@ -14,8 +15,8 @@ export enum CommentType {
 }
 
 type Variables = {
-  postId: string;
-  commentId: string;
+  postId: number;
+  commentId: number;
   value: number;
   commentType: CommentType;
   parentCommentId: number | null;
@@ -34,7 +35,7 @@ export type InfiniteComments = {
 };
 type Context = {
   previousComments?: InfiniteComments;
-  newComment: Variables;
+  variables: Variables;
   previousComment?: Comment;
 };
 
@@ -57,18 +58,18 @@ export const useVoteComment = createMutation<
         return Promise.reject(error);
       }),
   // When mutate is called:
-  onMutate: async (newComment) => {
+  onMutate: async (variables) => {
     // 1. Handle the infinite comments (either from the base comments or child comments)
     const commentsQueryKey =
-      newComment.commentType === CommentType.PARENT_COMMENT ||
-      newComment.commentType === CommentType.PREVIEW_COMMENT
+      variables.commentType === CommentType.PARENT_COMMENT ||
+      variables.commentType === CommentType.PREVIEW_COMMENT
         ? retrieveUseCommentsKey(
-            +newComment.postId,
+            variables.postId,
             useCommentKeys.getState().commentsQueryKey.sort
           )
         : retrieveUseChildCommentsKey(
-            +newComment.postId,
-            +newComment.parentCommentId!
+            variables.postId,
+            variables.parentCommentId!
           );
 
     // Cancel any outgoing refetches
@@ -85,57 +86,45 @@ export const useVoteComment = createMutation<
         return {
           pageParams: oldData.pageParams,
           pages: oldData.pages.map((page) => {
-            const targetId =
-              newComment.commentType === CommentType.PREVIEW_COMMENT
-                ? newComment.parentCommentId?.toString()
-                : newComment.commentId;
-            const foundIndex = page.comments.findIndex(
-              (comment) => comment.id.toString() === targetId
-            );
+            return produce(page, (draftPage) => {
+              const targetId =
+                variables.commentType === CommentType.PREVIEW_COMMENT
+                  ? variables.parentCommentId
+                  : variables.commentId;
+              const foundIndex = page.comments.findIndex(
+                (comment) => comment.id === targetId
+              );
 
-            if (foundIndex !== -1) {
-              if (newComment.commentType === CommentType.PREVIEW_COMMENT) {
-                // Update the nested replies
-                const updatedComments = [...page.comments];
-                const replyIndex = updatedComments[
-                  foundIndex
-                ].replies.findIndex(
-                  (reply) => reply.id.toString() === newComment.commentId
-                );
+              if (foundIndex !== -1) {
+                const comment = draftPage.comments[foundIndex];
 
-                if (replyIndex !== -1) {
-                  const newOptimisticComment = retrieveNewOptimisticComment(
-                    updatedComments[foundIndex].replies[replyIndex],
-                    newComment.value
+                if (variables.commentType === CommentType.PREVIEW_COMMENT) {
+                  // update nested reply
+                  const replyIndex = comment.replies.findIndex(
+                    (reply) => reply.id === variables.commentId
                   );
 
-                  const replies = [...updatedComments[foundIndex].replies];
-                  replies[replyIndex] = {
-                    ...newOptimisticComment,
-                  };
+                  if (replyIndex !== -1) {
+                    const reply = comment.replies[replyIndex];
+                    const newOptimisticComment = retrieveNewOptimisticComment(
+                      reply,
+                      variables.value
+                    );
 
-                  updatedComments[foundIndex] = {
-                    ...updatedComments[foundIndex],
-                    replies,
-                  };
+                    reply.points = newOptimisticComment.points;
+                    reply.like = newOptimisticComment.like;
+                  }
+                } else {
+                  const newOptimisticComment = retrieveNewOptimisticComment(
+                    comment,
+                    variables.value
+                  );
 
-                  return { ...page, comments: updatedComments };
+                  comment.points = newOptimisticComment.points;
+                  comment.like = newOptimisticComment.like;
                 }
-              } else {
-                const updatedComments = [...page.comments];
-                const newOptimisticComment = retrieveNewOptimisticComment(
-                  updatedComments[foundIndex],
-                  newComment.value
-                );
-
-                updatedComments[foundIndex] = {
-                  ...newOptimisticComment,
-                };
-                return { ...page, comments: updatedComments };
               }
-            }
-
-            return page;
+            });
           }),
         };
       }
@@ -144,11 +133,11 @@ export const useVoteComment = createMutation<
 
     // 2. Handle the single comment query
     let previousComment;
-    if (newComment.commentType === CommentType.PARENT_COMMENT) {
-      const commentQueryKey = [
-        'posts',
-        { postId: +newComment.postId, commentId: +newComment.parentCommentId! },
-      ];
+    if (variables.commentType === CommentType.PARENT_COMMENT) {
+      const commentQueryKey = retrieveUseCommentKey(
+        variables.postId,
+        variables.commentId
+      );
 
       // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
       await queryClient.cancelQueries({ queryKey: commentQueryKey });
@@ -158,12 +147,15 @@ export const useVoteComment = createMutation<
 
       queryClient.setQueryData<Comment>(commentQueryKey, (oldData) => {
         if (oldData) {
-          const newOptimisticComment = retrieveNewOptimisticComment(
-            oldData,
-            newComment.value
-          );
+          return produce(oldData, (draftComment) => {
+            const newOptimisticComment = retrieveNewOptimisticComment(
+              oldData,
+              variables.value
+            );
 
-          return { ...newOptimisticComment };
+            draftComment.points = newOptimisticComment.points;
+            draftComment.like = newOptimisticComment.like;
+          });
         }
 
         return oldData;
@@ -171,20 +163,20 @@ export const useVoteComment = createMutation<
     }
 
     // Return a context with the previous and new todo
-    return { previousComments, newComment, previousComment };
+    return { previousComments, variables, previousComment };
   },
   // If the mutation fails, use the context we returned above
-  onError: (_err, newComment, context) => {
+  onError: (_err, variables, context) => {
     const commentsQueryKey =
-      newComment.commentType === CommentType.PARENT_COMMENT ||
-      newComment.commentType === CommentType.PREVIEW_COMMENT
+      variables.commentType === CommentType.PARENT_COMMENT ||
+      variables.commentType === CommentType.PREVIEW_COMMENT
         ? retrieveUseCommentsKey(
-            +newComment.postId,
+            variables.postId,
             useCommentKeys.getState().commentsQueryKey.sort
           )
         : retrieveUseChildCommentsKey(
-            +newComment.postId,
-            +newComment.parentCommentId!
+            variables.postId,
+            variables.parentCommentId!
           );
 
     queryClient.setQueryData<InfiniteComments>(
@@ -192,11 +184,11 @@ export const useVoteComment = createMutation<
       context?.previousComments
     );
 
-    if (newComment.commentType === CommentType.PARENT_COMMENT) {
-      const commentQueryKey = [
-        'posts',
-        { postId: +newComment.postId, commentId: +newComment.commentId },
-      ];
+    if (variables.commentType === CommentType.PARENT_COMMENT) {
+      const commentQueryKey = retrieveUseCommentKey(
+        variables.postId,
+        variables.commentId
+      );
 
       queryClient.setQueryData<Comment>(
         commentQueryKey,
@@ -205,91 +197,63 @@ export const useVoteComment = createMutation<
     }
   },
   // Update the cache after success:
-  onSuccess: (data, newComment) => {
+  onSuccess: (data, variables) => {
     const commentsQueryKey =
-      newComment.commentType === CommentType.PARENT_COMMENT ||
-      newComment.commentType === CommentType.PREVIEW_COMMENT
+      variables.commentType === CommentType.PARENT_COMMENT ||
+      variables.commentType === CommentType.PREVIEW_COMMENT
         ? retrieveUseCommentsKey(
-            +newComment.postId,
+            variables.postId,
             useCommentKeys.getState().commentsQueryKey.sort
           )
-        : retrieveUseChildCommentsKey(
-            +newComment.postId,
-            +newComment.commentId
-          );
-
+        : retrieveUseChildCommentsKey(+variables.postId, +variables.commentId);
     queryClient.setQueryData<InfiniteComments>(commentsQueryKey, (oldData) => {
       if (oldData) {
         return {
           pageParams: oldData.pageParams,
           pages: oldData.pages.map((page) => {
-            const targetId =
-              newComment.commentType === CommentType.PREVIEW_COMMENT
-                ? newComment.parentCommentId?.toString()
-                : newComment.commentId;
-            const foundIndex = page.comments.findIndex(
-              (comment) => comment.id.toString() === targetId
-            );
-
-            if (foundIndex !== -1) {
-              const updatedComments = [...page.comments];
-
-              if (newComment.commentType === CommentType.PREVIEW_COMMENT) {
-                // Update the nested replies
-                const replyIndex = updatedComments[
-                  foundIndex
-                ].replies.findIndex(
-                  (reply) => reply.id.toString() === newComment.commentId
-                );
-
-                if (replyIndex !== -1) {
-                  const replies = [...updatedComments[foundIndex].replies];
-                  replies[replyIndex] = {
-                    ...replies[replyIndex],
-                    ...data.comment,
-                    like: data.like,
-                  };
-
-                  updatedComments[foundIndex] = {
-                    ...updatedComments[foundIndex],
-                    replies,
-                  };
-
-                  return { ...page, comments: updatedComments };
+            return produce(page, (draftPage) => {
+              const targetId =
+                variables.commentType === CommentType.PREVIEW_COMMENT
+                  ? variables.parentCommentId
+                  : variables.commentId;
+              const foundIndex = page.comments.findIndex(
+                (comment) => comment.id === targetId
+              );
+              if (foundIndex !== -1) {
+                const comment = draftPage.comments[foundIndex];
+                if (variables.commentType === CommentType.PREVIEW_COMMENT) {
+                  // update nested reply
+                  const replyIndex = comment.replies.findIndex(
+                    (reply) => reply.id === variables.commentId
+                  );
+                  if (replyIndex !== -1) {
+                    const reply = comment.replies[replyIndex];
+                    reply.points = data.comment.points;
+                    reply.like = data.like;
+                  }
                 } else {
-                  updatedComments[foundIndex] = {
-                    ...updatedComments[foundIndex],
-                    ...data.comment,
-                    like: data.like,
-                    author: updatedComments[foundIndex].author,
-                  };
-                  return { ...page, comments: updatedComments };
+                  comment.points = data.comment.points;
+                  comment.like = data.like;
                 }
               }
-            }
-
-            return page;
+            });
           }),
         };
       }
       return oldData;
     });
-
-    if (newComment.commentType === CommentType.PARENT_COMMENT) {
-      const commentQueryKey = [
-        'posts',
-        { postId: +newComment.postId, commentId: +newComment.commentId },
-      ];
-
+    if (variables.commentType === CommentType.PARENT_COMMENT) {
+      const commentQueryKey = retrieveUseCommentKey(
+        variables.postId,
+        variables.commentId
+      );
       queryClient.setQueryData<Comment>(commentQueryKey, (oldData) => {
         if (oldData) {
-          return {
-            author: oldData.author,
-            ...data.comment,
-            like: data.like,
-          };
+          return produce(oldData, (draftComment) => {
+            draftComment.points = data.comment.points;
+            draftComment.like = data.like;
+          });
         }
-
         return oldData;
       });
     }
@@ -352,12 +316,25 @@ export const retrieveUseCommentsKey = (
   ];
 };
 
-export const retrieveUseChildCommentsKey = (
+export const retrieveUseCommentKey = (
   postId: number,
   commentId: number
 ): any => {
   return [
     'comments',
+    {
+      postId,
+      commentId,
+    },
+  ];
+};
+
+export const retrieveUseChildCommentsKey = (
+  postId: number,
+  commentId: number
+): any => {
+  return [
+    'child-comments',
     {
       postId,
       commentId,

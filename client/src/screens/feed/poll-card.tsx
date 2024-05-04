@@ -31,7 +31,9 @@ export const PollCard = ({ poll, showAllText = false }: Props) => {
   );
 
   const isPollVoted =
-    poll.vote !== undefined && poll.vote.userId === useUser.getState().user?.id;
+    poll.vote !== undefined &&
+    poll.vote !== null &&
+    poll.vote?.userId === useUser.getState().user?.id;
 
   const isPollExpired = new Date().getTime() >= pollExpirationDate.getTime();
 

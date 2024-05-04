@@ -19,13 +19,13 @@ export const useChildComments = createInfiniteQuery<
   Variables,
   AxiosError
 >(
-  'comments', // we recommend using endpoint base url as primaryKey
-  async ({ queryKey: [primaryKey, variables], pageParam }) => {
+  'child-comments', // we recommend using endpoint base url as primaryKey
+  async ({ queryKey: [_primaryKey, variables], pageParam }) => {
     // in case if variables is needed, we can use destructuring to get it from queryKey array like this: ({ queryKey: [primaryKey, variables] })
     const cursor = pageParam !== undefined ? pageParam.toString() : pageParam;
     const response = await client
       .get(
-        `posts/${variables.postId}/${primaryKey}/${variables.commentId}/replies`,
+        `posts/${variables.postId}/comments/${variables.commentId}/replies`,
         {
           params: {
             ...variables,

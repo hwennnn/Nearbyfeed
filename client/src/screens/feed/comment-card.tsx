@@ -49,8 +49,8 @@ export const CommentCard = ({
 
     mutate({
       value: value,
-      postId: postId.toString(),
-      commentId: id.toString(),
+      postId: postId,
+      commentId: id,
       commentType: isPreviewComment
         ? CommentType.PREVIEW_COMMENT
         : isChildComment !== true
