@@ -72,7 +72,7 @@ export class PostsController {
   }
 
   @Get()
-  @UseGuards(OptionalJwtAuthGuard)
+  @UseGuards(new OptionalJwtAuthGuard(true))
   async findPosts(
     @Query() getPostsDto: GetPostsDto,
     @GetUser() user: TokenUser | null,
@@ -90,7 +90,7 @@ export class PostsController {
   }
 
   @Get(':id')
-  @UseGuards(OptionalJwtAuthGuard)
+  @UseGuards(new OptionalJwtAuthGuard(true))
   async findPost(
     @Param('id') postId: string,
     @GetUser() user: TokenUser | null,
@@ -137,7 +137,7 @@ export class PostsController {
   }
 
   @Get(':postId/comments/:commentId')
-  @UseGuards(OptionalJwtAuthGuard)
+  @UseGuards(new OptionalJwtAuthGuard(true))
   async findComment(
     @Param('postId') postId: string,
     @Param('commentId') commentId: string,
@@ -151,7 +151,7 @@ export class PostsController {
   }
 
   @Get(':id/comments')
-  @UseGuards(OptionalJwtAuthGuard)
+  @UseGuards(new OptionalJwtAuthGuard(true))
   async findComments(
     @Param('id') postId: string,
     @Query() getCommentDto: GetCommentDto,
@@ -168,7 +168,7 @@ export class PostsController {
   }
 
   @Get(':postId/comments/:commentId/replies')
-  @UseGuards(OptionalJwtAuthGuard)
+  @UseGuards(new OptionalJwtAuthGuard(true))
   async findChildComments(
     @Param('postId') postId: string,
     @Param('commentId') commentId: string,
@@ -223,7 +223,7 @@ export class PostsController {
   }
 
   @Get(':postId/polls/:pollId')
-  @UseGuards(OptionalJwtAuthGuard)
+  @UseGuards(new OptionalJwtAuthGuard(true))
   async findPoll(
     @Param('postId') postId: string,
     @Param('pollId') pollId: string,
