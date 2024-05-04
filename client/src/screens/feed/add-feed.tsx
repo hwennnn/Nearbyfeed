@@ -154,13 +154,15 @@ export const AddFeed = () => {
       addPost(dto, {
         onSuccess: () => {
           showMessage({
-            message: 'Post added successfully',
+            message: 'Feed added successfully',
             type: 'success',
           });
           navigation.goBack();
         },
         onError: () => {
-          showErrorMessage('Error adding post');
+          showErrorMessage(
+            'There is an error while adding feed. Please try again later.'
+          );
         },
       });
     },

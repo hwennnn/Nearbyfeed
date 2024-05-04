@@ -109,7 +109,7 @@ export const FeedCard = ({
           </Text>
         )}
 
-        {image !== null && (
+        {image !== null && image !== undefined && (
           <View>
             <TouchableOpacity
               onPress={() => setImageModalVisible(true)}
@@ -183,8 +183,8 @@ export const FeedCard = ({
         </View>
 
         {isOptimistic === true && (
-          <View className="flex-row space-x-2">
-            <Text>Creating post....</Text>
+          <View className="flex-row justify-center space-x-2">
+            <Text>Creating feed....</Text>
 
             <ActivityIndicator />
           </View>

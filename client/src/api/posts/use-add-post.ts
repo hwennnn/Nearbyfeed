@@ -1,5 +1,6 @@
 import type { AxiosError } from 'axios';
 import type * as ImagePicker from 'expo-image-picker';
+import { produce } from 'immer';
 import { createMutation } from 'react-query-kit';
 
 import { usePostKeys } from '@/core/posts';
@@ -28,7 +29,7 @@ export type InfinitePosts = {
 };
 type Context = {
   previousPosts?: InfinitePosts;
-  newPost: Variables;
+  variables: Variables;
   optimisticPostId: number;
 };
 
@@ -76,7 +77,7 @@ export const useAddPost = createMutation<
 
     return response.data;
   },
-  onMutate: async (newPost) => {
+  onMutate: async (variables) => {
     const queryKey = ['posts', usePostKeys.getState().postsQueryKey];
 
     // Cancel any outgoing refetches
@@ -90,10 +91,10 @@ export const useAddPost = createMutation<
 
     const optimisticPost: Post = {
       id: optimisticPostId,
-      title: newPost.title,
-      content: newPost.content,
-      longitude: newPost.longitude,
-      latitude: newPost.longitude,
+      title: variables.title,
+      content: variables.content,
+      longitude: variables.longitude,
+      latitude: variables.longitude,
       points: 0,
       isOptimistic: true,
       commentsCount: 0,
@@ -105,20 +106,17 @@ export const useAddPost = createMutation<
     // Update the cache optimistically by adding the new post to the existing list
     queryClient.setQueryData<InfinitePosts>(queryKey, (oldData) => {
       if (oldData) {
-        const updatedPage = {
-          ...oldData.pages[0],
-          posts: [optimisticPost, ...oldData.pages[0].posts],
-        };
-
         return {
           pageParams: oldData.pageParams,
-          pages: [updatedPage, ...oldData.pages.slice(1)],
+          pages: produce(oldData.pages, (draftPages) => {
+            draftPages[0].posts.unshift(optimisticPost);
+          }),
         };
       }
       return oldData;
     });
     // Return a context with the previous and new todo
-    return { previousPosts, newPost, optimisticPostId };
+    return { previousPosts, variables, optimisticPostId };
   },
   // If the mutation fails, use the context we returned above
   onError: (_err, _newPost, context) => {
@@ -129,24 +127,22 @@ export const useAddPost = createMutation<
   onSuccess: (data, _variables, context) => {
     const queryKey = ['posts', usePostKeys.getState().postsQueryKey];
     const optimisticPostId = context?.optimisticPostId;
-    // Update the cache with the response data from the API
 
+    // Update the cache with the response data from the API
     queryClient.setQueryData<InfinitePosts>(queryKey, (oldData) => {
       if (oldData) {
         return {
           pageParams: oldData.pageParams,
           pages: oldData.pages.map((page) => {
-            const foundIndex = page.posts.findIndex(
-              (post) => post.id === optimisticPostId
-            );
+            return produce(page, (draftPage) => {
+              const foundIndex = draftPage.posts.findIndex(
+                (post) => post.id === optimisticPostId
+              );
 
-            if (foundIndex !== -1) {
-              const updatedPosts = [...page.posts];
-              updatedPosts[foundIndex] = data;
-              return { ...page, posts: updatedPosts };
-            }
-
-            return page;
+              if (foundIndex !== -1) {
+                draftPage.posts[foundIndex] = data;
+              }
+            });
           }),
         };
       }

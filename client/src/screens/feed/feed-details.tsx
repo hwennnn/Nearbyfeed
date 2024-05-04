@@ -231,7 +231,7 @@ export const FeedDetails = () => {
             </View>
           )}
 
-          <View className="flex-row justify-between px-10 py-4">
+          <View className="flex-row justify-between px-10 pt-2 pb-4">
             <Pressable onPress={() => handleVote(isLiked ? 0 : 1)}>
               <View className="flex-row items-center space-x-1">
                 <Ionicons
