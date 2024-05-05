@@ -6,3 +6,9 @@ export const isPollExpired = (createdTime: number, days: number): boolean => {
 
   return currentTime >= expirationTime;
 };
+
+export const isEventExpired = (expiredTime: number): boolean => {
+  const currentTime = Date.now();
+
+  return currentTime >= expiredTime;
+};

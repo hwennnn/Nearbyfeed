@@ -26,6 +26,7 @@ import { imageUploadOptions } from 'src/images/constants';
 import { ImagesService } from 'src/images/images.service';
 import {
   CreateCommentDto,
+  EventParticipationDto,
   GetChildCommentDto,
   GetCommentDto,
   GetPostsDto,
@@ -37,12 +38,15 @@ import { CreatePostDto } from 'src/posts/dto/create-post.dto';
 import { LikeDto } from 'src/posts/dto/like.dto';
 import {
   type CommentWithLike,
+  type EventParticipationResult,
+  type EventWithParticipant,
   type PollWithOptions,
   type PostWithLike,
   type VotePollResult,
 } from 'src/posts/entities';
 import { PollService } from 'src/posts/poll.service';
 import { CommentsService } from './comments.service';
+import { EventService } from './event.service';
 import { PostsService } from './posts.service';
 
 @Controller('posts')
@@ -51,6 +55,7 @@ export class PostsController {
     private readonly postsService: PostsService,
     private readonly commentsService: CommentsService,
     private readonly pollService: PollService,
+    private readonly eventService: EventService,
     private readonly imagesService: ImagesService,
   ) {}
 
@@ -244,6 +249,32 @@ export class PostsController {
       votePollDto,
       +postId,
       +pollId,
+      +userId,
+    );
+  }
+
+  @Get(':postId/events/:eventId')
+  @UseGuards(new OptionalJwtAuthGuard(true))
+  async findEvent(
+    @Param('postId') postId: string,
+    @Param('eventId') eventId: string,
+    @GetUser() user: TokenUser | null,
+  ): Promise<EventWithParticipant | null> {
+    return await this.eventService.findEvent(+postId, +eventId, user?.userId);
+  }
+
+  @Post(':postId/events/:eventId/participate')
+  @UseGuards(JwtAuthGuard)
+  async participateEvent(
+    @Body() eventParticipationDto: EventParticipationDto,
+    @GetUser('userId') userId: string,
+    @Param('postId') postId: string,
+    @Param('eventId') eventId: string,
+  ): Promise<EventParticipationResult> {
+    return await this.eventService.participateEvent(
+      eventParticipationDto.isAttending,
+      +postId,
+      +eventId,
       +userId,
     );
   }
