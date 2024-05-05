@@ -33,9 +33,10 @@ export class PostsService {
     );
 
     const hasPollData =
-      createPostDto.votingLength !== undefined &&
-      createPostDto.options !== undefined &&
-      createPostDto.options.length > 0;
+      createPostDto.poll !== undefined && createPostDto.poll !== null;
+
+    const hasEventData =
+      createPostDto.event !== undefined && createPostDto.event !== null;
 
     const data = {
       authorId,
@@ -52,15 +53,37 @@ export class PostsService {
       poll: hasPollData
         ? {
             create: {
-              votingLength: +createPostDto.votingLength,
+              votingLength: +createPostDto.poll.votingLength,
               options: {
                 createMany: {
-                  data: createPostDto.options.map((option, index) => ({
+                  data: createPostDto.poll.options.map((option, index) => ({
                     text: option,
                     order: index,
                   })),
                 },
               },
+            },
+          }
+        : undefined,
+      event: hasEventData
+        ? {
+            create: {
+              title: this.filterService.filterText(createPostDto.event.title),
+              description:
+                createPostDto.event.description !== undefined
+                  ? this.filterService.filterText(
+                      createPostDto.event.description,
+                    )
+                  : null,
+              startDate: new Date(createPostDto.event.startDate),
+              endDate:
+                createPostDto.event.endDate !== undefined
+                  ? new Date(createPostDto.event.endDate)
+                  : null,
+              locationName: createPostDto.event.locationName,
+              fullLocationName: createPostDto.event.fullLocationName,
+              latitude: +createPostDto.event.latitude,
+              longitude: +createPostDto.event.longitude,
             },
           }
         : undefined,
@@ -78,6 +101,7 @@ export class PostsService {
                 },
               }
             : false,
+          event: hasEventData,
         },
       })
       .catch((e) => {

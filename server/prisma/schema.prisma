@@ -19,18 +19,19 @@ model PendingUser {
 }
 
 model User {
-  id            Int           @id @default(autoincrement())
-  username      String
-  email         String        @unique
-  password      String
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  image         String?
-  posts         Post[]
-  comments      Comment[]
-  likedPosts    PostLike[]
-  likedComments CommentLike[]
-  PollVote      PollVote[]
+  id                 Int                  @id @default(autoincrement())
+  username           String
+  email              String               @unique
+  password           String
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  image              String?
+  posts              Post[]
+  comments           Comment[]
+  likedPosts         PostLike[]
+  likedComments      CommentLike[]
+  participatedPolls  PollVote[]
+  participatedEvents EventParticipation[]
 }
 
 model Post {
@@ -51,6 +52,7 @@ model Post {
   comments         Comment[]
   likes            PostLike[]
   poll             Poll?
+  event            Event?
 }
 
 model Comment {
@@ -133,4 +135,35 @@ model PollVote {
   pollOption   PollOption @relation(fields: [pollOptionId], references: [id], onDelete: Cascade)
 
   @@id([pollId, userId])
+}
+
+model Event {
+  id                Int                  @id @default(autoincrement())
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+  title             String
+  description       String?
+  startDate         DateTime
+  endDate           DateTime?
+  latitude          Float
+  longitude         Float
+  locationName      String
+  fullLocationName  String
+  participantsCount Int                  @default(0)
+  postId            Int                  @unique
+  post              Post                 @relation(fields: [postId], references: [id], onDelete: Cascade)
+  participants      EventParticipation[]
+}
+
+model EventParticipation {
+  id          Int      @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+  eventId     Int
+  event       Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  isAttending Boolean
+
+  @@id([eventId, userId])
 }

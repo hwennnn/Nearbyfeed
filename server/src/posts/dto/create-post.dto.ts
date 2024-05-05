@@ -1,18 +1,16 @@
+import { Type } from 'class-transformer';
 import {
-  ArrayMaxSize,
-  ArrayMinSize,
-  IsArray,
   IsLatitude,
   IsLongitude,
-  IsNumberString,
+  IsObject,
   IsOptional,
   IsString,
-  Length,
   MaxLength,
   MinLength,
-  Validate,
+  ValidateNested,
 } from 'class-validator';
-import { ValidNumberRangeValue } from 'src/posts/decorators';
+import { CreateEventDto } from './create-event.dto';
+import { CreatePollDto } from './create-poll.dto';
 
 export class CreatePostDto {
   @IsString()
@@ -33,15 +31,14 @@ export class CreatePostDto {
   longitude: number;
 
   @IsOptional()
-  @IsNumberString()
-  @Validate(ValidNumberRangeValue, [1, 7])
-  votingLength: number;
+  @IsObject()
+  @ValidateNested()
+  @Type(() => CreatePollDto)
+  poll: CreatePollDto;
 
   @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  @Length(1, 70, { each: true })
-  @ArrayMinSize(2)
-  @ArrayMaxSize(7)
-  options: string[];
+  @IsObject()
+  @ValidateNested()
+  @Type(() => CreateEventDto)
+  event: CreateEventDto;
 }
