@@ -27,7 +27,7 @@ const client = axios.create({
 const refreshAuthToken = async (): Promise<void> => {
   const refreshToken = getRefreshToken();
 
-  console.log('refreshing token..., ', refreshToken);
+  console.log('refreshing token...');
 
   if (refreshToken === null) return;
 
@@ -57,7 +57,6 @@ const refreshAuthToken = async (): Promise<void> => {
 client.interceptors.request.use(
   async (config) => {
     const accessToken = getAccessToken();
-    console.log('🚀 ~ accessToken:', accessToken);
 
     if (accessToken !== null) {
       config.headers.Authorization = `Bearer ${accessToken}`;
@@ -82,7 +81,7 @@ client.interceptors.response.use(
       if (getRefreshToken() !== undefined) {
         await refreshAuthToken();
 
-        const newToken = getAccessToken;
+        const newToken = getAccessToken();
 
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
 

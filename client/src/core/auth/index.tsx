@@ -23,8 +23,6 @@ const _useAuth = create<AuthState>((set, get) => ({
   status: 'idle',
   token: null,
   signIn: (token, shouldUpdateToken = true) => {
-    console.log('🚀 ~ shouldUpdateToken:', shouldUpdateToken);
-
     if (shouldUpdateToken) {
       setTokensIntoStorage(token);
     }

@@ -195,12 +195,7 @@ export const AddFeed = () => {
         <HeaderButton iconName="close-outline" disabled={isLoading} />
       ),
       headerRight: () => (
-        <TouchableOpacity
-          onPress={handleSubmit(onSubmit, (errors) => {
-            console.log(errors);
-          })}
-          disabled={isLoading}
-        >
+        <TouchableOpacity onPress={handleSubmit(onSubmit)} disabled={isLoading}>
           {isLoading ? (
             <ActivityIndicator size="small" />
           ) : (

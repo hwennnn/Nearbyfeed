@@ -146,8 +146,6 @@ export const useAddReply = createMutation<
       useCommentKeys.getState().commentsQueryKey.sort
     );
 
-    console.log(commentsQueryKey);
-
     queryClient.setQueryData<InfiniteComments>(commentsQueryKey, (oldData) => {
       if (oldData) {
         return {
