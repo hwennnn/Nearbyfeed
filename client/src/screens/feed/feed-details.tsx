@@ -90,7 +90,9 @@ export const FeedDetails = () => {
 
   const { mutate } = useVotePost();
 
-  const [imageModalVisible, setImageModalVisible] = React.useState(false);
+  const [imageModalIndex, setImageModalIndex] = React.useState<
+    number | undefined
+  >(undefined);
 
   const { colorScheme } = useColorScheme();
 
@@ -121,7 +123,7 @@ export const FeedDetails = () => {
     content,
     author,
     like,
-    image,
+    images,
     points,
     locationName,
     createdAt,
@@ -206,27 +208,37 @@ export const FeedDetails = () => {
             </Text>
           )}
 
-          {image !== null && (
-            <View className="px-4">
-              <TouchableOpacity
-                onPress={() => setImageModalVisible(true)}
-                className="mt-1"
+          {images !== null && images !== undefined && images.length > 0 && (
+            <View className="mt-1 flex-1 flex-row">
+              <ScrollView
+                showsHorizontalScrollIndicator={false}
+                className="flex-1 flex-row space-x-3"
+                contentContainerStyle="px-4"
+                horizontal={true}
               >
-                <Image
-                  className="h-64 w-full object-cover"
-                  source={{
-                    uri: image,
-                  }}
-                />
-              </TouchableOpacity>
+                {images.map((image, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    onPress={() => setImageModalIndex(index)}
+                    className={`flex-1`}
+                  >
+                    <Image
+                      className="h-56 w-64 object-cover"
+                      source={{
+                        uri: image,
+                      }}
+                    />
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+
               <ImageViewer
-                images={[
-                  {
-                    uri: image!,
-                  },
-                ]}
-                visible={imageModalVisible}
-                onClose={() => setImageModalVisible(false)}
+                images={images.map((url) => ({
+                  uri: url,
+                }))}
+                visible={imageModalIndex !== undefined}
+                onClose={() => setImageModalIndex(undefined)}
+                imageIndex={imageModalIndex}
               />
             </View>
           )}

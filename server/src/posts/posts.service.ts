@@ -25,7 +25,7 @@ export class PostsService {
   async createPost(
     createPostDto: CreatePostDto,
     authorId: number,
-    image?: string,
+    images?: string[],
   ): Promise<Post> {
     const geolocationName = await this.geocodingService.getLocationName(
       +createPostDto.latitude,
@@ -37,7 +37,7 @@ export class PostsService {
 
     const data = {
       authorId,
-      image,
+      images,
       latitude: +createPostDto.latitude,
       longitude: +createPostDto.longitude,
       title: this.filterService.filterText(createPostDto.title),
@@ -142,7 +142,7 @@ export class PostsService {
           longitude: true,
           locationName: true,
           fullLocationName: true,
-          image: true,
+          images: true,
           points: true,
           createdAt: true,
           updatedAt: true,
@@ -249,7 +249,7 @@ export class PostsService {
           longitude: true,
           locationName: true,
           fullLocationName: true,
-          image: true,
+          images: true,
           points: true,
           createdAt: true,
           updatedAt: true,

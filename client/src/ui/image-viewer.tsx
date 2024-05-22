@@ -8,13 +8,19 @@ type ImageViewerProps = {
   visible: boolean;
   images: ImageProps[];
   onClose: () => void;
+  imageIndex?: number;
 };
 
-export const ImageViewer = ({ visible, images, onClose }: ImageViewerProps) => {
+export const ImageViewer = ({
+  visible,
+  images,
+  onClose,
+  imageIndex = 0,
+}: ImageViewerProps) => {
   return (
     <ImageView
       images={images}
-      imageIndex={0}
+      imageIndex={imageIndex}
       visible={visible}
       onRequestClose={onClose}
     />

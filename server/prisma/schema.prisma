@@ -41,7 +41,7 @@ model Post {
   longitude        Float
   locationName     String?
   fullLocationName String?
-  image            String?
+  images           String[]
   points           Int        @default(0)
   createdAt        DateTime   @default(now())
   updatedAt        DateTime   @updatedAt

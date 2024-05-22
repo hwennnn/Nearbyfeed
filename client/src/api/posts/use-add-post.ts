@@ -14,7 +14,7 @@ type Variables = {
   content?: string;
   latitude: number;
   longitude: number;
-  image: ImagePicker.ImagePickerAsset | null;
+  images: ImagePicker.ImagePickerAsset[];
   votingLength?: number;
   options?: string[];
 };
@@ -41,12 +41,14 @@ export const useAddPost = createMutation<
 >({
   mutationFn: async (variables) => {
     const formData = new FormData();
-    if (variables.image !== null) {
-      formData.append('image', {
-        uri: variables.image.uri,
-        type: 'image',
-        name: variables.image.fileName ?? 'photo.jpg',
-      } as any);
+    if (variables.images !== null) {
+      for (const image of variables.images) {
+        formData.append('images', {
+          uri: image.uri,
+          type: 'image',
+          name: image.fileName ?? 'photo.jpg',
+        } as any);
+      }
     }
 
     formData.append('title', variables.title);

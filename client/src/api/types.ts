@@ -6,7 +6,7 @@ export type Post = {
   longitude: number;
   locationName?: string | null;
   fullLocationName?: string | null;
-  image?: string | null;
+  images?: string[] | null;
   points: number;
   createdAt?: Date;
   updatedAt?: Date;

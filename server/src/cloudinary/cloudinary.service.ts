@@ -16,8 +16,8 @@ export class CloudinaryService {
     return await new Promise((resolve, reject) => {
       const upload = v2.uploader.upload_stream(
         {
-          width: 400,
-          height: 400,
+          width: 800,
+          height: 800,
           crop: 'limit',
         },
         (error, result) => {

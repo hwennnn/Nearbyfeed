@@ -19,6 +19,7 @@ import { useColorScheme } from 'nativewind';
 import * as React from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { showMessage } from 'react-native-flash-message';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 import { useAddPost } from '@/api';
 import type { VotingLengthOption } from '@/screens/feed/poll-voting-length-item';
@@ -28,10 +29,12 @@ import {
 } from '@/screens/feed/poll-voting-length-item';
 import {
   ActivityIndicator,
+  colors,
   ControlledInput,
   HeaderButton,
   Image,
   Pressable,
+  ScrollView,
   showErrorMessage,
   Text,
   TouchableOpacity,
@@ -41,7 +44,9 @@ import Divider from '@/ui/core/divider';
 import { Layout } from '@/ui/core/layout';
 import { ScrollLayout } from '@/ui/core/scroll-layout';
 import { FontAwesome5, Ionicons } from '@/ui/icons/ionicons';
+import { ImageViewer } from '@/ui/image-viewer';
 import { retrieveCurrentPosition } from '@/utils/geolocation-utils';
+import { checkFileSize } from '@/utils/image-utils';
 
 export class CreatePostDto {
   @IsString()
@@ -95,6 +100,9 @@ export const AddFeed = () => {
   const isDark = colorScheme === 'dark';
   const iconColor = isDark ? 'text-neutral-400' : 'text-neutral-500';
 
+  const [imageModalIndex, setImageModalIndex] = React.useState<
+    number | undefined
+  >(undefined);
   const [isPollEnabled, setIsPollEnabled] = React.useState(false);
   const [selectedVotingLength, setSelectedVotingLength] =
     React.useState<VotingLengthOption>(DEFAULT_VOTING_LENGTH_OPTION);
@@ -130,8 +138,8 @@ export const AddFeed = () => {
   }, [isPollEnabled, register, unregister]);
 
   const { mutate: addPost, isLoading } = useAddPost();
-  const [image, setImage] = React.useState<ImagePicker.ImagePickerAsset | null>(
-    null
+  const [images, setImages] = React.useState<ImagePicker.ImagePickerAsset[]>(
+    []
   );
 
   const navigation = useNavigation();
@@ -148,7 +156,7 @@ export const AddFeed = () => {
         title: data.title,
         content: data.content,
         ...location,
-        image,
+        images,
         options: isPollEnabled
           ? data.options.map((option) => option.value)
           : undefined,
@@ -171,21 +179,30 @@ export const AddFeed = () => {
         },
       });
     },
-    [addPost, image, isPollEnabled, navigation, selectedVotingLength]
+    [addPost, images, isPollEnabled, navigation, selectedVotingLength]
   );
 
   const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
+    // No permissions request is necessary for launching the images library
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
       aspect: [4, 3],
-      quality: 1,
-      selectionLimit: 1,
+      quality: 0.2,
+      selectionLimit: 5 - images.length,
+      allowsMultipleSelection: true,
     });
 
     if (!result.canceled && result.assets.length > 0) {
-      setImage(result.assets[0]);
+      for (const asset of result.assets) {
+        const fileSize = await checkFileSize(asset.uri);
+        if (fileSize === null || fileSize > 5 * 1024 * 1024) {
+          showErrorMessage(
+            'The images is too large. Please select a smaller images.'
+          );
+        }
+      }
+
+      setImages((prevImages) => prevImages.concat(result.assets));
     }
   };
 
@@ -230,16 +247,57 @@ export const AddFeed = () => {
             multiline
           />
 
-          {image !== null && (
-            <View className="my-4 h-[150px] w-[150px]">
-              <Image source={{ uri: image.uri }} className="h-full w-full" />
-
-              <Pressable
-                className="absolute top-2 right-2 rounded-full border bg-black"
-                onPress={() => setImage(null)}
+          {images.length > 0 && (
+            <View className="my-4 flex-1 flex-row">
+              <ScrollView
+                showsHorizontalScrollIndicator={false}
+                className="flex-1 flex-row space-x-3"
+                horizontal={true}
               >
-                <Ionicons name="close" color="white" size={16} />
-              </Pressable>
+                {images.map((image, index) => (
+                  <Pressable
+                    className="h-[150px] w-[150px]"
+                    key={index}
+                    onPress={() => setImageModalIndex(index)}
+                  >
+                    <Image
+                      source={{ uri: image.uri }}
+                      className="h-full w-full"
+                    />
+
+                    <Pressable
+                      className="absolute top-2 right-2 rounded-full border bg-black"
+                      onPress={() =>
+                        setImages((currImages) =>
+                          currImages.filter(
+                            (_, currIndex) => currIndex !== index
+                          )
+                        )
+                      }
+                    >
+                      <Ionicons name="close" color="white" size={16} />
+                    </Pressable>
+                  </Pressable>
+                ))}
+
+                {images.length !== 5 && (
+                  <TouchableOpacity
+                    onPress={pickImage}
+                    className="h-[150px] w-[150px] items-center justify-center border-[1px] border-dotted border-charcoal-700 dark:border-white"
+                  >
+                    <Icon name="add" color={colors.primary[400]} size={48} />
+                  </TouchableOpacity>
+                )}
+              </ScrollView>
+
+              <ImageViewer
+                images={images.map((image) => ({
+                  uri: image.uri,
+                }))}
+                visible={imageModalIndex !== undefined}
+                onClose={() => setImageModalIndex(undefined)}
+                imageIndex={imageModalIndex}
+              />
             </View>
           )}
 
@@ -341,7 +399,7 @@ export const AddFeed = () => {
         <Divider />
         <View className="mx-4 mb-6 mt-2 flex-row space-x-6">
           <Pressable onPress={pickImage}>
-            <FontAwesome5 name="image" size={24} className={iconColor} />
+            <FontAwesome5 name="images" size={24} className={iconColor} />
           </Pressable>
 
           <Pressable onPress={() => setIsPollEnabled((value) => !value)}>

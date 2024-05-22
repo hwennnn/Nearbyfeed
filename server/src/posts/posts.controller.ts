@@ -7,11 +7,11 @@ import {
   Post,
   Put,
   Query,
-  UploadedFile,
+  UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import {
   type Comment as CommentEntity,
   type CommentLike,
@@ -56,19 +56,19 @@ export class PostsController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  @UseInterceptors(FileInterceptor('image', imageUploadOptions))
+  @UseInterceptors(FilesInterceptor('images', 5, imageUploadOptions)) // Allow up to 5 images
   async createPost(
     @Body() createPostDto: CreatePostDto,
     @GetUser('userId') userId: string,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFiles() files: Express.Multer.File[],
   ): Promise<PostEntity> {
-    let image: string | undefined;
+    let images: string[] | undefined;
 
-    if (file !== undefined) {
-      image = await this.imagesService.uploadImage(file);
+    if (files !== undefined) {
+      images = await this.imagesService.uploadImages(files);
     }
 
-    return await this.postsService.createPost(createPostDto, +userId, image);
+    return await this.postsService.createPost(createPostDto, +userId, images);
   }
 
   @Get()
