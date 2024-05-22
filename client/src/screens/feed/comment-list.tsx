@@ -147,16 +147,18 @@ export const CommentList = ({ postId, refreshing, onRefetchDone }: Props) => {
         <Divider />
       </View>
 
-      <View className="min-h-[2px] flex-1">
-        <FlashList
-          data={allComments}
-          renderItem={renderItem}
-          estimatedItemSize={100}
-          keyExtractor={(_, index) => `item-${index}`}
-          onEndReached={handleEndReached}
-          onEndReachedThreshold={0.1}
-        />
-      </View>
+      {allComments.length > 0 && (
+        <View className="min-h-[2px] flex-1">
+          <FlashList
+            data={allComments}
+            renderItem={renderItem}
+            estimatedItemSize={100}
+            keyExtractor={(_, index) => `item-${index}`}
+            onEndReached={handleEndReached}
+            onEndReachedThreshold={0.1}
+          />
+        </View>
+      )}
     </View>
   );
 };

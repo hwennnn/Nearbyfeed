@@ -2,7 +2,7 @@ import {
   ArrayMaxSize,
   ArrayMinSize,
   IsArray,
-  IsNumber,
+  IsNumberString,
   IsString,
   Length,
   Validate,
@@ -10,14 +10,14 @@ import {
 import { ValidNumberRangeValue } from 'src/posts/decorators';
 
 export class CreatePollDto {
-  @IsNumber()
+  @IsNumberString()
   @Validate(ValidNumberRangeValue, [1, 7])
   votingLength: number;
 
   @IsArray()
   @IsString({ each: true })
-  @Length(1, 120, { each: true })
-  @ArrayMinSize(1)
+  @Length(1, 70, { each: true })
+  @ArrayMinSize(2)
   @ArrayMaxSize(7)
   options: string[];
 }

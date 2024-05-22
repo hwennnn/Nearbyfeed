@@ -30,7 +30,7 @@ model User {
   comments      Comment[]
   likedPosts    PostLike[]
   likedComments CommentLike[]
-  PollVote      PollVote[]
+  votedPolls    PollVote[]
 }
 
 model Post {

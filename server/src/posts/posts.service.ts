@@ -33,9 +33,7 @@ export class PostsService {
     );
 
     const hasPollData =
-      createPostDto.votingLength !== undefined &&
-      createPostDto.options !== undefined &&
-      createPostDto.options.length > 0;
+      createPostDto.poll !== undefined && createPostDto.poll !== null;
 
     const data = {
       authorId,
@@ -52,10 +50,10 @@ export class PostsService {
       poll: hasPollData
         ? {
             create: {
-              votingLength: +createPostDto.votingLength,
+              votingLength: +createPostDto.poll.votingLength,
               options: {
                 createMany: {
-                  data: createPostDto.options.map((option, index) => ({
+                  data: createPostDto.poll.options.map((option, index) => ({
                     text: option,
                     order: index,
                   })),

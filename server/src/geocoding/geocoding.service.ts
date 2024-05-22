@@ -36,7 +36,7 @@ export class GeocodingService {
 
     return names.length > 0
       ? {
-          locationName: names[0],
+          locationName: names.slice(0, 2).join(', '),
           displayName: data.display_name,
         }
       : null;

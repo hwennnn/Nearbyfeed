@@ -61,9 +61,9 @@ export const useAddPost = createMutation<
       variables.votingLength !== undefined
     ) {
       for (const option of variables.options) {
-        formData.append('options[]', option);
+        formData.append('poll[options][]', option);
       }
-      formData.append('votingLength', variables.votingLength.toString());
+      formData.append('poll[votingLength]', variables.votingLength.toString());
     }
 
     const response = await client({

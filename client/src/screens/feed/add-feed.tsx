@@ -67,6 +67,10 @@ export class CreatePostDto {
   content?: string;
 
   @IsOptional()
+  @ValidateIf(
+    (_object, value) =>
+      value !== undefined && value !== null && value.length !== 0
+  )
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => PollOptionDto)
@@ -109,6 +113,7 @@ export const AddFeed = () => {
           },
         ],
       },
+      shouldUnregister: true,
     });
 
   const { fields, append, remove } = useFieldArray({
