@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
@@ -18,14 +18,6 @@ export class JwtAuthStrategy extends PassportStrategy(Strategy, 'jwt') {
   }
 
   async validate(payload: TokenPayload): Promise<TokenUser> {
-    const storedRefreshToken = await this.redisService.get<string>(
-      payload.sessionId,
-    );
-
-    if (storedRefreshToken === null) {
-      throw new UnauthorizedException('Invalid token');
-    }
-
     return {
       userId: payload.sub,
       email: payload.email,

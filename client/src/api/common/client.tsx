@@ -8,7 +8,7 @@ import {
   getAccessToken,
   getRefreshToken,
   isRefreshTokenEmpty,
-  setAccessToken,
+  setTokens,
 } from '@/core/auth/utils';
 import { resetUser } from '@/core/user';
 const { manifest } = Constants;
@@ -46,9 +46,7 @@ const refreshAuthToken = async (): Promise<void> => {
     );
 
     const tokens = response.data;
-    const access = tokens.accessToken;
-
-    setAccessToken(access);
+    setTokens(tokens);
   } catch (error: any) {
     if (error.response?.status === 401 || error.response?.status === 403) {
       console.error('There was an error when refreshing the token');

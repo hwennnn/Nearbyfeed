@@ -142,10 +142,10 @@ export class AuthService {
     return user;
   }
 
-  async refreshAccessToken(
+  async refreshTokens(
     refreshToken: string,
     payload: TokenPayload,
-  ): Promise<string> {
+  ): Promise<AuthToken> {
     const sessionId = payload.sessionId;
 
     const storedRefreshToken = await this.redisService.get<string>(sessionId);
@@ -159,15 +159,11 @@ export class AuthService {
 
     const userId = payload.sub;
     const user = await this.usersService.findOne(parseInt(userId));
-    const newPayload: TokenPayload = {
-      sub: user.id.toString(),
-      email: user.email,
-      sessionId: payload.sessionId,
-    };
 
-    const accessToken = await this.generateAccessToken(newPayload);
+    // Delete the old refresh token stored in the redis
+    await this.redisService.delete(sessionId);
 
-    return accessToken;
+    return await this.getTokens(user.id.toString(), user.email);
   }
 
   private async getTokens(userId: string, email: string): Promise<AuthToken> {
@@ -194,11 +190,7 @@ export class AuthService {
 
     const hashedRefreshToken = await hashData(refreshToken);
 
-    await this.redisService.set(
-      sessionId,
-      hashedRefreshToken,
-      30 * 24 * 60 * 60,
-    );
+    await this.redisService.set(sessionId, hashedRefreshToken);
 
     return {
       accessToken,
@@ -216,7 +208,7 @@ export class AuthService {
   private async generateRefreshToken(payload: any): Promise<string> {
     return await this.jwtService.signAsync(payload, {
       secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
-      expiresIn: '30d',
+      // the jwt refresh token will not be expired (Refresh token rotation)
     });
   }
 

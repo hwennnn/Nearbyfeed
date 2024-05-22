@@ -12,7 +12,7 @@ import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import { AuthDto, ForgotPasswordDto, ResetPasswordDto } from 'src/auth/dto';
-import { type LoginResult } from 'src/auth/entities';
+import { TokenPayload, type LoginResult } from 'src/auth/entities';
 import JwtAuthGuard from 'src/auth/guards/jwt-auth.guard';
 import JwtRefreshGuard from 'src/auth/guards/jwt-refresh.guard';
 import { CreateUserDto } from 'src/users/dto';
@@ -53,7 +53,7 @@ export class AuthController {
     @Param('id') id: string,
     @Res() res: Response,
   ): Promise<void> {
-    const user = await this.authService.verifyEmail(id);
+    await this.authService.verifyEmail(id);
 
     const deepLink = (await this.configService.get('APP_DEEP_LINK')) as string;
     res.redirect(deepLink + 'login/success');
@@ -62,9 +62,10 @@ export class AuthController {
   @Post('refresh-token')
   @UseGuards(JwtRefreshGuard)
   async refreshToken(
-    @GetUser('accessToken') accessToken: string,
+    @GetUser('refreshToken') refreshToken: string,
+    @GetUser('payload') payload: TokenPayload,
   ): Promise<{ accessToken: string }> {
-    return { accessToken };
+    return await this.authService.refreshTokens(refreshToken, payload);
   }
 
   @Post('forgot-password')

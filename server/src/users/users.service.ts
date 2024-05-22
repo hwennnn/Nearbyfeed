@@ -214,11 +214,6 @@ export class UsersService {
     updateUserDto: UpdateUserDto,
     imageUrl?: string,
   ): Promise<UserWithoutPassword> {
-    console.log(
-      '🚀 ~ file: users.service.ts:195 ~ UsersService ~ updateUserDto:',
-      updateUserDto,
-    );
-
     const data = {
       username: updateUserDto.username,
       image:
@@ -228,8 +223,6 @@ export class UsersService {
           ? null
           : undefined,
     };
-
-    console.log(data);
 
     return this.excludePasswordFromUser(
       await this.prismaService.user

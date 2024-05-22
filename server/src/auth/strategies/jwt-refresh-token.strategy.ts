@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { type Request } from 'express';
@@ -25,18 +25,16 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(
   async validate(
     request: Request,
     payload: TokenPayload,
-  ): Promise<{ accessToken: string }> {
+  ): Promise<{ refreshToken: string; payload: TokenPayload }> {
     const refreshToken = this.extractTokenFromHeader(request);
 
     if (refreshToken === undefined) {
-      throw new UnauthorizedException('Token invalid');
+      throw new ForbiddenException('Token invalid');
     }
 
     return {
-      accessToken: await this.authService.refreshAccessToken(
-        refreshToken,
-        payload,
-      ),
+      refreshToken,
+      payload,
     };
   }
 

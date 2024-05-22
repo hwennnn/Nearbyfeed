@@ -57,7 +57,7 @@ export class PostsController {
   @Post()
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('image', imageUploadOptions))
-  async create(
+  async createPost(
     @Body() createPostDto: CreatePostDto,
     @GetUser('userId') userId: string,
     @UploadedFile() file: Express.Multer.File,
