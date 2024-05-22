@@ -204,7 +204,7 @@ export const FeedList = ({
   };
 
   return (
-    <View className="flex-1">
+    <View className="min-h-[2px] flex-1">
       <FlashList
         ItemSeparatorComponent={Divider}
         ListHeaderComponent={header}
