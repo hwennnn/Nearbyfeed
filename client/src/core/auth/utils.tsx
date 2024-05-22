@@ -8,19 +8,21 @@ export type AuthToken = {
   refreshToken: string;
 };
 
-export const getAccessToken = () => getItem<string | null>(ACCESS_TOKEN);
-export const removeAccessToken = () => removeItem(ACCESS_TOKEN);
-export const setAccessToken = (value: string) =>
+export const getAccessTokenFromStorage = () =>
+  getItem<string | null>(ACCESS_TOKEN);
+export const removeAccessTokenFromStorage = () => removeItem(ACCESS_TOKEN);
+export const setAccessTokenIntoStorage = (value: string) =>
   setItem<string>(ACCESS_TOKEN, value);
 
-export const getRefreshToken = () => getItem<string | null>(REFRESH_TOKEN);
-export const removeRefreshToken = () => removeItem(REFRESH_TOKEN);
-export const setRefreshToken = (value: string) =>
+export const getRefreshTokenFromStorage = () =>
+  getItem<string | null>(REFRESH_TOKEN);
+export const removeRefreshTokenFromStorage = () => removeItem(REFRESH_TOKEN);
+export const setRefreshTokenIntoStorage = (value: string) =>
   setItem<string>(REFRESH_TOKEN, value);
 
-export const getTokens = (): AuthToken | null => {
-  const accessToken = getAccessToken();
-  const refreshToken = getRefreshToken();
+export const getTokensFromStorage = (): AuthToken | null => {
+  const accessToken = getAccessTokenFromStorage();
+  const refreshToken = getRefreshTokenFromStorage();
 
   if (accessToken === null || refreshToken === null) return null;
 
@@ -29,15 +31,13 @@ export const getTokens = (): AuthToken | null => {
     refreshToken,
   };
 };
-export const removeTokens = () => {
-  removeAccessToken();
-  removeRefreshToken();
-};
-export const setTokens = (token: AuthToken) => {
-  setAccessToken(token.accessToken);
-  setRefreshToken(token.refreshToken);
+
+export const removeTokensFromStorage = () => {
+  removeAccessTokenFromStorage();
+  removeRefreshTokenFromStorage();
 };
 
-export const isRefreshTokenEmpty = (): boolean => {
-  return getRefreshToken() === null;
+export const setTokensIntoStorage = (token: AuthToken) => {
+  setAccessTokenIntoStorage(token.accessToken);
+  setRefreshTokenIntoStorage(token.refreshToken);
 };

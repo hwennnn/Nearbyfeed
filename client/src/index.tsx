@@ -10,11 +10,10 @@ import FlashMessage from 'react-native-flash-message';
 import { APIProvider } from '@/api';
 import { hydrateAuth, loadSelectedTheme } from '@/core';
 import { RootNavigator } from '@/navigation';
-import { userUtils } from '@/utils/user-utils';
 
 // enableMapSet();
 hydrateAuth();
-userUtils.hydrateUser();
+// userUtils.hydrateUser();
 loadSelectedTheme();
 SplashScreen.preventAutoHideAsync();
 

@@ -3,14 +3,12 @@ import axios from 'axios';
 import Constants from 'expo-constants';
 import { Alert } from 'react-native';
 
-import { signOut } from '@/core/auth';
 import {
   getAccessToken,
   getRefreshToken,
-  isRefreshTokenEmpty,
-  setTokens,
-} from '@/core/auth/utils';
-import { resetUser } from '@/core/user';
+  signOut,
+  updateToken,
+} from '@/core/auth';
 const { manifest } = Constants;
 
 export const API_URL =
@@ -46,23 +44,23 @@ const refreshAuthToken = async (): Promise<void> => {
     );
 
     const tokens = response.data;
-    setTokens(tokens);
+    updateToken(tokens);
   } catch (error: any) {
     if (error.response?.status === 401 || error.response?.status === 403) {
       console.error('There was an error when refreshing the token');
       Alert.alert('You have been signed out');
       signOut();
-      resetUser();
     }
   }
 };
 
 client.interceptors.request.use(
   async (config) => {
-    const newToken = getAccessToken();
+    const accessToken = getAccessToken();
+    console.log('🚀 ~ accessToken:', accessToken);
 
-    if (newToken !== null) {
-      config.headers.Authorization = `Bearer ${newToken}`;
+    if (accessToken !== null) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
     }
 
     return config;
@@ -81,10 +79,10 @@ client.interceptors.response.use(
     const originalRequest = error.config;
 
     if (error.response?.status === 401) {
-      if (!isRefreshTokenEmpty()) {
+      if (getRefreshToken() !== undefined) {
         await refreshAuthToken();
 
-        const newToken = getAccessToken();
+        const newToken = getAccessToken;
 
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
 
@@ -92,7 +90,6 @@ client.interceptors.response.use(
       } else {
         Alert.alert('You have been signed out');
         signOut();
-        resetUser();
         console.log('res error : Session expired.');
         // could be showing popup alert -> your session has expired, please login to continue.
         const errorMessage =

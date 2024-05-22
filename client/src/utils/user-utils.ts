@@ -1,9 +1,9 @@
 import { fetchSelf } from '@/api/users/fetch-self';
-import { isRefreshTokenEmpty } from '@/core/auth/utils';
+import { getRefreshToken } from '@/core';
 import { setUser } from '@/core/user';
 
 const hydrateUser = async () => {
-  if (!isRefreshTokenEmpty()) {
+  if (getRefreshToken() !== undefined) {
     const user = await fetchSelf();
     setUser(user);
   }

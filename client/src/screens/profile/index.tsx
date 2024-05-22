@@ -6,7 +6,6 @@ import Icon from 'react-native-vector-icons/Ionicons';
 
 import { useSelf } from '@/api/users';
 import { signOut } from '@/core';
-import { resetUser } from '@/core/user';
 import type { ProfileNavigatorProp } from '@/navigation/profile-navigator';
 import {
   ActivityIndicator,
@@ -54,7 +53,6 @@ export const Profile = () => {
 
   const signOutUser = (): void => {
     signOut();
-    resetUser();
   };
 
   return (

@@ -160,6 +160,10 @@ export class AuthService {
     const userId = payload.sub;
     const user = await this.usersService.findOne(parseInt(userId));
 
+    if (userId !== user.id.toString()) {
+      throw new BadRequestException('Invalid user');
+    }
+
     // Delete the old refresh token stored in the redis
     await this.redisService.delete(sessionId);
 
