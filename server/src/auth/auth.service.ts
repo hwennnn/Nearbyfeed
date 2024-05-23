@@ -6,7 +6,11 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { type AuthDto, type ResetPasswordDto } from 'src/auth/dto';
+import {
+  type AuthDto,
+  type ResetPasswordDto,
+  type VerifyEmailDto,
+} from 'src/auth/dto';
 import {
   type AuthToken,
   type LoginResult,
@@ -15,13 +19,10 @@ import {
 import { MailService } from 'src/mail/mail.service';
 import { RedisService } from 'src/redis/redis.service';
 import { type CreateUserDto } from 'src/users/dto';
-import {
-  type PendingUserWithoutPassword,
-  type UserWithoutPassword,
-} from 'src/users/entities';
+import { type PendingUserWithoutPassword } from 'src/users/entities';
 
 import { UsersService } from 'src/users/users.service';
-import { compareHash, dayInMs, hashData } from 'src/utils';
+import { compareHash, dayInMs, generateOTP, hashData } from 'src/utils';
 import { v4 as uuidV4 } from 'uuid';
 
 @Injectable()
@@ -35,9 +36,10 @@ export class AuthService {
     private readonly mailService: MailService,
   ) {}
 
-  async register(
-    createUserDto: CreateUserDto,
-  ): Promise<PendingUserWithoutPassword> {
+  async register(createUserDto: CreateUserDto): Promise<{
+    sessionId: string;
+    pendingUser: PendingUserWithoutPassword;
+  }> {
     const userExists = await this.usersService.isUserExistByEmail(
       createUserDto.email,
     );
@@ -54,14 +56,21 @@ export class AuthService {
     };
 
     const pendingUser = await this.usersService.createPendingUser(data);
+    const { sessionId, otpCode } = await this.generateVerifyEmailOtp(
+      pendingUser.email,
+    );
 
+    // TODO: add to a message queue to process sending of mails
     await this.mailService.sendVerificationEmail(
       pendingUser.email,
       pendingUser.username,
-      pendingUser.id,
+      otpCode,
     );
 
-    return pendingUser;
+    return {
+      sessionId,
+      pendingUser,
+    };
   }
 
   async login(authDto: AuthDto): Promise<LoginResult> {
@@ -103,22 +112,14 @@ export class AuthService {
     });
   }
 
-  async verifyEmail(id: string): Promise<UserWithoutPassword> {
-    const pendingUser = await this.usersService.findPendingUser(id);
-    console.log(pendingUser?.email, new Date().getTime());
+  async verifyEmail(
+    pendingUserId: string,
+    verifyEmailDto: VerifyEmailDto,
+  ): Promise<LoginResult> {
+    const pendingUser = await this.usersService.findPendingUser(pendingUserId);
 
     if (pendingUser === null) {
-      throw new BadRequestException('Invalid email verification link');
-    }
-
-    const now = new Date();
-    const hasExpired =
-      now.getTime() - pendingUser.createdAt.getTime() > dayInMs;
-
-    if (hasExpired) {
-      throw new BadRequestException(
-        'The verification link has already expired',
-      );
+      throw new BadRequestException('Invalid request');
     }
 
     const userExists = await this.usersService.isUserExistByEmail(
@@ -127,8 +128,16 @@ export class AuthService {
 
     if (userExists) {
       throw new BadRequestException(
-        'Email is already in use. Please use another email.',
+        'An account has already been created with the associated email, please login instaed.',
       );
+    }
+
+    const storedOTP = await this.redisService.get<string>(
+      verifyEmailDto.sessionId,
+    );
+
+    if (storedOTP === null || storedOTP !== verifyEmailDto.otpCode) {
+      throw new BadRequestException('Invalid OTP Code. Please try again.');
     }
 
     const createUserDto: CreateUserDto = {
@@ -137,9 +146,50 @@ export class AuthService {
       password: pendingUser.password,
     };
     const user = await this.usersService.createUser(createUserDto);
-    await this.usersService.deletePendingUser(id);
+    await this.usersService.deletePendingUser(pendingUserId);
+    await this.redisService.delete(verifyEmailDto.sessionId);
 
-    return user;
+    const tokens = await this.getTokens(user.id.toString(), user.email);
+
+    return {
+      tokens,
+      user,
+    };
+  }
+
+  async resendEmailOtp(pendingUserId: string): Promise<{
+    sessionId: string;
+  }> {
+    const pendingUser = await this.usersService.findPendingUser(pendingUserId);
+
+    if (pendingUser === null) {
+      throw new BadRequestException('Invalid request');
+    }
+
+    const userExists = await this.usersService.isUserExistByEmail(
+      pendingUser.email,
+    );
+
+    if (userExists) {
+      throw new BadRequestException(
+        'An account has already been created with the associated email, please login instaed.',
+      );
+    }
+
+    const { sessionId, otpCode } = await this.generateVerifyEmailOtp(
+      pendingUser.email,
+    );
+
+    // TODO: add to a message queue to process sending of mails
+    await this.mailService.sendVerificationEmail(
+      pendingUser.email,
+      pendingUser.username,
+      otpCode,
+    );
+
+    return {
+      sessionId,
+    };
   }
 
   async refreshTokens(
@@ -279,5 +329,20 @@ export class AuthService {
     if (user === null) {
       throw new ForbiddenException('User not found');
     }
+  }
+
+  async generateVerifyEmailOtp(email: string): Promise<{
+    sessionId: string;
+    otpCode: string;
+  }> {
+    const sessionId = uuidV4();
+    const otpCode = generateOTP();
+
+    await this.redisService.set(sessionId, otpCode, 10 * 60); // OTP code expires in 10 minutes
+
+    return {
+      sessionId,
+      otpCode,
+    };
   }
 }

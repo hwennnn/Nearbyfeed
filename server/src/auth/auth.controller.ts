@@ -11,7 +11,12 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
-import { AuthDto, ForgotPasswordDto, ResetPasswordDto } from 'src/auth/dto';
+import {
+  AuthDto,
+  ForgotPasswordDto,
+  ResetPasswordDto,
+  VerifyEmailDto,
+} from 'src/auth/dto';
 import { TokenPayload, type LoginResult } from 'src/auth/entities';
 import JwtAuthGuard from 'src/auth/guards/jwt-auth.guard';
 import JwtRefreshGuard from 'src/auth/guards/jwt-refresh.guard';
@@ -27,19 +32,16 @@ export class AuthController {
   ) {}
 
   @Post('register')
-  async register(
-    @Body() createUserDto: CreateUserDto,
-  ): Promise<PendingUserWithoutPassword> {
-    const pendingUser = await this.authService.register(createUserDto);
-
-    return pendingUser;
+  async register(@Body() createUserDto: CreateUserDto): Promise<{
+    sessionId: string;
+    pendingUser: PendingUserWithoutPassword;
+  }> {
+    return await this.authService.register(createUserDto);
   }
 
   @Post('login')
   async login(@Body() authDto: AuthDto): Promise<LoginResult> {
-    const result = await this.authService.login(authDto);
-
-    return result;
+    return await this.authService.login(authDto);
   }
 
   @Get('logout')
@@ -48,15 +50,19 @@ export class AuthController {
     await this.authService.logout(sessionId);
   }
 
-  @Get('verify-email/:id')
+  @Post('verify-email/:id')
   async verifyEmail(
-    @Param('id') id: string,
-    @Res() res: Response,
-  ): Promise<void> {
-    await this.authService.verifyEmail(id);
+    @Param('id') pendingUserId: string,
+    @Body() verifyEmailDto: VerifyEmailDto,
+  ): Promise<LoginResult> {
+    return await this.authService.verifyEmail(pendingUserId, verifyEmailDto);
+  }
 
-    const deepLink = (await this.configService.get('APP_DEEP_LINK')) as string;
-    res.redirect(deepLink + 'login/success');
+  @Post('verify-email/:id/resend')
+  async requestEmailOTP(@Param('id') pendingUserId: string): Promise<{
+    sessionId: string;
+  }> {
+    return await this.authService.resendEmailOtp(pendingUserId);
   }
 
   @Post('refresh-token')

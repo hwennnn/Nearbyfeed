@@ -4,18 +4,25 @@ import { createMutation } from 'react-query-kit';
 import { client } from '../common';
 
 type Variables = { username: string; email: string; password: string };
-type Response = {
+type PendingUser = {
   id: string;
   username: string;
   email: string;
   createdAt: Date;
 };
+type RegisterResponse = {
+  pendingUser: PendingUser;
+  sessionId: string;
+};
 
-export const useRegister = createMutation<Response, Variables, AxiosError>(
-  async (variables) =>
-    client({
-      url: '/auth/register',
-      method: 'POST',
-      data: variables,
-    }).then((response) => response.data)
+export const useRegister = createMutation<
+  RegisterResponse,
+  Variables,
+  AxiosError
+>(async (variables) =>
+  client({
+    url: '/auth/register',
+    method: 'POST',
+    data: variables,
+  }).then((response) => response.data)
 );

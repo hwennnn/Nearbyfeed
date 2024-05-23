@@ -12,12 +12,14 @@ export const Register = () => {
   const { navigate } = useNavigation();
 
   const onSubmit: RegisterFormProps['onSubmit'] = async (data) => {
-    const pendingUser = await mutateRegister(data);
+    const { sessionId, pendingUser } = await mutateRegister(data);
 
     navigate('Auth', {
       screen: 'ValidateEmail',
       params: {
+        pendingUserId: pendingUser.id,
         email: pendingUser.email,
+        sessionId,
       },
     });
   };

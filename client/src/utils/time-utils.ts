@@ -86,12 +86,21 @@ const addDays = (date: Date, days: number): Date => {
   return d;
 };
 
+const formatCountdownTime = (time: number): string => {
+  const minutes = Math.floor(time / 60);
+  const seconds = time % 60;
+  return `${minutes.toString().padStart(2, '0')}:${seconds
+    .toString()
+    .padStart(2, '0')}`;
+};
+
 const timeUtils = {
   getCurrentTimeInMs,
   formatDateStringToMonthYear,
   formatDateStringToDateMonthYear,
   formatCreatedTime,
   formatCreatedTimeInFull,
+  formatCountdownTime,
   addDays,
 };
 

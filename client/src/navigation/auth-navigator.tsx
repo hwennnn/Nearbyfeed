@@ -9,13 +9,9 @@ import {
 import ValidateEmailScreen from '@/screens/validate-email';
 
 export type AuthStackParamList = {
-  Login:
-    | undefined
-    | {
-        verifyEmail: 'success';
-      };
+  Login: undefined;
   Register: undefined;
-  ValidateEmail: { email: string };
+  ValidateEmail: { pendingUserId: string; email: string; sessionId: string };
   ForgotPassword: undefined;
   ResetPassword: {
     token: string;

@@ -11,11 +11,8 @@ export class MailService {
   async sendVerificationEmail(
     email: string,
     username: string,
-    verificationId: string,
+    otpCode: string,
   ): Promise<void> {
-    const verifyEmailLink =
-      'http://localhost:3000/auth/verify-email/' + verificationId;
-
     await this.mailerService
       .sendMail({
         to: email,
@@ -23,7 +20,7 @@ export class MailService {
         template: './verify-email',
         context: {
           username,
-          verifyEmailLink,
+          otpCode,
         },
       })
       .catch((error) => {

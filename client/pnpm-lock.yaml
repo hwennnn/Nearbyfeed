@@ -151,6 +151,9 @@ dependencies:
   react-native-svg:
     specifier: 13.4.0
     version: 13.4.0(react-native@0.71.8)(react@18.2.0)
+  react-native-text-input-otp:
+    specifier: ^1.0.7
+    version: 1.0.7
   react-native-vector-icons:
     specifier: ^9.2.0
     version: 9.2.0
@@ -10807,6 +10810,10 @@ packages:
       css-tree: 1.1.3
       react: 18.2.0
       react-native: 0.71.8(@babel/core@7.21.0)(@babel/preset-env@7.20.2)(react@18.2.0)
+    dev: false
+
+  /react-native-text-input-otp@1.0.7:
+    resolution: {integrity: sha512-aqMxC5f/6CtLikfxxvtGXPQHZnpzd1Yfn8PREta/+o993GlkcoWFIvYGak9LK7AljMm2WtBseQL8pQS5/q5URw==}
     dev: false
 
   /react-native-vector-icons@9.2.0:

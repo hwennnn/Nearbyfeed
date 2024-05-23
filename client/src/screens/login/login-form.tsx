@@ -2,10 +2,9 @@ import { classValidatorResolver } from '@hookform/resolvers/class-validator';
 import { useNavigation } from '@react-navigation/native';
 import type { AxiosError } from 'axios';
 import { IsEmail, IsNotEmpty, Length } from 'class-validator';
-import React, { useState } from 'react';
+import React from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
-import Icon from 'react-native-vector-icons/Ionicons';
 
 import {
   Button,
@@ -13,7 +12,6 @@ import {
   Pressable,
   ScrollView,
   Text,
-  TouchableOpacity,
   View,
 } from '@/ui';
 
@@ -32,26 +30,18 @@ export type LoginFormProps = {
   onSubmit?: SubmitHandler<LoginDto>;
   isLoading: boolean;
   error: AxiosError<unknown, any> | null;
-  emailVerified: boolean;
 };
 
 export const LoginForm = ({
   onSubmit = () => {},
   isLoading,
   error,
-  emailVerified,
 }: LoginFormProps) => {
   const { navigate } = useNavigation();
 
   const { handleSubmit, control } = useForm<LoginDto>({
     resolver,
   });
-
-  const [isBannerVisible, setBannerVisible] = useState(emailVerified);
-
-  const handleBannerClose = () => {
-    setBannerVisible(false);
-  };
 
   const navToForgotPassword = () => {
     navigate('Auth', {
@@ -67,19 +57,6 @@ export const LoginForm = ({
       <Text variant="h1" className="pb-2 text-center">
         Sign In
       </Text>
-
-      {isBannerVisible && (
-        <View className="my-4 w-full flex-row rounded-xl bg-green-500 p-4">
-          <Text className="flex-1 font-semibold text-white">
-            Your email has been successfully verified. You can now proceed to
-            log in.
-          </Text>
-
-          <TouchableOpacity onPress={handleBannerClose} className="flex">
-            <Icon name="close" size={24} color="black" />
-          </TouchableOpacity>
-        </View>
-      )}
 
       {typeof error === 'string' && (
         <Text className="pb-4 text-center text-red-600">{error}</Text>
