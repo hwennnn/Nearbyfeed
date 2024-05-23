@@ -1,3 +1,6 @@
+import axios from 'axios';
+
+import { API_URL } from '@/api/types';
 import { getItem, removeItem, setItem } from '@/core/storage';
 
 const ACCESS_TOKEN = 'access_token';
@@ -40,4 +43,22 @@ export const removeTokensFromStorage = () => {
 export const setTokensIntoStorage = (token: AuthToken) => {
   setAccessTokenIntoStorage(token.accessToken);
   setRefreshTokenIntoStorage(token.refreshToken);
+};
+
+export const logoutUser = async () => {
+  const refreshToken = getRefreshTokenFromStorage();
+
+  if (refreshToken !== undefined) {
+    // Bypass the axios interceptor
+    await axios.post(
+      `${API_URL}/auth/logout`,
+      {},
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${refreshToken}`,
+        },
+      }
+    );
+  }
 };

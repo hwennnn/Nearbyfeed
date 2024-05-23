@@ -18,7 +18,6 @@ import {
   VerifyEmailDto,
 } from 'src/auth/dto';
 import { TokenPayload, type LoginResult } from 'src/auth/entities';
-import JwtAuthGuard from 'src/auth/guards/jwt-auth.guard';
 import JwtRefreshGuard from 'src/auth/guards/jwt-refresh.guard';
 import { CreateUserDto } from 'src/users/dto';
 import { type PendingUserWithoutPassword } from 'src/users/entities';
@@ -44,10 +43,10 @@ export class AuthController {
     return await this.authService.login(authDto);
   }
 
-  @Get('logout')
-  @UseGuards(JwtAuthGuard)
-  async logout(@GetUser('sessionId') sessionId: string): Promise<void> {
-    await this.authService.logout(sessionId);
+  @Post('logout')
+  @UseGuards(JwtRefreshGuard)
+  async logout(@GetUser('payload') payload: TokenPayload): Promise<void> {
+    await this.authService.logout(payload.sessionId);
   }
 
   @Post('verify-email/:id')

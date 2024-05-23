@@ -7,7 +7,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import React from 'react';
 import FlashMessage from 'react-native-flash-message';
 
-import { APIProvider } from '@/api';
+import { APIProvider } from '@/api/common';
 import { hydrateAuth, loadSelectedTheme } from '@/core';
 import { RootNavigator } from '@/navigation';
 

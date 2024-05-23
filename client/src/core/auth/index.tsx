@@ -3,6 +3,7 @@ import { create } from 'zustand';
 import type { AuthToken } from '@/core/auth/utils';
 import {
   getTokensFromStorage,
+  logoutUser,
   removeTokensFromStorage,
   setTokensIntoStorage,
 } from '@/core/auth/utils';
@@ -30,6 +31,7 @@ const _useAuth = create<AuthState>((set, get) => ({
     set({ status: 'signIn', token });
   },
   signOut: () => {
+    logoutUser();
     removeTokensFromStorage();
     set({ status: 'signOut', token: null });
     resetUser();

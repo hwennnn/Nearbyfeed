@@ -1,3 +1,16 @@
+import { Env } from '@env';
+import Constants from 'expo-constants';
+
+const { manifest } = Constants;
+
+export const API_URL =
+  manifest !== null &&
+  typeof manifest.packagerOpts === `object` &&
+  manifest.packagerOpts.dev &&
+  manifest.debuggerHost !== undefined
+    ? `http://${manifest.debuggerHost.split(':').shift()}:3000`
+    : Env.API_URL;
+
 export type Post = {
   id: number;
   title: string;

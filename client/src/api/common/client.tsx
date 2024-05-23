@@ -1,23 +1,13 @@
-import { Env } from '@env';
 import axios from 'axios';
-import Constants from 'expo-constants';
 import { Alert } from 'react-native';
 
+import { API_URL } from '@/api/types';
 import {
   getAccessToken,
   getRefreshToken,
   signOut,
   updateToken,
 } from '@/core/auth';
-const { manifest } = Constants;
-
-export const API_URL =
-  manifest !== null &&
-  typeof manifest.packagerOpts === `object` &&
-  manifest.packagerOpts.dev &&
-  manifest.debuggerHost !== undefined
-    ? `http://${manifest.debuggerHost.split(':').shift()}:3000`
-    : Env.API_URL;
 
 const client = axios.create({
   baseURL: API_URL,
