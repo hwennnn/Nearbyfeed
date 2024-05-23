@@ -8,7 +8,7 @@ import { useForm } from 'react-hook-form';
 
 import { useResetPassword } from '@/api/auth';
 import type { AuthStackParamList } from '@/navigation/auth-navigator';
-import { Button, ControlledInput, showSuccessMessage, Text } from '@/ui';
+import { Button, ControlledInput, showSuccessMessage, Text, View } from '@/ui';
 import { Layout } from '@/ui/core/layout';
 import { MatchesProperty } from '@/utils/decorators';
 
@@ -39,9 +39,11 @@ export const ResetPasswordScreen = () => {
   const { token } = params;
   const { navigate } = useNavigation();
 
-  const { handleSubmit, control } = useForm<ResetPasswordDto>({
+  const { handleSubmit, control, formState } = useForm<ResetPasswordDto>({
     resolver,
   });
+
+  const isFormValid = formState.isValid;
 
   const { isLoading, error, mutateAsync } = useResetPassword();
 
@@ -55,42 +57,45 @@ export const ResetPasswordScreen = () => {
   };
 
   return (
-    <Layout className="flex-1 justify-center p-4">
-      <Text testID="form-title" variant="h1" className="pb-2 text-center">
-        Reset your password
-      </Text>
-
-      <Text testID="form-title" variant="md" className="pb-2">
-        Enter a new password to reset the password on your account.
-      </Text>
-
-      {typeof error === 'string' && (
-        <Text testID="form-title" className="pb-4 text-red-600">
-          {error}
+    <Layout className="flex-1">
+      <View className="flex-1 space-y-4 px-4 pt-12">
+        <Text testID="form-title" variant="h1" className="pb-2 text-center">
+          Reset your password
         </Text>
-      )}
 
-      <ControlledInput
-        control={control}
-        name="password"
-        label="Password"
-        secureTextEntry={true}
-      />
+        <Text testID="form-title" variant="md" className="pb-2">
+          Enter a new password to reset the password on your account.
+        </Text>
 
-      <ControlledInput
-        control={control}
-        name="confirmPassword"
-        label="Confirm your password"
-        secureTextEntry={true}
-      />
+        {typeof error === 'string' && (
+          <Text testID="form-title" className="pb-4 text-red-600">
+            {error}
+          </Text>
+        )}
 
-      <Button
-        loading={isLoading}
-        testID="submit-button"
-        label="Submit"
-        onPress={handleSubmit(onSubmit)}
-        variant="primary"
-      />
+        <ControlledInput
+          control={control}
+          name="password"
+          label="Password"
+          secureTextEntry={true}
+        />
+
+        <ControlledInput
+          control={control}
+          name="confirmPassword"
+          label="Confirm your password"
+          secureTextEntry={true}
+        />
+
+        <Button
+          disabled={!isFormValid || isLoading}
+          loading={isLoading}
+          testID="submit-button"
+          label="Submit"
+          onPress={handleSubmit(onSubmit)}
+          variant="secondary"
+        />
+      </View>
     </Layout>
   );
 };
