@@ -9,7 +9,6 @@ import { hideMessage, showMessage } from 'react-native-flash-message';
 import type { SvgProps } from 'react-native-svg';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-import { MapNavigator } from '@/navigation/map-navigator';
 import { ProfileNavigator } from '@/navigation/profile-navigator';
 import { colors, Feed as FeedIcon } from '@/ui';
 
@@ -17,7 +16,6 @@ import { FeedNavigator } from './feed-navigator';
 
 type TabParamList = {
   FeedNavigator: undefined;
-  MapNavigator: undefined;
   ProfileNavigator: undefined;
 };
 
@@ -34,9 +32,6 @@ type TabIconsType = {
 const Tab = createBottomTabNavigator<TabParamList>();
 
 const tabsIcons: TabIconsType = {
-  MapNavigator: ({ color }: SvgProps) => (
-    <Ionicons name="map" size={24} color={color} />
-  ),
   FeedNavigator: (props: SvgProps) => <FeedIcon {...props} />,
   ProfileNavigator: ({ color }: SvgProps) => (
     <Ionicons name="person-circle-outline" size={24} color={color} />
@@ -53,11 +48,6 @@ const tabs: TabType[] = [
     name: 'FeedNavigator',
     component: FeedNavigator,
     label: 'Feed',
-  },
-  {
-    name: 'MapNavigator',
-    component: MapNavigator,
-    label: 'Maps',
   },
   {
     name: 'ProfileNavigator',
@@ -97,7 +87,6 @@ export const TabNavigator = () => {
       showMessage({
         message: 'No internet connection',
         type: 'danger',
-
         autoHide: false,
       });
     } else {
