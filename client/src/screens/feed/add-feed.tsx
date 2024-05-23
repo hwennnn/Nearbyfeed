@@ -193,16 +193,21 @@ export const AddFeed = () => {
     });
 
     if (!result.canceled && result.assets.length > 0) {
+      let isValid = true;
       for (const asset of result.assets) {
         const fileSize = await checkFileSize(asset.uri);
         if (fileSize === null || fileSize > 5 * 1024 * 1024) {
           showErrorMessage(
             'The images is too large. Please select a smaller images.'
           );
+          isValid = false;
+          break;
         }
       }
 
-      setImages((prevImages) => prevImages.concat(result.assets));
+      if (isValid) {
+        setImages((prevImages) => prevImages.concat(result.assets));
+      }
     }
   };
 
@@ -255,7 +260,7 @@ export const AddFeed = () => {
                 horizontal={true}
               >
                 {images.map((image, index) => (
-                  <Pressable
+                  <TouchableOpacity
                     className="h-[150px] w-[150px]"
                     key={index}
                     onPress={() => setImageModalIndex(index)}
@@ -277,7 +282,7 @@ export const AddFeed = () => {
                     >
                       <Ionicons name="close" color="white" size={16} />
                     </Pressable>
-                  </Pressable>
+                  </TouchableOpacity>
                 ))}
 
                 {images.length !== 5 && (
