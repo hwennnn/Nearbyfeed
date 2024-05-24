@@ -33,7 +33,7 @@ require('dotenv').config({
 
 const BUNDLE_ID = 'com.nearbyfeed'; // ios bundle id
 const PACKAGE = 'com.nearbyfeed'; // android package name
-const NAME = 'nearbyfeed'; // app name
+const NAME = 'Nearbyfeed'; // app name
 
 /**
  * We declare a function withEnvSuffix that will add a suffix to the variable name based on the APP_ENV
