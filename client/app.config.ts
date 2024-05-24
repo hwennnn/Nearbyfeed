@@ -44,6 +44,12 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
           'This app requires access to the photo library to select images.',
       },
     ],
+    [
+      'expo-location',
+      {
+        locationWhenInUsePermission: 'Allow Nearbyfeed to use your location',
+      },
+    ],
   ],
   extra: {
     ...ClientEnv,

@@ -76,9 +76,8 @@ export const Feed = () => {
           className="h-72 w-72"
         />
         <Text className="text-center">
-          Location permission is required to access nearby feeds and create a
-          post. Please grant the location permission in your device settings to
-          proceed.
+          Location permission is required. Please grant the location permission
+          in your device settings to proceed.
         </Text>
         <Text className="pt-2 text-primary-400" onPress={openAppSettings}>
           Enable your location in Settings

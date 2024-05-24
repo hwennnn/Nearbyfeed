@@ -32,8 +32,7 @@
     "test": "jest",
     "test:watch": "pnpm run test --watch",
     "test:ci": "pnpm run test --coverage",
-    "test:badges": "pnpm test:ci  && jest-coverage-badges --input coverage/coverage-summary.json --output __badges__",
-    "postinstall": "react-native setup-ios-permissions && pod-install"
+    "test:badges": "pnpm test:ci  && jest-coverage-badges --input coverage/coverage-summary.json --output __badges__"
   },
   "dependencies": {
     "@bacons/link-assets": "^1.1.0",
@@ -58,6 +57,7 @@
     "expo-image-picker": "~14.1.1",
     "expo-linking": "~4.0.1",
     "expo-localization": "~14.1.1",
+    "expo-location": "~15.1.1",
     "expo-splash-screen": "~0.18.2",
     "expo-status-bar": "~1.4.4",
     "expo-system-ui": "~2.2.1",
@@ -75,7 +75,6 @@
     "react-native": "0.71.8",
     "react-native-email-link": "^1.14.5",
     "react-native-flash-message": "^0.4.0",
-    "react-native-geolocation-service": "^5.3.1",
     "react-native-gesture-handler": "~2.9.0",
     "react-native-image-viewing": "^0.2.2",
     "react-native-keyboard-aware-scroll-view": "^0.9.5",

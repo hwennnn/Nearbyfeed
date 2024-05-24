@@ -1,6 +1,4 @@
-import { Platform } from 'react-native';
-import Geolocation from 'react-native-geolocation-service';
-import { PERMISSIONS, request, RESULTS } from 'react-native-permissions';
+import * as Permissions from 'expo-location';
 
 import { showErrorMessage } from '@/ui';
 
@@ -12,15 +10,9 @@ export type Location = {
 // Function to request location permission
 export const requestLocationPermission = async (): Promise<boolean> => {
   try {
-    let permission;
-    if (Platform.OS === 'ios') {
-      permission = PERMISSIONS.IOS.LOCATION_WHEN_IN_USE;
-    } else {
-      permission = PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION;
-    }
+    let { status } = await Permissions.requestForegroundPermissionsAsync();
 
-    const result = await request(permission);
-    if (result === RESULTS.GRANTED) {
+    if (status === 'granted') {
       console.log('Location permission granted');
       // Location permission granted, you can now proceed with location-related functionality
       return true;
@@ -44,23 +36,16 @@ export const retrieveCurrentPosition = async (): Promise<Location | null> => {
     const permissionGranted = await requestLocationPermission();
 
     if (permissionGranted) {
-      // Permission granted, you can now retrieve the location
-      Geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
+      let position = await Permissions.getCurrentPositionAsync({
+        accuracy: 3,
+      });
+      const { latitude, longitude } = position.coords;
+      const location: Location = {
+        latitude,
+        longitude,
+      };
 
-          const location: Location = {
-            latitude,
-            longitude,
-          };
-
-          resolve(location);
-        },
-        (error) => {
-          console.error('Error retrieving location:', error);
-        },
-        { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-      );
+      resolve(location);
     } else {
       const error = new Error('Location permission denied');
       console.error('Location permission denied');

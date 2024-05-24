@@ -2,13 +2,12 @@
 
 > This Project is based on [Obytes starter](https://starter.obytes.com)
 
-
 ## 👋 Quick start
 
 Clone the repo to your machine and install deps:
 
 ```sh
-pnmpm install
+pnpm install
 ```
 
 To run the app on ios
