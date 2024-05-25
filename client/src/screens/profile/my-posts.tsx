@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import { useColorScheme } from 'nativewind';
 import React, { useState } from 'react';
-import { RefreshControl } from 'react-native';
+import { ActivityIndicator, RefreshControl } from 'react-native';
 
 import type { Post } from '@/api';
 import { useMyPosts } from '@/api/users';
@@ -55,6 +55,14 @@ export const MyPosts = () => {
   const footer = React.useCallback(() => {
     return <View className="py-6" />;
   }, []);
+
+  if (isLoading) {
+    return (
+      <View className="flex-1 items-center justify-center">
+        <ActivityIndicator />
+      </View>
+    );
+  }
 
   if (isError) {
     return (

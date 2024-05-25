@@ -1,5 +1,6 @@
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { classValidatorResolver } from '@hookform/resolvers/class-validator';
+import { Transform } from 'class-transformer';
 import {
   IsNotEmpty,
   IsOptional,
@@ -35,6 +36,7 @@ export class UpdateProfileDto {
   @IsNotEmpty()
   @MinLength(4)
   @MaxLength(25)
+  @Transform(({ value }) => value?.trim())
   username: string;
 }
 
@@ -134,7 +136,7 @@ export const EditProfile = () => {
       Keyboard.dismiss();
       const dto = {
         userId: user!.id,
-        username: data.username,
+        username: data.username.trim(),
         image: user?.image !== image ? image : null,
         shouldSetImageNull: user?.image !== null && image === null,
       };

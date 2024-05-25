@@ -28,6 +28,7 @@ import { Layout } from '@/ui/core/layout';
 import { Ionicons } from '@/ui/icons/ionicons';
 import { ImageViewer } from '@/ui/image-viewer';
 import { getInitials } from '@/utils/get-initials';
+import { onShare, POST_SHARE_MESSAGE } from '@/utils/share-utils';
 
 type Props = RouteProp<RootStackParamList, 'FeedDetails'>;
 
@@ -287,7 +288,10 @@ export const FeedDetails = () => {
               </Text>
             </View>
 
-            <View className="flex-row items-center space-x-1">
+            <Pressable
+              className="flex-row items-center space-x-1"
+              onPress={() => onShare(POST_SHARE_MESSAGE)}
+            >
               <Ionicons name="share-outline" size={16} className={iconColor} />
 
               <Text
@@ -296,7 +300,7 @@ export const FeedDetails = () => {
               >
                 Share
               </Text>
-            </View>
+            </Pressable>
           </View>
 
           <CommentList

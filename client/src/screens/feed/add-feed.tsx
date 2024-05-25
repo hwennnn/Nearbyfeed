@@ -153,16 +153,15 @@ export const AddFeed = () => {
       }
 
       const dto = {
-        title: data.title,
-        content: data.content,
+        title: data.title.trim(),
+        content: data.content?.trim(),
         ...location,
         images,
         options: isPollEnabled
-          ? data.options.map((option) => option.value)
+          ? data.options.map((option) => option.value.trim())
           : undefined,
         votingLength: isPollEnabled ? selectedVotingLength.value : undefined,
       };
-      console.log('🚀 ~ dto:', dto);
 
       addPost(dto, {
         onSuccess: () => {

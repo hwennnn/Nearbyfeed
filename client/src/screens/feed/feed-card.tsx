@@ -17,6 +17,7 @@ import {
 import { Ionicons } from '@/ui/icons/ionicons';
 import { ImageViewer } from '@/ui/image-viewer';
 import { getInitials } from '@/utils/get-initials';
+import { onShare, POST_SHARE_MESSAGE } from '@/utils/share-utils';
 
 type Props = Post & { onPress?: () => void };
 
@@ -182,7 +183,10 @@ export const FeedCard = ({
             </Text>
           </View>
 
-          <View className="flex-row items-center space-x-1">
+          <Pressable
+            className="flex-row items-center space-x-1"
+            onPress={() => onShare(POST_SHARE_MESSAGE)}
+          >
             <Ionicons name="share-outline" size={16} className={iconColor} />
 
             <Text
@@ -191,7 +195,7 @@ export const FeedCard = ({
             >
               Share
             </Text>
-          </View>
+          </Pressable>
         </View>
 
         {isOptimistic === true && (
