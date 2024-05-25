@@ -11,11 +11,13 @@ import {
 } from '@nestjs/common';
 
 import { FileInterceptor } from '@nestjs/platform-express';
+import { type Comment } from '@prisma/client';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import JwtAuthGuard from 'src/auth/guards/jwt-auth.guard';
 import { imageUploadOptions } from 'src/images/constants';
 import { ImagesService } from 'src/images/images.service';
-import { UpdateUserDto } from 'src/users/dto';
+import { type PostWithLike } from 'src/posts/entities';
+import { PaginationDto, UpdateUserDto } from 'src/users/dto';
 import { type UserWithoutPassword } from 'src/users/entities/userWithoutPassword';
 import { UsersService } from './users.service';
 
@@ -33,16 +35,6 @@ export class UsersController {
     @GetUser('userId') userId: string,
   ): Promise<UserWithoutPassword> {
     return await this.usersService.findOne(+userId);
-  }
-
-  @Get()
-  async findAll(): Promise<UserWithoutPassword[]> {
-    return await this.usersService.findAll();
-  }
-
-  @Get(':id')
-  async findOne(@Param('id') id: string): Promise<UserWithoutPassword> {
-    return await this.usersService.findOne(+id);
   }
 
   @Patch(':id')
@@ -64,5 +56,37 @@ export class UsersController {
     }
 
     return await this.usersService.update(+id, updateUserDto, image);
+  }
+
+  @Get(':id/posts')
+  async findOwnPosts(
+    @Param('id') id: string,
+    @GetUser('userId') userId: string,
+    @Body() paginationDto: PaginationDto,
+  ): Promise<{
+    posts: PostWithLike[];
+    hasMore: boolean;
+  }> {
+    if (id !== userId) {
+      throw new ForbiddenException('Invalid credentials');
+    }
+
+    return await this.usersService.findOwnPosts(+id, paginationDto);
+  }
+
+  @Get(':id/comments')
+  async findOwnComments(
+    @Param('id') id: string,
+    @GetUser('userId') userId: string,
+    @Body() paginationDto: PaginationDto,
+  ): Promise<{
+    comments: Comment[];
+    hasMore: boolean;
+  }> {
+    if (id !== userId) {
+      throw new ForbiddenException('Invalid credentials');
+    }
+
+    return await this.usersService.findOwnComments(+id, paginationDto);
   }
 }

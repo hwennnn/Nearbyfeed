@@ -1,7 +1,12 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-import { type PendingUser, type User } from '@prisma/client';
+import { type Comment, type PendingUser, type User } from '@prisma/client';
+import { type PostWithLike } from 'src/posts/entities';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { type CreateUserDto, type UpdateUserDto } from 'src/users/dto';
+import {
+  type CreateUserDto,
+  type PaginationDto,
+  type UpdateUserDto,
+} from 'src/users/dto';
 
 import {
   type PendingUserWithoutPassword,
@@ -62,42 +67,6 @@ export class UsersService {
           throw new BadRequestException('Failed to create user');
         }),
     );
-  }
-
-  async findAll(): Promise<UserWithoutPassword[]> {
-    return (
-      await this.prismaService.user.findMany({}).catch((e) => {
-        this.logger.error(
-          'Failed to find users',
-          e instanceof Error ? e.stack : undefined,
-          UsersService.name,
-        );
-
-        throw new BadRequestException('Failed to find users');
-      })
-    ).map((user) => this.excludePasswordFromUser(user));
-  }
-
-  async findManyUsers(users: number[]): Promise<UserWithoutPassword[]> {
-    return (
-      await this.prismaService.user
-        .findMany({
-          where: {
-            id: {
-              in: users,
-            },
-          },
-        })
-        .catch((e) => {
-          this.logger.error(
-            'Failed to find users',
-            e instanceof Error ? e.stack : undefined,
-            UsersService.name,
-          );
-
-          throw new BadRequestException('Failed to find users');
-        })
-    ).map((user) => this.excludePasswordFromUser(user));
   }
 
   async findPendingUsersWithEmail(email: string): Promise<boolean> {
@@ -264,5 +233,193 @@ export class UsersService {
           throw new BadRequestException('Failed to update user');
         }),
     );
+  }
+
+  async findOwnPosts(
+    userId: number,
+    dto: PaginationDto,
+  ): Promise<{
+    posts: PostWithLike[];
+    hasMore: boolean;
+  }> {
+    const limit = dto.take ?? 15;
+
+    const selectLikes = {
+      where: {
+        userId,
+      },
+    };
+
+    let postCursor: { id: number } | undefined;
+    if (dto.cursor !== undefined) {
+      postCursor = {
+        id: +dto.cursor,
+      };
+    }
+
+    // in order to skip the cursor
+    const skip = postCursor !== undefined ? 1 : undefined;
+
+    const posts = await this.prismaService.post
+      .findMany({
+        take: limit + 1,
+        skip,
+        where: {
+          authorId: userId,
+        },
+        cursor: postCursor,
+        select: {
+          id: true,
+          title: true,
+          content: true,
+          latitude: true,
+          longitude: true,
+          locationName: true,
+          fullLocationName: true,
+          images: true,
+          points: true,
+          createdAt: true,
+          updatedAt: true,
+          authorId: true,
+          likes: selectLikes,
+          author: true,
+          commentsCount: true,
+          poll: {
+            select: {
+              options: {
+                orderBy: {
+                  order: 'asc',
+                },
+              },
+              pollVotes: selectLikes,
+              id: true,
+              createdAt: true,
+              updatedAt: true,
+              postId: true,
+              votingLength: true,
+              participantsCount: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+      })
+      .catch((e) => {
+        this.logger.error(
+          'Failed to find posts',
+          e instanceof Error ? e.stack : undefined,
+          UsersService.name,
+        );
+
+        throw new BadRequestException('Failed to find posts');
+      });
+
+    const hasMore = posts.length === limit + 1;
+    if (hasMore) {
+      posts.pop();
+    }
+
+    // transform the likes array into single like variable -> this is to indicate whether the current user likes the post or not
+    const parsedPosts = posts.map((post) => {
+      const p = {
+        ...post,
+        like:
+          post.likes !== undefined && post.likes.length > 0
+            ? post.likes[0]
+            : undefined,
+      };
+
+      const { likes: _, ...parsedPost } = p;
+
+      const poll = parsedPost.poll;
+
+      if (poll !== null) {
+        const p = {
+          ...poll,
+          vote:
+            poll.pollVotes !== undefined && poll.pollVotes.length > 0
+              ? poll.pollVotes[0]
+              : undefined,
+        };
+
+        const { pollVotes: _, ...parsedPoll } = p;
+
+        return { ...parsedPost, poll: parsedPoll };
+      }
+
+      return parsedPost;
+    });
+
+    return {
+      posts: parsedPosts,
+      hasMore,
+    };
+  }
+
+  async findOwnComments(
+    userId: number,
+    dto: PaginationDto,
+  ): Promise<{
+    comments: Comment[];
+    hasMore: boolean;
+  }> {
+    const limit = dto.take ?? 15;
+
+    let cursor: { id: number } | undefined;
+    if (dto.cursor !== undefined) {
+      cursor = {
+        id: +dto.cursor,
+      };
+    }
+
+    // in order to skip the cursor
+    const skip = cursor !== undefined ? 1 : undefined;
+
+    const comments = await this.prismaService.comment
+      .findMany({
+        where: {
+          authorId: userId,
+          isDeleted: false,
+        },
+        cursor,
+        take: limit + 1,
+        skip,
+        orderBy: {
+          createdAt: 'desc',
+        },
+        select: {
+          id: true,
+          content: true,
+          createdAt: true,
+          updatedAt: true,
+          postId: true,
+          points: true,
+          authorId: true,
+          isDeleted: true,
+          parentCommentId: true,
+          repliesCount: true,
+          post: true,
+        },
+      })
+      .catch((e) => {
+        this.logger.error(
+          'Failed to find comments',
+          e instanceof Error ? e.stack : undefined,
+          UsersService.name,
+        );
+
+        throw new BadRequestException('Failed to find comments');
+      });
+
+    const hasMore = comments.length === limit + 1;
+    if (hasMore) {
+      comments.pop();
+    }
+
+    return {
+      comments,
+      hasMore,
+    };
   }
 }
