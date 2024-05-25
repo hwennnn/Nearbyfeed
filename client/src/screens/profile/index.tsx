@@ -6,7 +6,9 @@ import Icon from 'react-native-vector-icons/Ionicons';
 
 import { useSelf } from '@/api/users';
 import { signOut } from '@/core';
+import type { RootNavigatorProp } from '@/navigation';
 import type { ProfileNavigatorProp } from '@/navigation/profile-navigator';
+import { LanguageItem } from '@/screens/profile/language-item';
 import {
   ActivityIndicator,
   Image,
@@ -23,7 +25,6 @@ import { getInitials } from '@/utils/get-initials';
 
 import { BottomSheetItem } from '../../ui/core/bottom-sheet/bottom-sheet-item';
 import { ItemsContainer } from './items-container';
-import { LanguageItem } from './language-item';
 import { ThemeItem } from './theme-item';
 
 export const Profile = () => {
@@ -35,11 +36,19 @@ export const Profile = () => {
     variables: {},
   });
 
+  const { navigate: navigateRoot } = useNavigation<RootNavigatorProp>();
+
   const { navigate } = useNavigation<ProfileNavigatorProp>();
 
   const navToEditProfile = () => {
     if (user !== null && user !== undefined) {
       navigate('EditProfile');
+    }
+  };
+
+  const navToMyPosts = () => {
+    if (user !== null && user !== undefined) {
+      navigateRoot('MyPosts');
     }
   };
 
@@ -95,6 +104,11 @@ export const Profile = () => {
           </View>
         </View>
 
+        <ItemsContainer title="settings.my_activity">
+          <BottomSheetItem text="settings.my_posts" onPress={navToMyPosts} />
+          <BottomSheetItem text="settings.my_comments" onPress={() => {}} />
+        </ItemsContainer>
+
         <ItemsContainer title="settings.generale">
           <LanguageItem />
           <ThemeItem />
@@ -138,7 +152,7 @@ export const Profile = () => {
           />
         </ItemsContainer>
 
-        <View className="my-8">
+        <View className="my-8 flex-1">
           <ItemsContainer>
             <BottomSheetItem text="settings.logout" onPress={signOutUser} />
           </ItemsContainer>

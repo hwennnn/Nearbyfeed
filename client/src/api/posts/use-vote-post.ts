@@ -4,6 +4,7 @@ import { createMutation } from 'react-query-kit';
 
 import type { Post, PostLike } from '@/api/types';
 import { usePostKeys } from '@/core/posts';
+import { useUser } from '@/core/user';
 
 import { client, queryClient } from '../common';
 
@@ -27,6 +28,7 @@ type Context = {
   previousPosts?: InfinitePosts;
   variables: Variables;
   previousPost?: Post;
+  previousMyPosts?: InfinitePosts;
 };
 
 export const useVotePost = createMutation<
@@ -112,8 +114,57 @@ export const useVotePost = createMutation<
       return oldData;
     });
 
+    // 3. Handle my posts query
+    const userId = useUser.getState().user?.id;
+    const myPostsQueryKey = [
+      'my-posts',
+      {
+        userId,
+      },
+    ];
+
+    // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
+    await queryClient.cancelQueries({ queryKey: myPostsQueryKey });
+
+    // Snapshot the previous value
+    const previousMyPosts =
+      queryClient.getQueryData<InfinitePosts>(myPostsQueryKey);
+
+    // Update the cache optimistically by modifying the points value on the existing list
+    queryClient.setQueryData<InfinitePosts>(myPostsQueryKey, (oldData) => {
+      if (oldData) {
+        return {
+          pageParams: oldData.pageParams,
+          pages: oldData.pages.map((page) => {
+            return produce(page, (draftPage) => {
+              const foundIndex = draftPage.posts.findIndex(
+                (post) => post.id === variables.postId
+              );
+
+              if (foundIndex !== -1) {
+                const post = draftPage.posts[foundIndex];
+                const newOptimisticPost = retrieveNewOptimisticPost(
+                  post,
+                  variables.value
+                );
+
+                post.points = newOptimisticPost.points;
+                post.like = newOptimisticPost.like;
+              }
+            });
+          }),
+        };
+      }
+      return oldData;
+    });
+
     // Return a context with the previous and new todo
-    return { previousPosts, variables: variables, previousPost };
+    return {
+      previousPosts,
+      variables: variables,
+      previousPost,
+      previousMyPosts,
+    };
   },
   // If the mutation fails, use the context we returned above
   onError: (_err, variables, context) => {
@@ -127,6 +178,18 @@ export const useVotePost = createMutation<
     const postQueryKey = ['posts', { id: variables.postId }];
 
     queryClient.setQueryData<Post>(postQueryKey, context?.previousPost);
+
+    const userId = useUser.getState().user?.id;
+    const myPostsQueryKey = [
+      'my-posts',
+      {
+        userId,
+      },
+    ];
+    queryClient.setQueryData<InfinitePosts>(
+      myPostsQueryKey,
+      context?.previousMyPosts
+    );
   },
   // Update the cache after success:
   onSuccess: (data, variables) => {
@@ -165,6 +228,37 @@ export const useVotePost = createMutation<
         });
       }
 
+      return oldData;
+    });
+
+    const userId = useUser.getState().user?.id;
+    const myPostsQueryKey = [
+      'my-posts',
+      {
+        userId,
+      },
+    ];
+
+    queryClient.setQueryData<InfinitePosts>(myPostsQueryKey, (oldData) => {
+      if (oldData) {
+        return {
+          pageParams: oldData.pageParams,
+          pages: oldData.pages.map((page) => {
+            return produce(page, (draftPage) => {
+              const foundIndex = draftPage.posts.findIndex(
+                (post) => post.id === variables.postId
+              );
+
+              if (foundIndex !== -1) {
+                const post = draftPage.posts[foundIndex];
+
+                post.points = data.post.points;
+                post.like = data.like;
+              }
+            });
+          }),
+        };
+      }
       return oldData;
     });
   },

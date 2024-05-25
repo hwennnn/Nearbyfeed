@@ -16,9 +16,6 @@ const AuthLinking: LinkingOptions<RootStackParamList> = {
     screens: {
       Auth: {
         screens: {
-          Login: {
-            path: 'login/:verifyEmail',
-          },
           ResetPassword: {
             path: 'reset-password/:token',
           },

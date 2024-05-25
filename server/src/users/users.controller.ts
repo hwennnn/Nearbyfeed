@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Patch,
+  Query,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -62,7 +63,7 @@ export class UsersController {
   async findOwnPosts(
     @Param('id') id: string,
     @GetUser('userId') userId: string,
-    @Body() paginationDto: PaginationDto,
+    @Query() paginationDto: PaginationDto,
   ): Promise<{
     posts: PostWithLike[];
     hasMore: boolean;
@@ -78,7 +79,7 @@ export class UsersController {
   async findOwnComments(
     @Param('id') id: string,
     @GetUser('userId') userId: string,
-    @Body() paginationDto: PaginationDto,
+    @Query() paginationDto: PaginationDto,
   ): Promise<{
     comments: Comment[];
     hasMore: boolean;

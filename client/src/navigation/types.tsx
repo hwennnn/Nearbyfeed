@@ -10,6 +10,7 @@ export type RootStackParamList = {
   AddFeed: undefined;
   FeedDetails: { postId: number };
   CommentDetails: { commentId: number; postId: number; repliesCount: number };
+  MyPosts: undefined;
 };
 
 // very important to type check useNavigation hook

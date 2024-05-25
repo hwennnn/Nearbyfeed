@@ -4,6 +4,7 @@ import { createMutation } from 'react-query-kit';
 
 import type { Post, VotePollResult } from '@/api/types';
 import { usePostKeys } from '@/core/posts';
+import { useUser } from '@/core/user';
 
 import { client, queryClient } from '../common';
 
@@ -91,6 +92,46 @@ export const useVotePoll = createMutation<Response, Variables, AxiosError>({
         });
       }
 
+      return oldData;
+    });
+
+    const userId = useUser.getState().user?.id;
+    const myPostsQueryKey = [
+      'my-posts',
+      {
+        userId,
+      },
+    ];
+
+    queryClient.setQueryData<InfinitePosts>(myPostsQueryKey, (oldData) => {
+      if (oldData) {
+        return {
+          pageParams: oldData.pageParams,
+          pages: oldData.pages.map((page) => {
+            return produce(page, (draftPage) => {
+              const foundIndex = draftPage.posts.findIndex(
+                (post) => post.id === variables.postId
+              );
+
+              if (foundIndex !== -1) {
+                const post = draftPage.posts[foundIndex];
+                if (post.poll === null || post.poll === undefined) return;
+
+                post.poll.participantsCount = data.poll.participantsCount;
+                post.poll.vote = data.vote;
+
+                const pollOptionIndex = post.poll.options.findIndex(
+                  (option) => option.id === data.pollOption.id
+                );
+
+                if (pollOptionIndex !== -1) {
+                  post.poll.options[pollOptionIndex] = data.pollOption;
+                }
+              }
+            });
+          }),
+        };
+      }
       return oldData;
     });
   },

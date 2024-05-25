@@ -5,7 +5,9 @@
   "settings": {
     "about": "About",
     "app_name": "App Name",
-    "arabic": "Arabic",
+    "my_activity": "My Activities",
+    "my_posts": "My Posts",
+    "my_comments": "My Comments",
     "english": "English",
     "generale": "General",
     "github": "Github",

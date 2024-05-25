@@ -10,6 +10,7 @@ import { TabNavigator } from '@/navigation/tab-navigator';
 import type { RootStackParamList } from '@/navigation/types';
 import { AddFeed, FeedDetails, Onboarding } from '@/screens';
 import { CommentsDetails } from '@/screens/feed/comment-details';
+import { MyPosts } from '@/screens/profile/my-posts';
 import { HeaderButton } from '@/ui';
 
 import { AuthNavigator } from './auth-navigator';
@@ -84,6 +85,13 @@ export const Root = () => {
                     headerLeft: () => (
                       <HeaderButton iconName="chevron-back-outline" />
                     ),
+                  }}
+                />
+                <Stack.Screen
+                  name="MyPosts"
+                  component={MyPosts}
+                  options={{
+                    headerTitle: 'My Posts',
                   }}
                 />
               </Stack.Group>
