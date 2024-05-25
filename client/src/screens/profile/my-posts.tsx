@@ -6,7 +6,6 @@ import { RefreshControl } from 'react-native';
 
 import type { Post } from '@/api';
 import { useMyPosts } from '@/api/users';
-import { useUser } from '@/core/user';
 import type { RootNavigatorProp } from '@/navigation/root-navigator';
 import { FeedCard } from '@/screens';
 import { colors, EmptyList, Text, View } from '@/ui';
@@ -20,8 +19,6 @@ export const MyPosts = () => {
   const refreshColor =
     colorScheme === 'dark' ? colors.neutral[400] : colors.neutral[500];
 
-  const userId = useUser.getState().user!.id;
-
   const {
     data,
     isLoading,
@@ -31,9 +28,7 @@ export const MyPosts = () => {
     fetchNextPage,
     isFetchingNextPage,
   } = useMyPosts({
-    variables: {
-      userId,
-    },
+    variables: {},
   });
 
   const { navigate } = useNavigation<RootNavigatorProp>();

@@ -20,7 +20,6 @@ export const useMyComments = createInfiniteQuery<
   'my-comments', // we recommend using endpoint base url as primaryKey
   async ({ queryKey: [_primaryKey], pageParam }) => {
     // in case if variables is needed, we can use destructuring to get it from queryKey array like this: ({ queryKey: [primaryKey, variables] })
-    // primaryKey is 'posts' in this case
 
     const cursor = pageParam !== undefined ? pageParam.toString() : pageParam;
 

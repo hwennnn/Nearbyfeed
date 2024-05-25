@@ -4,7 +4,6 @@ import { createMutation } from 'react-query-kit';
 
 import type { Post, PostLike } from '@/api/types';
 import { usePostKeys } from '@/core/posts';
-import { useUser } from '@/core/user';
 
 import { client, queryClient } from '../common';
 
@@ -115,13 +114,7 @@ export const useVotePost = createMutation<
     });
 
     // 3. Handle my posts query
-    const userId = useUser.getState().user?.id;
-    const myPostsQueryKey = [
-      'my-posts',
-      {
-        userId,
-      },
-    ];
+    const myPostsQueryKey = ['my-posts', {}];
 
     // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
     await queryClient.cancelQueries({ queryKey: myPostsQueryKey });
@@ -179,13 +172,7 @@ export const useVotePost = createMutation<
 
     queryClient.setQueryData<Post>(postQueryKey, context?.previousPost);
 
-    const userId = useUser.getState().user?.id;
-    const myPostsQueryKey = [
-      'my-posts',
-      {
-        userId,
-      },
-    ];
+    const myPostsQueryKey = ['my-posts', {}];
     queryClient.setQueryData<InfinitePosts>(
       myPostsQueryKey,
       context?.previousMyPosts
@@ -231,13 +218,7 @@ export const useVotePost = createMutation<
       return oldData;
     });
 
-    const userId = useUser.getState().user?.id;
-    const myPostsQueryKey = [
-      'my-posts',
-      {
-        userId,
-      },
-    ];
+    const myPostsQueryKey = ['my-posts', {}];
 
     queryClient.setQueryData<InfinitePosts>(myPostsQueryKey, (oldData) => {
       if (oldData) {
