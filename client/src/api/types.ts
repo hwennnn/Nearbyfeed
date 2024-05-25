@@ -49,6 +49,22 @@ export type Comment = {
   replies: Comment[];
 };
 
+export type CommentWithPost = {
+  id: number;
+  content: string;
+  createdAt: Date;
+  updatedAt: Date;
+  isDeleted: boolean;
+  postId: number;
+  points: number;
+  authorId?: number;
+  author?: User;
+  isOptimistic?: boolean;
+  parentCommentId: number | null;
+  like?: CommentLike;
+  post: Post;
+};
+
 export type User = {
   id: number;
   username: string;

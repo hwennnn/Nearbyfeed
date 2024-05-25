@@ -52,6 +52,12 @@ export const Profile = () => {
     }
   };
 
+  const navToMyComments = () => {
+    if (user !== null && user !== undefined) {
+      navigateRoot('MyComments');
+    }
+  };
+
   if (isLoading) {
     return (
       <Layout className="flex-1 items-center justify-center">
@@ -106,7 +112,10 @@ export const Profile = () => {
 
         <ItemsContainer title="settings.my_activity">
           <BottomSheetItem text="settings.my_posts" onPress={navToMyPosts} />
-          <BottomSheetItem text="settings.my_comments" onPress={() => {}} />
+          <BottomSheetItem
+            text="settings.my_comments"
+            onPress={navToMyComments}
+          />
         </ItemsContainer>
 
         <ItemsContainer title="settings.generale">

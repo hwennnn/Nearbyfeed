@@ -10,6 +10,7 @@ import { TabNavigator } from '@/navigation/tab-navigator';
 import type { RootStackParamList } from '@/navigation/types';
 import { AddFeed, FeedDetails, Onboarding } from '@/screens';
 import { CommentsDetails } from '@/screens/feed/comment-details';
+import { MyComments } from '@/screens/profile/my-comments';
 import { MyPosts } from '@/screens/profile/my-posts';
 import { HeaderButton } from '@/ui';
 
@@ -92,6 +93,13 @@ export const Root = () => {
                   component={MyPosts}
                   options={{
                     headerTitle: 'My Posts',
+                  }}
+                />
+                <Stack.Screen
+                  name="MyComments"
+                  component={MyComments}
+                  options={{
+                    headerTitle: 'My Comments',
                   }}
                 />
               </Stack.Group>
