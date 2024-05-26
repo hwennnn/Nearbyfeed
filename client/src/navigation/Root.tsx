@@ -1,24 +1,13 @@
-/* eslint-disable react/no-unstable-nested-components */
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import * as SplashScreen from 'expo-splash-screen';
-import React, { useEffect } from 'react';
-
+import React from 'react';
 import { useAuth } from '@/core';
 import { TabNavigator } from '@/navigation/tab-navigator';
-import type { RootStackParamList } from '@/navigation/types';
 import { AddFeed, FeedDetails } from '@/screens';
 import { CommentsDetails } from '@/screens/feed/comment-details';
 import { MyComments } from '@/screens/profile/my-comments';
 import { MyPosts } from '@/screens/profile/my-posts';
 import { HeaderButton } from '@/ui';
-
 import { AuthNavigator } from './auth-navigator';
-import { NavigationContainer } from './navigation-container';
-
-const Stack = createNativeStackNavigator<RootStackParamList>();
-type Props = NativeStackScreenProps<RootStackParamList>;
-export type RootNavigatorProp = Props['navigation'];
+import { Stack } from './root-navigator';
 
 export const Root = () => {
   const status = useAuth.use.status();
@@ -102,13 +91,5 @@ export const Root = () => {
         )}
       </Stack.Group>
     </Stack.Navigator>
-  );
-};
-
-export const RootNavigator = () => {
-  return (
-    <NavigationContainer>
-      <Root />
-    </NavigationContainer>
   );
 };
