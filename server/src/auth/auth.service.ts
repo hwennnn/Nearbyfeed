@@ -13,9 +13,11 @@ import {
 } from 'src/auth/dto';
 import {
   type AuthToken,
+  type GoogleUserProfile,
   type LoginResult,
   type TokenPayload,
 } from 'src/auth/entities';
+import { GOOGLE_API_USER_INFO_URL } from 'src/constants';
 import { MailService } from 'src/mail/mail.service';
 import { RedisService } from 'src/redis/redis.service';
 import { type CreateUserDto } from 'src/users/dto';
@@ -60,7 +62,6 @@ export class AuthService {
       pendingUser.email,
     );
 
-    // TODO: add to a message queue to process sending of mails
     await this.mailService.sendVerificationEmail(
       pendingUser.email,
       pendingUser.username,
@@ -85,6 +86,10 @@ export class AuthService {
       );
     }
 
+    if (user?.password === null) {
+      throw new ForbiddenException('User does not have a password');
+    }
+
     if (
       user === null ||
       !(await compareHash(authDto.password, user.password))
@@ -98,6 +103,32 @@ export class AuthService {
       tokens,
       user,
     };
+  }
+
+  async loginWithGoogle(token: string): Promise<LoginResult> {
+    try {
+      const response = await fetch(GOOGLE_API_USER_INFO_URL, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const data: GoogleUserProfile = await response.json();
+
+      const user = await this.usersService.upsertUser({
+        email: data.email,
+        name: data.name ?? data.given_name,
+        image: data.picture,
+        providerName: 'google',
+      });
+
+      const tokens = await this.getTokens(user.id.toString(), user.email);
+
+      return {
+        tokens,
+        user,
+      };
+    } catch (err) {
+      throw new BadRequestException('Invalid request');
+    }
   }
 
   async logout(sessionId: string): Promise<void> {
@@ -145,7 +176,9 @@ export class AuthService {
       username: pendingUser.username,
       password: pendingUser.password,
     };
-    const user = await this.usersService.createUser(createUserDto);
+    const user = await this.usersService.createUserWithEmailProvider(
+      createUserDto,
+    );
     await this.usersService.deletePendingUser(pendingUserId);
     await this.redisService.delete(verifyEmailDto.sessionId);
 
@@ -300,6 +333,10 @@ export class AuthService {
 
     if (user === null) {
       throw new ForbiddenException('User not found');
+    }
+
+    if (user?.password === null) {
+      throw new ForbiddenException('User does not have a password');
     }
 
     if (await compareHash(resetPasswordDto.newPassword, user.password)) {

@@ -5,6 +5,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   Res,
   UseGuards,
 } from '@nestjs/common';
@@ -29,6 +30,11 @@ export class AuthController {
     private readonly authService: AuthService,
     private readonly configService: ConfigService,
   ) {}
+
+  @Post('google/callback')
+  async googleAuth(@Query('token') token: string): Promise<LoginResult> {
+    return await this.authService.loginWithGoogle(token);
+  }
 
   @Post('register')
   async register(@Body() createUserDto: CreateUserDto): Promise<{

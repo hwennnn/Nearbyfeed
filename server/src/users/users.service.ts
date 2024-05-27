@@ -6,6 +6,7 @@ import {
   type CreateUserDto,
   type PaginationDto,
   type UpdateUserDto,
+  type UpsertUserDto,
 } from 'src/users/dto';
 
 import {
@@ -51,11 +52,24 @@ export class UsersService {
     );
   }
 
-  async createUser(createUserDto: CreateUserDto): Promise<UserWithoutPassword> {
+  async createUserWithEmailProvider(
+    createUserDto: CreateUserDto,
+  ): Promise<UserWithoutPassword> {
     return this.excludePasswordFromUser(
       await this.prismaService.user
         .create({
-          data: createUserDto,
+          data: {
+            ...createUserDto,
+            providers: {
+              create: {
+                providerName: 'email',
+                isActive: true,
+              },
+            },
+          },
+          include: {
+            providers: true,
+          },
         })
         .catch((e) => {
           this.logger.error(
@@ -67,6 +81,70 @@ export class UsersService {
           throw new BadRequestException('Failed to create user');
         }),
     );
+  }
+
+  async upsertUser(dto: UpsertUserDto): Promise<UserWithoutPassword> {
+    try {
+      let user = await this.findOneByEmail(dto.email);
+
+      if (user === null) {
+        // create new user if the user with this email does not exist
+        user = await this.prismaService.user.create({
+          data: {
+            email: dto.email,
+            image: dto.image,
+            username: dto.name,
+            providers: {
+              create: {
+                providerName: dto.providerName,
+                isActive: true,
+              },
+            },
+          },
+          include: {
+            providers: true,
+          },
+        });
+      } else {
+        // upsert the user provider if the user with this email already exists
+        user = await this.prismaService.user.update({
+          where: {
+            id: user.id,
+          },
+          data: {
+            providers: {
+              upsert: {
+                where: {
+                  providerName_userId: {
+                    providerName: dto.providerName,
+                    userId: user.id,
+                  },
+                },
+                create: {
+                  providerName: dto.providerName,
+                  isActive: true,
+                },
+                update: {
+                  isActive: true,
+                },
+              },
+            },
+          },
+          include: {
+            providers: true,
+          },
+        });
+      }
+      return this.excludePasswordFromUser(user);
+    } catch (e) {
+      this.logger.error(
+        'Failed to upsert user',
+        e instanceof Error ? e.stack : undefined,
+        UsersService.name,
+      );
+
+      throw new BadRequestException('Failed to upsert user');
+    }
   }
 
   async findPendingUsersWithEmail(email: string): Promise<boolean> {

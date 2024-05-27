@@ -94,6 +94,8 @@ PODS:
     - expo-dev-menu/GestureHandler
     - expo-dev-menu/Reanimated
     - expo-dev-menu/SafeAreaView
+  - ExpoCrypto (12.2.2):
+    - ExpoModulesCore
   - ExpoImage (1.2.3):
     - ExpoModulesCore
     - SDWebImage (~> 5.15.0)
@@ -111,6 +113,8 @@ PODS:
     - React-RCTAppDelegate
     - ReactCommon/turbomodule/core
   - ExpoSystemUI (2.2.1):
+    - ExpoModulesCore
+  - ExpoWebBrowser (12.1.1):
     - ExpoModulesCore
   - EXSplashScreen (0.18.2):
     - ExpoModulesCore
@@ -577,12 +581,14 @@ DEPENDENCIES:
   - expo-dev-launcher (from `../node_modules/expo-dev-launcher`)
   - expo-dev-menu (from `../node_modules/expo-dev-menu`)
   - expo-dev-menu-interface (from `../node_modules/expo-dev-menu-interface/ios`)
+  - ExpoCrypto (from `../node_modules/expo-crypto/ios`)
   - ExpoImage (from `../node_modules/_tmp_22486_893ce5f965c9c8c7915c29337a67f9c1/ios`)
   - ExpoImagePicker (from `../node_modules/_tmp_22486_ac3159011208e23e8007d2845f0c3e70/ios`)
   - ExpoKeepAwake (from `../node_modules/expo-keep-awake/ios`)
   - ExpoLocalization (from `../node_modules/expo-localization/ios`)
   - ExpoModulesCore (from `../node_modules/expo-modules-core`)
   - ExpoSystemUI (from `../node_modules/expo-system-ui/ios`)
+  - ExpoWebBrowser (from `../node_modules/expo-web-browser/ios`)
   - EXSplashScreen (from `../node_modules/_tmp_22486_564b9ff843c4a15b0290a4ca36f13a97/ios`)
   - EXStructuredHeaders (from `../node_modules/expo-structured-headers/ios`)
   - EXUpdates (from `../node_modules/expo-updates/ios`)
@@ -680,6 +686,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo-dev-menu"
   expo-dev-menu-interface:
     :path: "../node_modules/expo-dev-menu-interface/ios"
+  ExpoCrypto:
+    :path: "../node_modules/expo-crypto/ios"
   ExpoImage:
     :path: "../node_modules/_tmp_22486_893ce5f965c9c8c7915c29337a67f9c1/ios"
   ExpoImagePicker:
@@ -692,6 +700,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo-modules-core"
   ExpoSystemUI:
     :path: "../node_modules/expo-system-ui/ios"
+  ExpoWebBrowser:
+    :path: "../node_modules/expo-web-browser/ios"
   EXSplashScreen:
     :path: "../node_modules/_tmp_22486_564b9ff843c4a15b0290a4ca36f13a97/ios"
   EXStructuredHeaders:
@@ -801,12 +811,14 @@ SPEC CHECKSUMS:
   expo-dev-launcher: 5275974e9f825f70a33bb79301a8ab894179fa94
   expo-dev-menu: 020e8853030d4b09e60f4ca75e1ece3e78fab788
   expo-dev-menu-interface: 6c82ae323c4b8724dead4763ce3ff24a2108bdb1
+  ExpoCrypto: 9105610a09cd6290b900bd82fc5d190e489125a3
   ExpoImage: 60f8d8182e8e13b5f5c2bb6bc860c933b2fe6c25
   ExpoImagePicker: 270dea232b3a072d981dd564e2cafc63a864edb1
   ExpoKeepAwake: 69f5f627670d62318410392d03e0b5db0f85759a
   ExpoLocalization: f26cd431ad9ea3533c5b08c4fabd879176a794bb
   ExpoModulesCore: 653958063a301098b541ae4dfed1ac0b98db607b
   ExpoSystemUI: 0be5173ee2a7c01e9abc44f56d879a1eaaa16527
+  ExpoWebBrowser: 033d34c478d9986da2f1679729041423837626e0
   EXSplashScreen: 0e0a9ba0cf7553094e93213099bd7b42e6e237e9
   EXStructuredHeaders: b1a48d732562e2cc81f11771bcfd29534f5d9254
   EXUpdates: 603c4dfec2ed9ef323dfbd9c59c946593d4d9a5c
