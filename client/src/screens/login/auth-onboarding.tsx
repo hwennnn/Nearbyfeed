@@ -7,6 +7,7 @@ import React from 'react';
 
 import { useGoogleAuth } from '@/api';
 import { signIn } from '@/core/auth';
+import { setAppLoading } from '@/core/loading';
 import { setUser } from '@/core/user';
 import { Button, Text, View } from '@/ui';
 import { Layout } from '@/ui/core/layout';
@@ -17,29 +18,35 @@ const config = {
 };
 
 export const AuthOnboardingScreen = () => {
-  const {
-    isLoading,
-    error,
-    mutate: mutateGoogleAuth,
-  } = useGoogleAuth({
-    onSuccess: (result) => {
-      const tokens = result.tokens;
+  const { isLoading: isGoogleLoading, mutate: mutateGoogleAuth } =
+    useGoogleAuth({
+      onSuccess: (result) => {
+        setAppLoading(false);
+        const tokens = result.tokens;
 
-      signIn(tokens);
-      setUser(result.user);
-    },
-  });
+        signIn(tokens);
+        setUser(result.user);
+      },
+      onError: (_error) => {
+        // TODO: show error toast
+        setAppLoading(false);
+      },
+    });
 
   const [_request, response, promptAsync] = Google.useAuthRequest(config);
   const { navigate } = useNavigation();
 
   React.useEffect(() => {
-    if (response !== null && response.type === 'success') {
-      const accessToken = response.authentication!.accessToken;
-      console.log('🚀 ~ useEffect ~ accessToken:', accessToken);
-      mutateGoogleAuth({
-        token: accessToken,
-      });
+    if (response !== null) {
+      if (response.type === 'success') {
+        const accessToken = response.authentication!.accessToken;
+        console.log('🚀 ~ useEffect ~ accessToken:', accessToken);
+        mutateGoogleAuth({
+          token: accessToken,
+        });
+      } else if (response.type === 'error') {
+        // TODO: show error toast: There is an error while signing in. Please try again
+      }
     }
   }, [mutateGoogleAuth, response]);
 
@@ -47,6 +54,11 @@ export const AuthOnboardingScreen = () => {
     navigate('Auth', {
       screen: 'Login',
     });
+  };
+
+  const handleGoogleAuthSignIn = async () => {
+    setAppLoading(true, 'Signing in...');
+    await promptAsync();
   };
 
   return (
@@ -62,8 +74,9 @@ export const AuthOnboardingScreen = () => {
               <FontAwesome5 name="google" size={12} className="text-white" />
             }
             label="Continue with Google"
-            onPress={() => promptAsync()}
+            onPress={handleGoogleAuthSignIn}
             variant="primary"
+            loading={isGoogleLoading}
           />
 
           <AppleAuthentication.AppleAuthenticationButton

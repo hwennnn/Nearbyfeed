@@ -22,6 +22,7 @@ import { showMessage } from 'react-native-flash-message';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import { useAddPost } from '@/api';
+import { setAppLoading } from '@/core/loading';
 import type { VotingLengthOption } from '@/screens/feed/poll-voting-length-item';
 import {
   DEFAULT_VOTING_LENGTH_OPTION,
@@ -163,6 +164,8 @@ export const AddFeed = () => {
         votingLength: isPollEnabled ? selectedVotingLength.value : undefined,
       };
 
+      setAppLoading(true, 'Creating...');
+
       addPost(dto, {
         onSuccess: () => {
           showMessage({
@@ -175,6 +178,9 @@ export const AddFeed = () => {
           showErrorMessage(
             'There is an error while adding feed. Please try again later.'
           );
+        },
+        onSettled: () => {
+          setAppLoading(false);
         },
       });
     },

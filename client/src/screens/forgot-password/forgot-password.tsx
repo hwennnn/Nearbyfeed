@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import { useForgotPassword } from '@/api/auth';
 import { Button, ControlledInput, showSuccessMessage, Text, View } from '@/ui';
 import { Layout } from '@/ui/core/layout';
+import { getRandomIntFromInterval } from '@/utils/math-utils';
 
 export class ForgotPasswordDto {
   @IsNotEmpty({ message: 'Email is required' })
@@ -20,16 +21,22 @@ export const ForgotPasswordScreen = () => {
     resolver,
   });
 
+  const { error, mutate } = useForgotPassword();
+
+  const [isFormLoading, setIsFormLoading] = React.useState(false);
+
   const isFormValid = formState.isValid;
 
-  const { isLoading, error, mutate } = useForgotPassword();
-
   const onSubmit = (data: ForgotPasswordDto): void => {
-    mutate(data);
+    setIsFormLoading(true);
 
-    showSuccessMessage(
-      'An email will be sent to you if the provided email is valid and registered with us.'
-    );
+    mutate(data);
+    setTimeout(() => {
+      setIsFormLoading(false);
+      showSuccessMessage(
+        'An email will be sent to you if the provided email is valid and registered with us.'
+      );
+    }, getRandomIntFromInterval(3000, 5000)); // set random interval to prevent malicious attack on checking active emails
   };
 
   return (
@@ -54,13 +61,12 @@ export const ForgotPasswordScreen = () => {
             control={control}
             name="email"
             placeholder="Enter your email here"
-            // label="Email"
           />
         </View>
 
         <Button
           disabled={!isFormValid}
-          loading={isLoading}
+          loading={isFormLoading}
           testID="submit-button"
           label="Submit"
           onPress={handleSubmit(onSubmit)}

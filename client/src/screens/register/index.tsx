@@ -5,6 +5,7 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 
 import { useRegister } from '@/api/auth';
+import { setAppLoading } from '@/core/loading';
 import { Button, ControlledInput, Pressable, Text, View } from '@/ui';
 import { Layout } from '@/ui/core/layout';
 
@@ -34,24 +35,35 @@ export class RegisterDto {
 const resolver = classValidatorResolver(RegisterDto);
 
 export const EmailRegisterScreen = () => {
-  const { isLoading, error, mutateAsync: mutateRegister } = useRegister();
+  const {
+    isLoading,
+    error,
+    mutate: mutateRegister,
+  } = useRegister({
+    onSuccess: (data) => {
+      const { sessionId, pendingUser } = data;
+      navigate('Auth', {
+        screen: 'ValidateEmail',
+        params: {
+          pendingUserId: pendingUser.id,
+          email: pendingUser.email,
+          sessionId,
+        },
+      });
+    },
+    onSettled: () => {
+      setAppLoading(false);
+    },
+  });
   const { navigate } = useNavigation();
 
   const { handleSubmit, control } = useForm<RegisterDto>({
     resolver,
   });
 
-  const onSubmit = async (data: RegisterDto) => {
-    const { sessionId, pendingUser } = await mutateRegister(data);
-
-    navigate('Auth', {
-      screen: 'ValidateEmail',
-      params: {
-        pendingUserId: pendingUser.id,
-        email: pendingUser.email,
-        sessionId,
-      },
-    });
+  const onSubmit = (data: RegisterDto) => {
+    setAppLoading(true, 'Creating your account...');
+    mutateRegister(data);
   };
 
   return (

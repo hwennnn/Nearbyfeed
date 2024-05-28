@@ -10,6 +10,7 @@ import FlashMessage from 'react-native-flash-message';
 import { APIProvider } from '@/api/common';
 import { hydrateAuth, loadSelectedTheme } from '@/core';
 import { RootNavigator } from '@/navigation';
+import { OverlayLoadingSpinner } from '@/ui';
 
 // enableMapSet();
 hydrateAuth();
@@ -24,6 +25,7 @@ const App = () => {
         <APIProvider>
           <RootNavigator />
           <FlashMessage position="top" />
+          <OverlayLoadingSpinner />
         </APIProvider>
       </BottomSheetModalProvider>
     </ActionSheetProvider>
