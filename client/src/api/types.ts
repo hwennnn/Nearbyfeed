@@ -158,3 +158,10 @@ export interface VotePollResult {
   poll: Poll;
   pollOption: PollOption;
 }
+
+export type AuthToken = {
+  accessToken: string;
+  refreshToken: string;
+};
+
+export type LoginResponse = { tokens: AuthToken; user: User };

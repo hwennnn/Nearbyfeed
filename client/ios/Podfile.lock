@@ -94,6 +94,8 @@ PODS:
     - expo-dev-menu/GestureHandler
     - expo-dev-menu/Reanimated
     - expo-dev-menu/SafeAreaView
+  - ExpoAppleAuthentication (6.0.1):
+    - ExpoModulesCore
   - ExpoCrypto (12.2.2):
     - ExpoModulesCore
   - ExpoImage (1.2.3):
@@ -581,6 +583,7 @@ DEPENDENCIES:
   - expo-dev-launcher (from `../node_modules/expo-dev-launcher`)
   - expo-dev-menu (from `../node_modules/expo-dev-menu`)
   - expo-dev-menu-interface (from `../node_modules/expo-dev-menu-interface/ios`)
+  - ExpoAppleAuthentication (from `../node_modules/expo-apple-authentication/ios`)
   - ExpoCrypto (from `../node_modules/expo-crypto/ios`)
   - ExpoImage (from `../node_modules/_tmp_22486_893ce5f965c9c8c7915c29337a67f9c1/ios`)
   - ExpoImagePicker (from `../node_modules/_tmp_22486_ac3159011208e23e8007d2845f0c3e70/ios`)
@@ -686,6 +689,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo-dev-menu"
   expo-dev-menu-interface:
     :path: "../node_modules/expo-dev-menu-interface/ios"
+  ExpoAppleAuthentication:
+    :path: "../node_modules/expo-apple-authentication/ios"
   ExpoCrypto:
     :path: "../node_modules/expo-crypto/ios"
   ExpoImage:
@@ -811,6 +816,7 @@ SPEC CHECKSUMS:
   expo-dev-launcher: 5275974e9f825f70a33bb79301a8ab894179fa94
   expo-dev-menu: 020e8853030d4b09e60f4ca75e1ece3e78fab788
   expo-dev-menu-interface: 6c82ae323c4b8724dead4763ce3ff24a2108bdb1
+  ExpoAppleAuthentication: 7bd5e4150d59e8df37aa80b425850ae88adf9e65
   ExpoCrypto: 9105610a09cd6290b900bd82fc5d190e489125a3
   ExpoImage: 60f8d8182e8e13b5f5c2bb6bc860c933b2fe6c25
   ExpoImagePicker: 270dea232b3a072d981dd564e2cafc63a864edb1

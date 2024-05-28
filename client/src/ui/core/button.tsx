@@ -4,6 +4,7 @@ import type { TouchableOpacityProps } from 'react-native';
 import { ActivityIndicator } from './activity-indicator';
 import { Text } from './text';
 import { TouchableOpacity } from './touchable-opacity';
+import { View } from './view';
 
 type Variant = {
   container: string;
@@ -18,7 +19,7 @@ type BVariant = {
 export const buttonVariants: BVariant = {
   defaults: {
     container:
-      'flex-row items-center justify-center rounded-full px-12 py-3 my-2',
+      'flex-row items-center justify-center rounded-md px-12 py-3 my-2',
     label: 'text-[16px] font-medium text-white',
     indicator: 'text-white h-[30px]',
   },
@@ -43,6 +44,7 @@ interface Props extends TouchableOpacityProps {
   variant?: VariantName;
   label?: string;
   loading?: boolean;
+  icon?: JSX.Element;
 }
 
 export const Button = ({
@@ -50,6 +52,7 @@ export const Button = ({
   loading = false,
   variant = 'primary',
   disabled = false,
+  icon,
   ...props
 }: Props) => {
   return (
@@ -71,14 +74,17 @@ export const Button = ({
           `}
         />
       ) : (
-        <Text
-          className={`
+        <View className="flex-row items-center space-x-2">
+          {icon !== undefined && icon}
+          <Text
+            className={`
           ${buttonVariants.defaults.label}
            ${buttonVariants[variant].label}
           `}
-        >
-          {label}
-        </Text>
+          >
+            {label}
+          </Text>
+        </View>
       )}
     </TouchableOpacity>
   );

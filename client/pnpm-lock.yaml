@@ -56,6 +56,9 @@ importers:
       expo:
         specifier: ~48.0.21
         version: 48.0.21(@babel/core@7.21.0)
+      expo-apple-authentication:
+        specifier: ~6.0.1
+        version: 6.0.1(expo@48.0.21(@babel/core@7.21.0))
       expo-auth-session:
         specifier: ~4.0.3
         version: 4.0.3(expo@48.0.21(@babel/core@7.21.0))
@@ -3159,6 +3162,11 @@ packages:
   expect@29.5.0:
     resolution: {integrity: sha512-yM7xqUrCO2JdpFo4XpM82t+PJBFybdqoQuJLDGeDX2ij8NZzqRHyu3Hp188/JX7SWqud+7t4MUdvcgGBICMHZg==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
+
+  expo-apple-authentication@6.0.1:
+    resolution: {integrity: sha512-Vp7HzSdUJj9lC6rJokJjDU1BBA3EgZMEzoQJpI8Kjck4/5BXlOhlKMxqk4zUoPEqZ/hhj5DgqMhM3IeNm46mag==}
+    peerDependencies:
+      expo: '*'
 
   expo-application@5.1.1:
     resolution: {integrity: sha512-aDatTcTTCdTbHw8h4/Tq2ilc6InM5ntF9xWCJdOcnUEcglxxGphVI/lzJKBaBF6mJECA8mEOjpVg2EGxOctTwg==}
@@ -10725,6 +10733,10 @@ snapshots:
       jest-matcher-utils: 29.5.0
       jest-message-util: 29.5.0
       jest-util: 29.5.0
+
+  expo-apple-authentication@6.0.1(expo@48.0.21(@babel/core@7.21.0)):
+    dependencies:
+      expo: 48.0.21(@babel/core@7.21.0)
 
   expo-application@5.1.1(expo@48.0.21(@babel/core@7.21.0)):
     dependencies:

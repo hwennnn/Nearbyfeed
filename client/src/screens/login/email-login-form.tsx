@@ -1,26 +1,13 @@
-import { Env } from '@env';
 import { classValidatorResolver } from '@hookform/resolvers/class-validator';
 import { useNavigation } from '@react-navigation/native';
-import type { AxiosError } from 'axios';
 import { IsEmail, IsNotEmpty, Length } from 'class-validator';
-import * as Google from 'expo-auth-session/providers/google';
-import React, { useEffect } from 'react';
-import type { SubmitHandler } from 'react-hook-form';
+import React from 'react';
 import { useForm } from 'react-hook-form';
 
-import {
-  Button,
-  ControlledInput,
-  Pressable,
-  ScrollView,
-  Text,
-  View,
-} from '@/ui';
-
-const config = {
-  iosClientId: Env.GOOGLE_AUTH_IOS_CLIENT_ID,
-  webClientId: Env.GOOGLE_AUTH_WEB_CLIENT_ID,
-};
+import { useLogin } from '@/api';
+import { signIn } from '@/core';
+import { setUser } from '@/core/user';
+import { Button, ControlledInput, Pressable, Text, View } from '@/ui';
 
 export class LoginDto {
   @IsNotEmpty({ message: 'Email is required' })
@@ -33,32 +20,25 @@ export class LoginDto {
 
 const resolver = classValidatorResolver(LoginDto);
 
-export type LoginFormProps = {
-  onSubmit?: SubmitHandler<LoginDto>;
-  isLoading: boolean;
-  error: AxiosError<unknown, any> | null;
-};
-
-export const LoginForm = ({
-  onSubmit = () => {},
-  isLoading,
-  error,
-}: LoginFormProps) => {
+export const EmailLoginScreen = () => {
   const { navigate } = useNavigation();
+
+  const {
+    isLoading,
+    error,
+    mutateAsync: mutateLogin,
+  } = useLogin({
+    onSuccess: (result) => {
+      const tokens = result.tokens;
+
+      signIn(tokens);
+      setUser(result.user);
+    },
+  });
 
   const { handleSubmit, control } = useForm<LoginDto>({
     resolver,
   });
-
-  const [_request, response, promptAsync] = Google.useAuthRequest(config);
-
-  useEffect(() => {
-    if (response !== null && response.type === 'success') {
-      const accessToken = response.authentication?.accessToken;
-      console.log('🚀 ~ useEffect ~ accessToken:', accessToken);
-      // TODO: call "auth/google/calback" with the token to get the JWT tokens
-    }
-  }, [response]);
 
   const navToForgotPassword = () => {
     navigate('Auth', {
@@ -66,11 +46,12 @@ export const LoginForm = ({
     });
   };
 
+  const onSubmit = async (data: LoginDto) => {
+    await mutateLogin(data);
+  };
+
   return (
-    <ScrollView
-      className="flex-1 px-4"
-      contentContainerStyle="flex-1 grow justify-center"
-    >
+    <View className="mt-12 flex-1 px-4">
       <Text variant="h1" className="pb-2 text-center">
         Sign In
       </Text>
@@ -113,12 +94,6 @@ export const LoginForm = ({
         variant="primary"
       />
 
-      <Button
-        label="Continue with Google"
-        onPress={() => promptAsync()}
-        variant="secondary"
-      />
-
       <View className="flex-row">
         <Text className="">Do not have an account? </Text>
 
@@ -126,6 +101,6 @@ export const LoginForm = ({
           <Text className="text-primary-400">Register now</Text>
         </Pressable>
       </View>
-    </ScrollView>
+    </View>
   );
 };

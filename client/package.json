@@ -51,6 +51,7 @@
     "class-validator": "^0.14.0",
     "dateformat": "^5.0.3",
     "expo": "~48.0.21",
+    "expo-apple-authentication": "~6.0.1",
     "expo-auth-session": "~4.0.3",
     "expo-constants": "~14.2.1",
     "expo-crypto": "~12.2.1",

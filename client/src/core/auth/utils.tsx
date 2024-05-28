@@ -48,7 +48,7 @@ export const setTokensIntoStorage = (token: AuthToken) => {
 export const logoutUser = async () => {
   const refreshToken = getRefreshTokenFromStorage();
 
-  if (refreshToken !== undefined) {
+  if (refreshToken !== null) {
     // Bypass the axios interceptor
     await axios.post(
       `${API_URL}/auth/logout`,

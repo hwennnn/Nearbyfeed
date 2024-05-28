@@ -53,6 +53,7 @@ export const ForgotPasswordScreen = () => {
             testID="email-input"
             control={control}
             name="email"
+            placeholder="Enter your email here"
             // label="Email"
           />
         </View>

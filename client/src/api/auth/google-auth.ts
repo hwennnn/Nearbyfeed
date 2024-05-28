@@ -5,19 +5,15 @@ import type { LoginResponse } from '@/api/types';
 
 import { client } from '../common';
 
-type Variables = { pendingUserId: string; sessionId: string; otpCode: string };
+type Variables = { token: string };
 
-export const useVerifyEmail = createMutation<
+export const useGoogleAuth = createMutation<
   LoginResponse,
   Variables,
   AxiosError
 >(async (variables) =>
   client({
-    url: `/auth/verify-email/${variables.pendingUserId}`,
+    url: `/auth/google/callback?token=${variables.token}`,
     method: 'POST',
-    data: {
-      sessionId: variables.sessionId,
-      otpCode: variables.otpCode,
-    },
   }).then((response) => response.data)
 );

@@ -23,6 +23,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ios: {
     supportsTablet: true,
     bundleIdentifier: Env.BUNDLE_ID,
+    usesAppleSignIn: true,
   },
   android: {
     adaptiveIcon: {
@@ -50,6 +51,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         locationWhenInUsePermission: 'Allow Nearbyfeed to use your location',
       },
     ],
+    ['expo-apple-authentication'],
   ],
   extra: {
     ...ClientEnv,
