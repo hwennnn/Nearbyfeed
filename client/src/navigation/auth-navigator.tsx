@@ -2,13 +2,13 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
 
 import {
+  AuthOnboardingScreen,
+  EmailLoginScreen,
+  EmailRegisterScreen,
   ForgotPasswordScreen,
   ResetPasswordScreen,
-} from '@/screens/forgot-password';
-import { AuthOnboardingScreen } from '@/screens/login/auth-onboarding';
-import { EmailLoginScreen } from '@/screens/login/email-login-form';
-import { EmailRegisterScreen } from '@/screens/register';
-import ValidateEmailScreen from '@/screens/validate-email';
+  ValidateEmailScreen,
+} from '@/screens';
 
 export type AuthStackParamList = {
   AuthOnboarding: undefined;
@@ -25,42 +25,18 @@ const Stack = createNativeStackNavigator<AuthStackParamList>();
 
 export const AuthNavigator = () => {
   return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name="AuthOnboarding"
-        component={AuthOnboardingScreen}
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen name="Login" component={EmailLoginScreen} options={{}} />
-      <Stack.Screen
-        name="Register"
-        component={EmailRegisterScreen}
-        options={{}}
-      />
-      <Stack.Screen
-        name="ValidateEmail"
-        component={ValidateEmailScreen}
-        options={{
-          headerShown: false,
-          headerBackTitleVisible: true,
-        }}
-      />
-      <Stack.Screen
-        name="ForgotPassword"
-        component={ForgotPasswordScreen}
-        options={{
-          title: '',
-        }}
-      />
-      <Stack.Screen
-        name="ResetPassword"
-        component={ResetPasswordScreen}
-        options={{
-          headerShown: false,
-        }}
-      />
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+        gestureEnabled: false,
+      }}
+    >
+      <Stack.Screen name="AuthOnboarding" component={AuthOnboardingScreen} />
+      <Stack.Screen name="Login" component={EmailLoginScreen} />
+      <Stack.Screen name="Register" component={EmailRegisterScreen} />
+      <Stack.Screen name="ValidateEmail" component={ValidateEmailScreen} />
+      <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+      <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
     </Stack.Navigator>
   );
 };

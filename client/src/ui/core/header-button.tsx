@@ -11,9 +11,10 @@ import { TouchableOpacity } from './touchable-opacity';
 type Props = {
   iconName: string;
   disabled?: boolean;
+  onBack?: () => void;
 };
 
-export const HeaderButton = ({ iconName, disabled = false }: Props) => {
+export const HeaderButton = ({ iconName, disabled = false, onBack }: Props) => {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
 
@@ -26,7 +27,11 @@ export const HeaderButton = ({ iconName, disabled = false }: Props) => {
   };
 
   return (
-    <TouchableOpacity onPress={closeModal} className="" disabled={disabled}>
+    <TouchableOpacity
+      className=""
+      onPress={onBack ?? closeModal}
+      disabled={disabled}
+    >
       <Icon
         name={iconName}
         size={28}

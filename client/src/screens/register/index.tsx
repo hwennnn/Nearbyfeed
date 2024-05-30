@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 
 import { useRegister } from '@/api/auth';
 import { setAppLoading } from '@/core/loading';
-import { Button, ControlledInput, Pressable, Text, View } from '@/ui';
+import { Button, ControlledInput, Header, Pressable, Text, View } from '@/ui';
 import { Layout } from '@/ui/core/layout';
 
 export class RegisterDto {
@@ -54,6 +54,9 @@ export const EmailRegisterScreen = () => {
     onSettled: () => {
       setAppLoading(false);
     },
+    onMutate: () => {
+      setAppLoading(true, 'Creating your account...');
+    },
   });
   const { navigate } = useNavigation();
 
@@ -62,18 +65,14 @@ export const EmailRegisterScreen = () => {
   });
 
   const onSubmit = (data: RegisterDto) => {
-    setAppLoading(true, 'Creating your account...');
     mutateRegister(data);
   };
 
   return (
     <Layout className="flex-1" verticalPadding={80}>
-      <View className="mt-12 flex-1 px-4">
-        <View className="h-6" />
-        <Text testID="form-title" variant="h1" className="pb-2 text-center">
-          Register
-        </Text>
+      <Header headerTitle="Register" />
 
+      <View className="mt-8 flex-1 px-4">
         {typeof error === 'string' && (
           <Text testID="form-title" className="pb-4 text-center text-red-600">
             {error}
@@ -86,6 +85,7 @@ export const EmailRegisterScreen = () => {
           name="username"
           label="Username"
           placeholder="Username"
+          autoFocus={true}
         />
         <ControlledInput
           testID="email-input"
@@ -93,6 +93,7 @@ export const EmailRegisterScreen = () => {
           name="email"
           label="Email"
           placeholder="Email"
+          keyboardType="email-address"
         />
         <ControlledInput
           testID="password-input"
@@ -107,7 +108,7 @@ export const EmailRegisterScreen = () => {
           testID="register-button"
           label="Register"
           onPress={handleSubmit(onSubmit)}
-          variant="primary"
+          variant="secondary"
         />
 
         <View className="flex-row">

@@ -48,13 +48,13 @@ export const Input = React.forwardRef<TextInput, NInputProps>((props, ref) => {
       {label && (
         <Text
           variant="md"
-          className={
+          className={`mb-1 font-bold ${
             error
               ? 'text-danger-600'
               : isDark
               ? 'text-charcoal-100'
               : 'text-black'
-          }
+          }`}
         >
           {label}
         </Text>

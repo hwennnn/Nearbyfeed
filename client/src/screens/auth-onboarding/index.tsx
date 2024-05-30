@@ -3,14 +3,14 @@ import { Env } from '@env';
 import { useNavigation } from '@react-navigation/core';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import * as Google from 'expo-auth-session/providers/google';
+import { useColorScheme } from 'nativewind';
 import React from 'react';
 
 import { useGoogleAuth } from '@/api';
 import { signIn } from '@/core/auth';
 import { setAppLoading } from '@/core/loading';
 import { setUser } from '@/core/user';
-import { Button, Text, View } from '@/ui';
-import { Layout } from '@/ui/core/layout';
+import { Button, Image, LayoutWithoutKeyboard, Text, View } from '@/ui';
 import { FontAwesome5, Ionicons } from '@/ui/icons/ionicons';
 
 const config = {
@@ -18,6 +18,9 @@ const config = {
 };
 
 export const AuthOnboardingScreen = () => {
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
+
   const { isLoading: isGoogleLoading, mutate: mutateGoogleAuth } =
     useGoogleAuth({
       onSuccess: (result) => {
@@ -30,6 +33,9 @@ export const AuthOnboardingScreen = () => {
       onError: (_error) => {
         // TODO: show error toast
         setAppLoading(false);
+      },
+      onMutate: () => {
+        setAppLoading(true, 'Signing in...');
       },
     });
 
@@ -57,21 +63,35 @@ export const AuthOnboardingScreen = () => {
   };
 
   const handleGoogleAuthSignIn = async () => {
-    setAppLoading(true, 'Signing in...');
     await promptAsync();
   };
 
   return (
-    <Layout className="flex-1" verticalPadding={0}>
+    <LayoutWithoutKeyboard className="flex-1">
       <View className="flex-1 px-4">
-        <View className="flex-1">
+        <View className="items-end">
+          <Text variant="md" className="text-bold">
+            Skip
+          </Text>
+        </View>
+
+        <View className="flex-1 justify-center">
+          <Image
+            source={require('assets/rounded-icon.png')}
+            className="h-60 w-60 self-center"
+          />
+
           <Text variant="h1" className="pb-2 text-center">
             Nearbyfeed
           </Text>
 
           <Button
             icon={
-              <FontAwesome5 name="google" size={12} className="text-white" />
+              <FontAwesome5
+                name="google"
+                size={12}
+                className={!isDark ? 'text-white' : 'text-black'}
+              />
             }
             label="Continue with Google"
             onPress={handleGoogleAuthSignIn}
@@ -84,7 +104,9 @@ export const AuthOnboardingScreen = () => {
               AppleAuthentication.AppleAuthenticationButtonType.CONTINUE
             }
             buttonStyle={
-              AppleAuthentication.AppleAuthenticationButtonStyle.BLACK
+              isDark
+                ? AppleAuthentication.AppleAuthenticationButtonStyle.WHITE
+                : AppleAuthentication.AppleAuthenticationButtonStyle.BLACK
             }
             cornerRadius={5}
             style={{
@@ -130,6 +152,6 @@ export const AuthOnboardingScreen = () => {
           </Text>
         </View>
       </View>
-    </Layout>
+    </LayoutWithoutKeyboard>
   );
 };

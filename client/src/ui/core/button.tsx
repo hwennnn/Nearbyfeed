@@ -1,3 +1,4 @@
+import { useColorScheme } from 'nativewind';
 import React from 'react';
 import type { TouchableOpacityProps } from 'react-native';
 
@@ -16,30 +17,6 @@ type BVariant = {
   [key in VariantName]: Variant;
 };
 
-export const buttonVariants: BVariant = {
-  defaults: {
-    container:
-      'flex-row items-center justify-center rounded-md px-12 py-3 my-2',
-    label: 'text-[16px] font-medium text-white',
-    indicator: 'text-white h-[30px]',
-  },
-  primary: {
-    container: 'bg-black',
-    label: '',
-    indicator: 'text-white',
-  },
-  secondary: {
-    container: 'bg-primary-600',
-    label: 'text-secondary-600',
-    indicator: 'text-white',
-  },
-  outline: {
-    container: 'border border-neutral-400',
-    label: 'text-black dark:text-charcoal-100',
-    indicator: 'text-black',
-  },
-};
-
 interface Props extends TouchableOpacityProps {
   variant?: VariantName;
   label?: string;
@@ -55,22 +32,50 @@ export const Button = ({
   icon,
   ...props
 }: Props) => {
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
+
+  // Define buttonVariants with dynamic primary variant
+  const buttonVariants: BVariant = {
+    defaults: {
+      container:
+        'flex-row items-center justify-center rounded-md px-12 py-3 my-2',
+      label: 'text-[16px] font-medium text-white',
+      indicator: '',
+    },
+    primary: {
+      container: isDark ? 'bg-white' : 'bg-black',
+      label: isDark ? 'text-black' : 'text-white',
+      indicator: isDark ? 'black' : 'white',
+    },
+    secondary: {
+      container: 'bg-primary-600',
+      label: 'text-secondary-600',
+      indicator: 'white',
+    },
+    outline: {
+      container: 'border border-neutral-400',
+      label: 'text-black dark:text-charcoal-100',
+      indicator: 'black',
+    },
+  };
+
   return (
     <TouchableOpacity
       disabled={disabled || loading}
       className={`
-    ${buttonVariants.defaults.container}
-     ${buttonVariants[variant].container}
-     ${disabled ? 'opacity-50' : ''}
-    `}
+        ${buttonVariants.defaults.container}
+        ${buttonVariants[variant].container}
+        ${disabled ? 'opacity-50' : ''}
+      `}
       {...props}
     >
       {loading ? (
         <ActivityIndicator
+          color={buttonVariants[variant].indicator}
           size="small"
           className={`
-          ${buttonVariants.defaults.indicator}
-           ${buttonVariants[variant].indicator}
+            ${buttonVariants.defaults.indicator}
           `}
         />
       ) : (
@@ -78,9 +83,9 @@ export const Button = ({
           {icon !== undefined && icon}
           <Text
             className={`
-          ${buttonVariants.defaults.label}
-           ${buttonVariants[variant].label}
-          `}
+              ${buttonVariants.defaults.label}
+              ${buttonVariants[variant].label}
+            `}
           >
             {label}
           </Text>

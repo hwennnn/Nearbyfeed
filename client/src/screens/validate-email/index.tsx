@@ -8,14 +8,21 @@ import { useResendVerifyEmail, useVerifyEmail } from '@/api';
 import { signIn } from '@/core';
 import { setUser } from '@/core/user';
 import type { AuthStackParamList } from '@/navigation/auth-navigator';
-import { Button, showSuccessMessage, Text, TouchableOpacity, View } from '@/ui';
+import {
+  Button,
+  Header,
+  showSuccessMessage,
+  Text,
+  TouchableOpacity,
+  View,
+} from '@/ui';
 import { Layout } from '@/ui/core/layout';
 import colors from '@/ui/theme/colors';
 import { timeUtils } from '@/utils/time-utils';
 
 type Props = RouteProp<AuthStackParamList, 'ValidateEmail'>;
 
-const ValidateEmailScreen = () => {
+export const ValidateEmailScreen = () => {
   const { params } = useRoute<Props>();
   let { pendingUserId, email, sessionId: sessionIdFromProps } = params;
 
@@ -84,8 +91,10 @@ const ValidateEmailScreen = () => {
   }, [resetCountdown]);
 
   return (
-    <Layout className="flex-1">
-      <View className="space-y-4 p-4 pt-12">
+    <Layout className="flex-1" verticalPadding={80}>
+      <Header />
+
+      <View className="mt-8 space-y-4 p-4">
         <Text variant="h1" className="pb-2 text-center">
           Verify email address
         </Text>
@@ -162,5 +171,3 @@ const ValidateEmailScreen = () => {
     </Layout>
   );
 };
-
-export default ValidateEmailScreen;

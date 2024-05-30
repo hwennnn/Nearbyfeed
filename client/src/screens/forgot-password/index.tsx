@@ -4,7 +4,14 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 
 import { useForgotPassword } from '@/api/auth';
-import { Button, ControlledInput, showSuccessMessage, Text, View } from '@/ui';
+import {
+  Button,
+  ControlledInput,
+  Header,
+  showSuccessMessage,
+  Text,
+  View,
+} from '@/ui';
 import { Layout } from '@/ui/core/layout';
 import { getRandomIntFromInterval } from '@/utils/math-utils';
 
@@ -40,9 +47,11 @@ export const ForgotPasswordScreen = () => {
   };
 
   return (
-    <Layout className="flex-1">
-      <View className="flex-1 space-y-4 px-4 pt-12">
-        <Text variant="h1" className="pb-2 text-center">
+    <Layout className="flex-1" canDismissKeyboard={false} verticalPadding={80}>
+      <Header isDisabledBack={isFormLoading} />
+
+      <View className="mt-8 flex-1 space-y-4 px-4">
+        <Text variant="h3" className="pb-2 text-center font-semibold">
           Forgot your password?
         </Text>
 
@@ -57,10 +66,12 @@ export const ForgotPasswordScreen = () => {
 
         <View>
           <ControlledInput
+            autoFocus={true}
             testID="email-input"
             control={control}
             name="email"
             placeholder="Enter your email here"
+            keyboardType="email-address"
           />
         </View>
 
