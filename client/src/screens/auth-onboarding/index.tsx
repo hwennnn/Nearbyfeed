@@ -77,8 +77,11 @@ export const AuthOnboardingScreen = () => {
 
         <View className="flex-1 justify-center">
           <Image
-            source={require('assets/rounded-icon.png')}
+            source={require('assets/images/rounded-icon.png')}
             className="h-60 w-60 self-center"
+            priority="high"
+            placeholder={null}
+            transition={500}
           />
 
           <Text variant="h1" className="pb-2 text-center">

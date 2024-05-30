@@ -72,7 +72,7 @@ export const Feed = () => {
     return (
       <Layout className="items-center justify-center">
         <Image
-          source={require('assets/location-permission.png')}
+          source={require('assets/images/location-permission.png')}
           className="h-72 w-72"
         />
         <Text className="text-center">

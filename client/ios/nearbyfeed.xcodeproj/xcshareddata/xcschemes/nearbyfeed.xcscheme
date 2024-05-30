@@ -16,8 +16,8 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
                BuildableName = "Nearbyfeed.app"
-               BlueprintName = "nearbyfeed"
-               ReferencedContainer = "container:nearbyfeed.xcodeproj">
+               BlueprintName = "Nearbyfeed"
+               ReferencedContainer = "container:Nearbyfeed.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "nearbyfeedTests.xctest"
-               BlueprintName = "nearbyfeedTests"
-               ReferencedContainer = "container:nearbyfeed.xcodeproj">
+               BuildableName = "NearbyfeedTests.xctest"
+               BlueprintName = "NearbyfeedTests"
+               ReferencedContainer = "container:Nearbyfeed.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -56,8 +56,8 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
             BuildableName = "Nearbyfeed.app"
-            BlueprintName = "nearbyfeed"
-            ReferencedContainer = "container:nearbyfeed.xcodeproj">
+            BlueprintName = "Nearbyfeed"
+            ReferencedContainer = "container:Nearbyfeed.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -73,8 +73,8 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
             BuildableName = "Nearbyfeed.app"
-            BlueprintName = "nearbyfeed"
-            ReferencedContainer = "container:nearbyfeed.xcodeproj">
+            BlueprintName = "Nearbyfeed"
+            ReferencedContainer = "container:Nearbyfeed.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
