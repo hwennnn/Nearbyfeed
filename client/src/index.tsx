@@ -50,7 +50,7 @@ const App = () => {
         console.warn(e);
       } finally {
         setAppIsReady(true);
-        SplashScreen.hideAsync();
+        console.log('app ready');
       }
     }
 
