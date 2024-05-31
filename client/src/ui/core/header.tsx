@@ -19,19 +19,23 @@ export const Header = ({
 }: Props) => {
   return (
     <View className="flex-row items-center px-4">
-      <HeaderButton
-        iconName="chevron-back-outline"
-        onBack={onBack}
-        disabled={isDisabledBack}
-      />
+      <View className="flex-1 justify-start">
+        <HeaderButton
+          iconName="chevron-back-outline"
+          onBack={onBack}
+          disabled={isDisabledBack}
+        />
+      </View>
 
-      <View className="flex-1">
+      <View className="flex-2 justify-center">
         <Text className="text-center font-semibold" variant="lg">
           {headerTitle ?? ''}
         </Text>
       </View>
 
-      <View>{headerRight !== undefined && headerRight}</View>
+      <View className="flex-1 justify-end">
+        {headerRight !== undefined && headerRight}
+      </View>
     </View>
   );
 };

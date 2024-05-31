@@ -60,7 +60,7 @@ export const EmailLoginScreen = () => {
 
   return (
     <Layout className="flex-1 bg-white dark:bg-black" verticalPadding={80}>
-      <Header headerTitle="Login" isDisabledBack={isLoading} />
+      <Header headerTitle="Sign In" isDisabledBack={isLoading} />
 
       <View className="mt-8 flex-1 px-4">
         {typeof error === 'string' && (
@@ -95,7 +95,7 @@ export const EmailLoginScreen = () => {
         <Button
           loading={isLoading}
           testID="login-button"
-          label="Login"
+          label="Sign In"
           onPress={handleSubmit(onSubmit)}
           variant="secondary"
         />
