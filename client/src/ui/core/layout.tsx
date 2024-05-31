@@ -28,13 +28,13 @@ export const Layout = ({
 
   return (
     <KeyboardAvoidingView
-      className="flex-1"
+      className="flex-1 bg-white dark:bg-black"
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? verticalPadding : 0}
     >
       <Pressable onPress={dismissKeyboard} className="flex-1">
         <SafeAreaView
-          className={`flex-1 ${hasHorizontalPadding ? 'px-4' : ''} ${
+          className={`flex-1${hasHorizontalPadding ? 'px-4' : ''} ${
             props.className
           }`}
         >

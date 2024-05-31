@@ -10,7 +10,7 @@ import React from 'react';
 import FlashMessage from 'react-native-flash-message';
 
 import { APIProvider } from '@/api/common';
-import { hydrateAuth, loadSelectedTheme } from '@/core';
+import { hydrateAuth, hydrateTheme } from '@/core';
 import { RootNavigator } from '@/navigation';
 import { OverlayLoadingSpinner } from '@/ui';
 
@@ -35,7 +35,7 @@ const App = () => {
     async function loadResourcesAndDataAsync() {
       try {
         hydrateAuth();
-        loadSelectedTheme();
+        hydrateTheme();
         // enableMapSet();
         // userUtils.hydrateUser();
 

@@ -1,13 +1,13 @@
 import { useNavigation } from '@react-navigation/native';
-import { useColorScheme } from 'nativewind';
 import React from 'react';
 
 import type { Comment } from '@/api';
 import { CommentType, useVoteComment } from '@/api/posts/use-vote-comment';
+import { useTheme } from '@/core';
 import type { RootNavigatorProp } from '@/navigation';
 import { Image, Pressable, Text, TimeWidget, View } from '@/ui';
 import Divider from '@/ui/core/divider';
-import { Ionicons } from '@/ui/icons/ionicons';
+import { Ionicons } from '@/ui/icons/vector-icons';
 import { getInitials } from '@/utils/get-initials';
 import { stringUtils } from '@/utils/string-utils';
 
@@ -34,8 +34,7 @@ export const CommentCard = ({
 }: Props) => {
   const { navigate } = useNavigation<RootNavigatorProp>();
 
-  const { colorScheme } = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const isDark = useTheme.use.colorScheme() === 'dark';
   const iconColor = isDark ? 'text-neutral-400' : 'text-neutral-500';
 
   const isLiked = like !== undefined && like.value === 1;

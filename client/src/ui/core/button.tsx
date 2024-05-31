@@ -1,6 +1,7 @@
-import { useColorScheme } from 'nativewind';
 import React from 'react';
 import type { TouchableOpacityProps } from 'react-native';
+
+import { useTheme } from '@/core';
 
 import { ActivityIndicator } from './activity-indicator';
 import { Text } from './text';
@@ -32,8 +33,7 @@ export const Button = ({
   icon,
   ...props
 }: Props) => {
-  const { colorScheme } = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const isDark = useTheme.use.colorScheme() === 'dark';
 
   // Define buttonVariants with dynamic primary variant
   const buttonVariants: BVariant = {

@@ -59,7 +59,7 @@ export const EmailLoginScreen = () => {
   };
 
   return (
-    <Layout className="flex-1" verticalPadding={80}>
+    <Layout className="flex-1 bg-white dark:bg-black" verticalPadding={80}>
       <Header headerTitle="Login" isDisabledBack={isLoading} />
 
       <View className="mt-8 flex-1 px-4">
@@ -86,13 +86,11 @@ export const EmailLoginScreen = () => {
           secureTextEntry={true}
         />
 
-        <Text
-          className="self-end pb-1 text-primary-400"
-          variant="sm"
-          onPress={navToForgotPassword}
-        >
-          Forgot password?
-        </Text>
+        <Pressable onPress={navToForgotPassword}>
+          <Text className="self-end pb-1 text-primary-400" variant="sm">
+            Forgot password?
+          </Text>
+        </Pressable>
 
         <Button
           loading={isLoading}

@@ -18,9 +18,9 @@ export const LayoutWithoutKeyboard = ({
   return (
     <Pressable onPress={Keyboard.dismiss} className="flex-1">
       <SafeAreaView
-        className={`flex-1 ${hasHorizontalPadding ? 'px-4' : ''} ${
-          props.className
-        }`}
+        className={`flex-1 bg-white dark:bg-black ${
+          hasHorizontalPadding ? 'px-4' : ''
+        } ${props.className}`}
       >
         {children}
       </SafeAreaView>

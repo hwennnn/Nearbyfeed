@@ -1,8 +1,8 @@
 import { useNavigation } from '@react-navigation/native';
-import { useColorScheme } from 'nativewind';
 import React from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
 
+import { useTheme } from '@/core';
 import type { RootNavigatorProp } from '@/navigation';
 import colors from '@/ui/theme/colors';
 
@@ -15,8 +15,7 @@ type Props = {
 };
 
 export const HeaderButton = ({ iconName, disabled = false, onBack }: Props) => {
-  const { colorScheme } = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const isDark = useTheme.use.colorScheme() === 'dark';
 
   const { goBack, canGoBack } = useNavigation<RootNavigatorProp>();
 

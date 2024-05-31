@@ -9,7 +9,6 @@ import {
   MinLength,
 } from 'class-validator';
 import * as ImagePicker from 'expo-image-picker';
-import { useColorScheme } from 'nativewind';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Keyboard } from 'react-native';
@@ -17,10 +16,12 @@ import { showMessage } from 'react-native-flash-message';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import { useEditProfile, useSelf } from '@/api/users';
+import { useTheme } from '@/core';
 import {
   ActivityIndicator,
   Button,
   ControlledInput,
+  Header,
   Image,
   Pressable,
   showErrorMessage,
@@ -52,8 +53,7 @@ const EditImageButton = ({
 }: EditImageButtonProps) => {
   const { showActionSheetWithOptions } = useActionSheet();
 
-  const { colorScheme } = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const isDark = useTheme.use.colorScheme() === 'dark';
 
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
@@ -173,53 +173,57 @@ export const EditProfile = () => {
   }
 
   return (
-    <Layout className="mx-4 mt-4 flex-1 space-y-10">
-      <View className="items-center space-y-1">
-        <View className="h-[80px] w-[80px] items-center justify-center rounded-full bg-gray-100 dark:bg-gray-600">
-          {image === null && (
-            <Text
-              className="font-medium text-gray-600 dark:text-gray-300"
-              variant="h3"
-            >
-              {getInitials(user?.username ?? '')}
-            </Text>
-          )}
-          {image !== null && (
-            <Image
-              source={{ uri: image }}
-              className="h-[80px] w-[80px] rounded-full"
+    <Layout className="mt-4 flex-1 space-y-10" verticalPadding={80}>
+      <Header headerTitle="Edit Profile" isDisabledBack={isLoading} />
+
+      <View className="flex-1 space-y-4 px-4">
+        <View className="items-center space-y-1">
+          <View className="h-[80px] w-[80px] items-center justify-center rounded-full bg-gray-100 dark:bg-gray-600">
+            {image === null && (
+              <Text
+                className="font-medium text-gray-600 dark:text-gray-300"
+                variant="h3"
+              >
+                {getInitials(user?.username ?? '')}
+              </Text>
+            )}
+            {image !== null && (
+              <Image
+                source={{ uri: image }}
+                className="h-[80px] w-[80px] rounded-full"
+              />
+            )}
+            <EditImageButton
+              clearImageCallback={() => setImage(null)}
+              setImageCallback={(result) => setImage(result)}
             />
-          )}
-          <EditImageButton
-            clearImageCallback={() => setImage(null)}
-            setImageCallback={(result) => setImage(result)}
-          />
+          </View>
+
+          <Text variant="lg" className="font-semibold">
+            {user?.username ?? ''}
+          </Text>
+
+          <Text variant="sm" className="text-gray-600 dark:text-gray-300">
+            {user?.email ?? ''}
+          </Text>
         </View>
 
-        <Text variant="lg" className="font-semibold">
-          {user?.username ?? ''}
-        </Text>
+        <View className="flex-1 space-y-2">
+          <ControlledInput
+            label="Username"
+            name="username"
+            control={control}
+            placeholder="Username"
+          />
 
-        <Text variant="sm" className="text-gray-600 dark:text-gray-300">
-          {user?.email ?? ''}
-        </Text>
-      </View>
-
-      <View className="flex-1 space-y-5">
-        <ControlledInput
-          label="Username"
-          name="username"
-          control={control}
-          placeholder="Username"
-        />
-
-        <Button
-          disabled={!hasChanges}
-          label="Update Profile"
-          onPress={handleSubmit(onSubmit)}
-          loading={isLoadingEditProfile}
-          variant="secondary"
-        />
+          <Button
+            disabled={!hasChanges}
+            label="Update Profile"
+            onPress={handleSubmit(onSubmit)}
+            loading={isLoadingEditProfile}
+            variant="secondary"
+          />
+        </View>
       </View>
     </Layout>
   );

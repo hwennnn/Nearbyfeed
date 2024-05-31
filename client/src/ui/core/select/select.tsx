@@ -1,7 +1,7 @@
 import type { BottomSheetModal } from '@gorhom/bottom-sheet';
-import { useColorScheme } from 'nativewind';
 import * as React from 'react';
 
+import { useTheme } from '@/core';
 import colors from '@/ui/theme/colors';
 
 import { Text } from '../text';
@@ -34,8 +34,7 @@ export const Select = (props: SelectProps) => {
   const optionsRef = React.useRef<BottomSheetModal>(null);
   const open = React.useCallback(() => optionsRef.current?.present(), []);
   const close = React.useCallback(() => optionsRef.current?.dismiss(), []);
-  const { colorScheme } = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const isDark = useTheme.use.colorScheme() === 'dark';
   const onSelectOption = React.useCallback(
     (option: Option) => {
       onSelect?.(option.value);
@@ -78,7 +77,7 @@ export const Select = (props: SelectProps) => {
           </Text>
         )}
         <TouchableOpacity
-          className={`mt-0 flex-row items-center justify-center border-[1px] py-3 px-2  ${borderColor} rounded-md ${bgColor} text-[16px]`}
+          className={`mt-0 flex-row items-center justify-center border px-2 py-3  ${borderColor} rounded-md ${bgColor} text-[16px]`}
           disabled={disabled}
           onPress={open}
         >

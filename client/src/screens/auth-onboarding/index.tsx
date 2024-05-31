@@ -3,23 +3,22 @@ import { Env } from '@env';
 import { useNavigation } from '@react-navigation/core';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import * as Google from 'expo-auth-session/providers/google';
-import { useColorScheme } from 'nativewind';
 import React from 'react';
 
 import { useGoogleAuth } from '@/api';
+import { useTheme } from '@/core';
 import { signIn } from '@/core/auth';
 import { setAppLoading } from '@/core/loading';
 import { setUser } from '@/core/user';
 import { Button, Image, LayoutWithoutKeyboard, Text, View } from '@/ui';
-import { FontAwesome5, Ionicons } from '@/ui/icons/ionicons';
+import { FontAwesome5, Ionicons } from '@/ui/icons/vector-icons';
 
 const config = {
   iosClientId: Env.GOOGLE_AUTH_IOS_CLIENT_ID,
 };
 
 export const AuthOnboardingScreen = () => {
-  const { colorScheme } = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const isDark = useTheme.use.colorScheme() === 'dark';
 
   const { isLoading: isGoogleLoading, mutate: mutateGoogleAuth } =
     useGoogleAuth({
@@ -51,6 +50,7 @@ export const AuthOnboardingScreen = () => {
           token: accessToken,
         });
       } else if (response.type === 'error') {
+        console.log(response.error?.message);
         // TODO: show error toast: There is an error while signing in. Please try again
       }
     }
@@ -78,7 +78,6 @@ export const AuthOnboardingScreen = () => {
         <View className="flex-1 justify-center">
           <Image
             source={require('assets/images/rounded-icon.png')}
-            // eslint-disable-next-line tailwindcss/enforces-shorthand
             className="h-60 w-60 self-center"
             priority="high"
             placeholder={null}

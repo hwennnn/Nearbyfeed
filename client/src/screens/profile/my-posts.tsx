@@ -8,7 +8,7 @@ import type { Post } from '@/api';
 import { useMyPosts } from '@/api/users';
 import type { RootNavigatorProp } from '@/navigation/root-navigator';
 import { FeedCard } from '@/screens';
-import { colors, EmptyList, Text, View } from '@/ui';
+import { colors, EmptyList, LayoutWithoutKeyboard, Text, View } from '@/ui';
 import Divider from '@/ui/core/divider';
 
 export const MyPosts = () => {
@@ -81,27 +81,31 @@ export const MyPosts = () => {
   };
 
   return (
-    <View className="min-h-[2px] flex-1">
-      <FlashList
-        ItemSeparatorComponent={Divider}
-        data={allPosts}
-        renderItem={renderItem}
-        keyExtractor={(_, index) => `item-${index}`}
-        estimatedItemSize={200}
-        ListEmptyComponent={<EmptyList isLoading={isLoading} />}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={handleRefresh}
-            title="Pull down to refresh"
-            tintColor={refreshColor}
-            titleColor={refreshColor}
-          />
-        }
-        onEndReached={handleEndReached}
-        onEndReachedThreshold={0.1}
-        ListFooterComponent={footer}
-      />
-    </View>
+    <LayoutWithoutKeyboard>
+      {/* <Header headerTitle="My Posts" isDisabledBack={isLoading} /> */}
+
+      <View className="min-h-[2px] flex-1">
+        <FlashList
+          ItemSeparatorComponent={Divider}
+          data={allPosts}
+          renderItem={renderItem}
+          keyExtractor={(_, index) => `item-${index}`}
+          estimatedItemSize={200}
+          ListEmptyComponent={<EmptyList isLoading={isLoading} />}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={handleRefresh}
+              title="Pull down to refresh"
+              tintColor={refreshColor}
+              titleColor={refreshColor}
+            />
+          }
+          onEndReached={handleEndReached}
+          onEndReachedThreshold={0.1}
+          ListFooterComponent={footer}
+        />
+      </View>
+    </LayoutWithoutKeyboard>
   );
 };

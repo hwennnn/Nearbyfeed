@@ -14,7 +14,7 @@ import {
   TouchableOpacity,
   View,
 } from '@/ui';
-import { Ionicons } from '@/ui/icons/ionicons';
+import { Ionicons } from '@/ui/icons/vector-icons';
 import { ImageViewer } from '@/ui/image-viewer';
 import { getInitials } from '@/utils/get-initials';
 import { onShare, POST_SHARE_MESSAGE } from '@/utils/share-utils';

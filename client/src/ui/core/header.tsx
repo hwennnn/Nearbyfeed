@@ -26,7 +26,7 @@ export const Header = ({
       />
 
       <View className="flex-1">
-        <Text className="text-center" variant="lg">
+        <Text className="text-center font-semibold" variant="lg">
           {headerTitle ?? ''}
         </Text>
       </View>

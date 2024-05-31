@@ -17,7 +17,12 @@ export type ProfileNavigatorProp = Props['navigation'];
 
 export const ProfileNavigator = () => {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+        gestureEnabled: false,
+      }}
+    >
       <Stack.Screen
         name="Profile"
         component={Profile}

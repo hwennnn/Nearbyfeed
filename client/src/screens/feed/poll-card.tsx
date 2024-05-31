@@ -1,10 +1,10 @@
-import { useColorScheme } from 'nativewind';
 import React from 'react';
 
 import { type PollWithOptions, useVotePoll } from '@/api';
+import { useTheme } from '@/core';
 import { useUser } from '@/core/user';
 import { LoadingButton, Pressable, Text, View } from '@/ui';
-import { FontAwesome5, Ionicons } from '@/ui/icons/ionicons';
+import { FontAwesome5, Ionicons } from '@/ui/icons/vector-icons';
 import { stringUtils } from '@/utils/string-utils';
 import { timeUtils } from '@/utils/time-utils';
 
@@ -14,9 +14,7 @@ type Props = {
 };
 
 export const PollCard = ({ poll, showAllText = false }: Props) => {
-  const { colorScheme } = useColorScheme();
-
-  const isDark = colorScheme === 'dark';
+  const isDark = useTheme.use.colorScheme() === 'dark';
   const iconColor = isDark ? 'text-neutral-400' : 'text-neutral-500';
 
   const [selectedVoteOption, setSelectedVoteOption] = React.useState<
@@ -61,7 +59,7 @@ export const PollCard = ({ poll, showAllText = false }: Props) => {
           Poll
         </Text>
 
-        <View className="mx-1 h-[80%] w-[0.5px] bg-white" />
+        <View className="mx-1 h-4/5 w-[0.5px] bg-white" />
 
         <Text className="font-semibold text-black dark:text-white" variant="xs">
           {stringUtils.formatSingularPlural(
@@ -135,7 +133,7 @@ export const PollCard = ({ poll, showAllText = false }: Props) => {
                 isSelected ? 'bg-primary-400' : 'bg-charcoal-700'
               }`}
             >
-              <View className="h-4 w-4 items-center justify-center rounded-xl border-[1px] border-white">
+              <View className="h-4 w-4 items-center justify-center rounded-xl border border-white">
                 {isSelected && <View className="h-2 w-2 rounded-md bg-white" />}
               </View>
 

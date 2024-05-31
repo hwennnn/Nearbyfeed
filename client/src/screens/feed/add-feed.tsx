@@ -15,13 +15,13 @@ import {
   ValidateNested,
 } from 'class-validator';
 import * as ImagePicker from 'expo-image-picker';
-import { useColorScheme } from 'nativewind';
 import * as React from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { showMessage } from 'react-native-flash-message';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import { useAddPost } from '@/api';
+import { useTheme } from '@/core';
 import { setAppLoading } from '@/core/loading';
 import type { VotingLengthOption } from '@/screens/feed/poll-voting-length-item';
 import {
@@ -44,7 +44,7 @@ import {
 import Divider from '@/ui/core/divider';
 import { Layout } from '@/ui/core/layout';
 import { ScrollLayout } from '@/ui/core/scroll-layout';
-import { FontAwesome5, Ionicons } from '@/ui/icons/ionicons';
+import { FontAwesome5, Ionicons } from '@/ui/icons/vector-icons';
 import { ImageViewer } from '@/ui/image-viewer';
 import { retrieveCurrentPosition } from '@/utils/geolocation-utils';
 import { checkFileSize } from '@/utils/image-utils';
@@ -97,8 +97,7 @@ class PollOptionDto {
 const resolver = classValidatorResolver(CreatePostDto);
 
 export const AddFeed = () => {
-  const { colorScheme } = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const isDark = useTheme.use.colorScheme() === 'dark';
   const iconColor = isDark ? 'text-neutral-400' : 'text-neutral-500';
 
   const [imageModalIndex, setImageModalIndex] = React.useState<
@@ -276,7 +275,7 @@ export const AddFeed = () => {
                     />
 
                     <Pressable
-                      className="absolute top-2 right-2 rounded-full border bg-black"
+                      className="absolute right-2 top-2 rounded-full border bg-black"
                       onPress={() =>
                         setImages((currImages) =>
                           currImages.filter(
@@ -293,7 +292,7 @@ export const AddFeed = () => {
                 {images.length !== 5 && (
                   <TouchableOpacity
                     onPress={pickImage}
-                    className="h-[150px] w-[150px] items-center justify-center border-[1px] border-dotted border-charcoal-700 dark:border-white"
+                    className="h-[150px] w-[150px] items-center justify-center border border-dotted border-charcoal-700 dark:border-white"
                   >
                     <Icon name="add" color={colors.primary[400]} size={48} />
                   </TouchableOpacity>

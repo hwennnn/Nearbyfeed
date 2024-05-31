@@ -1,19 +1,19 @@
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useNavigation } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
-import { useColorScheme } from 'nativewind';
 import React, { useCallback, useEffect } from 'react';
 import { ActivityIndicator } from 'react-native';
 
 import { type Comment } from '@/api';
 import { useComments } from '@/api/posts/use-comments';
+import { useTheme } from '@/core';
 import type { CommentsSort } from '@/core/comments';
 import { setCommentsQueryKey, useCommentKeys } from '@/core/comments';
 import type { RootNavigatorProp } from '@/navigation';
 import { CommentCard } from '@/screens/feed/comment-card';
 import { Pressable, Text, View } from '@/ui';
 import Divider from '@/ui/core/divider';
-import { Ionicons } from '@/ui/icons/ionicons';
+import { Ionicons } from '@/ui/icons/vector-icons';
 
 type Props = { postId: number; onRefetchDone: () => void; refreshing: boolean };
 
@@ -24,8 +24,7 @@ export const CommentList = ({ postId, refreshing, onRefetchDone }: Props) => {
 
   const { showActionSheetWithOptions } = useActionSheet();
 
-  const { colorScheme } = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const isDark = useTheme.use.colorScheme() === 'dark';
 
   const {
     data,

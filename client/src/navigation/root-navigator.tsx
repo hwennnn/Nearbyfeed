@@ -3,8 +3,10 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as SplashScreen from 'expo-splash-screen';
 import React from 'react';
+import { useColorScheme } from 'react-native';
 
-import { useAuth } from '@/core';
+import type { ColorSchemeType } from '@/core';
+import { setSystemColorScheme, useAuth } from '@/core';
 import { TabNavigator } from '@/navigation/tab-navigator';
 import type { RootStackParamList } from '@/navigation/types';
 import { AddFeed, FeedDetails } from '@/screens';
@@ -22,6 +24,15 @@ export type RootNavigatorProp = Props['navigation'];
 
 export const Root = () => {
   const status = useAuth.use.status();
+  const systemColorScheme = useColorScheme();
+
+  const setSystemColor = React.useCallback((t: ColorSchemeType) => {
+    setSystemColorScheme(t);
+  }, []);
+
+  React.useEffect(() => {
+    setSystemColor(systemColorScheme as ColorSchemeType);
+  }, [setSystemColor, systemColorScheme]);
 
   const onLayoutRootView = React.useCallback(async () => {
     if (status !== 'idle') {

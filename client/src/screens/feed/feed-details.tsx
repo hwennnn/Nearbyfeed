@@ -2,12 +2,12 @@ import type { RouteProp } from '@react-navigation/native';
 import { useRoute } from '@react-navigation/native';
 import { useQueryClient } from '@tanstack/react-query';
 import { produce } from 'immer';
-import { useColorScheme } from 'nativewind';
 import * as React from 'react';
 import { ActivityIndicator, RefreshControl } from 'react-native';
 
 import type { InfinitePosts } from '@/api';
 import { usePost, useVotePost } from '@/api';
+import { useTheme } from '@/core';
 import { usePostKeys } from '@/core/posts';
 import type { RootStackParamList } from '@/navigation';
 import { CommentComposer } from '@/screens/feed/comment-composer';
@@ -25,7 +25,7 @@ import {
 } from '@/ui';
 import Divider from '@/ui/core/divider';
 import { Layout } from '@/ui/core/layout';
-import { Ionicons } from '@/ui/icons/ionicons';
+import { Ionicons } from '@/ui/icons/vector-icons';
 import { ImageViewer } from '@/ui/image-viewer';
 import { getInitials } from '@/utils/get-initials';
 import { onShare, POST_SHARE_MESSAGE } from '@/utils/share-utils';
@@ -95,9 +95,7 @@ export const FeedDetails = () => {
     number | undefined
   >(undefined);
 
-  const { colorScheme } = useColorScheme();
-
-  const isDark = colorScheme === 'dark';
+  const isDark = useTheme.use.colorScheme() === 'dark';
 
   const [refreshing, setRefreshing] = React.useState(false);
 
@@ -250,7 +248,7 @@ export const FeedDetails = () => {
             </View>
           )}
 
-          <View className="flex-row justify-between px-10 pt-2 pb-4">
+          <View className="flex-row justify-between px-10 pb-4 pt-2">
             <Pressable onPress={() => handleVote(isLiked ? 0 : 1)}>
               <View className="flex-row items-center space-x-1">
                 <Ionicons

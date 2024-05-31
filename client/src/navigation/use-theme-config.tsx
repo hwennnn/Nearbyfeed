@@ -30,6 +30,7 @@ const LightTheme: Theme = {
 
 export function useThemeConfig() {
   const { colorScheme } = useColorScheme();
+  console.log('🚀 ~ useThemeConfig ~ colorScheme:', colorScheme);
 
   if (colorScheme === 'dark') return DarkTheme;
 

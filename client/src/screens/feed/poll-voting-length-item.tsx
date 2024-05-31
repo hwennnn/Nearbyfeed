@@ -1,10 +1,10 @@
 import type { BottomSheetModal } from '@gorhom/bottom-sheet';
-import { useColorScheme } from 'nativewind';
 import * as React from 'react';
 
+import { useTheme } from '@/core';
 import type { Option } from '@/ui';
 import { Options, Text, TouchableOpacity } from '@/ui';
-import { Ionicons } from '@/ui/icons/ionicons';
+import { Ionicons } from '@/ui/icons/vector-icons';
 
 export interface VotingLengthOption {
   label: string;
@@ -35,8 +35,7 @@ export const PollVotingLengthItem = ({
     []
   );
 
-  const { colorScheme } = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const isDark = useTheme.use.colorScheme() === 'dark';
   const iconColor = isDark ? 'text-neutral-400' : 'text-neutral-500';
 
   const optionsRef = React.useRef<BottomSheetModal>(null);

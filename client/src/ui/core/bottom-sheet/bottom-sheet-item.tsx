@@ -8,9 +8,16 @@ type ItemProps = {
   value?: string;
   onPress?: () => void;
   icon?: React.ReactNode;
+  textProps?: string;
 };
 
-export const BottomSheetItem = ({ text, value, icon, onPress }: ItemProps) => {
+export const BottomSheetItem = ({
+  text,
+  value,
+  icon,
+  onPress,
+  textProps,
+}: ItemProps) => {
   const isPressable = onPress !== undefined;
   const Container = isPressable ? TouchableOpacity : View;
   return (
@@ -20,7 +27,7 @@ export const BottomSheetItem = ({ text, value, icon, onPress }: ItemProps) => {
     >
       <View className="flex-row items-center">
         {icon && <View className="pr-2">{icon}</View>}
-        <Text variant="md" tx={text} />
+        <Text variant="md" tx={text} className={textProps ?? ''} />
       </View>
       <View className="flex-row items-center">
         <Text variant="md" className="text-neutral-600 dark:text-white">

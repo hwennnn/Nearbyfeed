@@ -1,8 +1,8 @@
 import { BottomSheetFlatList, BottomSheetModal } from '@gorhom/bottom-sheet';
-import { useColorScheme } from 'nativewind';
 import * as React from 'react';
 import { type PressableProps } from 'react-native';
 
+import { useTheme } from '@/core';
 import { colors } from '@/ui/theme';
 
 import { renderBackdrop } from '../bottom-sheet';
@@ -26,8 +26,8 @@ export const Options = React.forwardRef<BottomSheetModal, OptionsProps>(
   ({ options, onSelect, value }, ref) => {
     const height = options.length * 70 + 100;
     const snapPoints = React.useMemo(() => [height], [height]);
-    const { colorScheme } = useColorScheme();
-    const isDark = colorScheme === 'dark';
+    const isDark = useTheme.use.colorScheme() === 'dark';
+
     const renderSelectItem = React.useCallback(
       ({ item }: { item: Option }) => (
         <Option
@@ -79,7 +79,7 @@ const Option = ({
 }) => {
   return (
     <Pressable
-      className="flex-row items-center border-b-[1px] border-neutral-300 bg-white py-2 px-3 dark:border-charcoal-700 dark:bg-charcoal-800"
+      className="flex-row items-center border-b border-neutral-300 bg-white px-3 py-2 dark:border-charcoal-700 dark:bg-charcoal-800"
       {...props}
     >
       <Text variant="md" className="flex-1 dark:text-charcoal-100">
