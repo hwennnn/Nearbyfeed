@@ -36,7 +36,6 @@ export const CommentCard = ({
   const { navigate } = useNavigation<RootNavigatorProp>();
 
   const isDark = useTheme.use.colorScheme() === 'dark';
-  const iconColor = isDark ? 'text-neutral-400' : 'text-neutral-500';
 
   const isLiked = like !== undefined && like.value === 1;
 
@@ -134,7 +133,11 @@ export const CommentCard = ({
                       <Ionicons
                         name="thumbs-up"
                         size={12}
-                        className={isLiked ? 'text-primary-400' : iconColor}
+                        className={
+                          isLiked
+                            ? 'text-primary-400'
+                            : 'text-neutral-500 dark:text-neutral-400'
+                        }
                       />
 
                       <Text
@@ -164,7 +167,7 @@ export const CommentCard = ({
                       <Ionicons
                         name="chatbox-outline"
                         size={12}
-                        className={iconColor}
+                        className="text-neutral-500 dark:text-neutral-400"
                       />
 
                       <Text
@@ -210,7 +213,7 @@ export const CommentCard = ({
                 <Ionicons
                   name="chevron-forward-outline"
                   size={20}
-                  className={iconColor}
+                  className="text-neutral-500 dark:text-neutral-400"
                 />
               </Pressable>
             )}

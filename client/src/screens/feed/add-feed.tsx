@@ -20,7 +20,6 @@ import { useFieldArray, useForm } from 'react-hook-form';
 import { showMessage } from 'react-native-flash-message';
 
 import { useAddPost } from '@/api';
-import { useTheme } from '@/core';
 import { setAppLoading } from '@/core/loading';
 import type { VotingLengthOption } from '@/screens/feed/poll-voting-length-item';
 import {
@@ -95,9 +94,6 @@ class PollOptionDto {
 const resolver = classValidatorResolver(CreatePostDto);
 
 export const AddFeed = () => {
-  const isDark = useTheme.use.colorScheme() === 'dark';
-  const iconColor = isDark ? 'text-neutral-400' : 'text-neutral-500';
-
   const [imageModalIndex, setImageModalIndex] = React.useState<
     number | undefined
   >(undefined);
@@ -329,7 +325,7 @@ export const AddFeed = () => {
                     <FontAwesome5
                       name="poll-h"
                       size={20}
-                      className={iconColor}
+                      className="text-neutral-500 dark:text-neutral-400"
                     />
 
                     <Text
@@ -351,7 +347,11 @@ export const AddFeed = () => {
                     className="items-end"
                     onPress={() => setIsPollEnabled(false)}
                   >
-                    <Ionicons size={30} name="close" className={iconColor} />
+                    <Ionicons
+                      size={30}
+                      name="close"
+                      className="text-neutral-500 dark:text-neutral-400"
+                    />
                   </Pressable>
                 </View>
 
@@ -374,7 +374,7 @@ export const AddFeed = () => {
                               <Ionicons
                                 size={20}
                                 name="close"
-                                className={`${iconColor} items-end`}
+                                className={`items-end text-neutral-500 dark:text-neutral-400`}
                               />
                             </Pressable>
                           )
@@ -410,14 +410,20 @@ export const AddFeed = () => {
         <Divider />
         <View className="mx-4 mb-6 mt-2 flex-row space-x-6">
           <Pressable onPress={pickImage}>
-            <FontAwesome5 name="images" size={24} className={iconColor} />
+            <FontAwesome5
+              name="images"
+              size={24}
+              className="text-neutral-500 dark:text-neutral-400"
+            />
           </Pressable>
 
           <Pressable onPress={() => setIsPollEnabled((value) => !value)}>
             <FontAwesome5
               name="poll-h"
               size={24}
-              className={`${iconColor} ${isPollEnabled ? 'opacity-50' : ''}`}
+              className={`text-neutral-500 dark:text-neutral-400 ${
+                isPollEnabled ? 'opacity-50' : ''
+              }`}
             />
           </Pressable>
         </View>

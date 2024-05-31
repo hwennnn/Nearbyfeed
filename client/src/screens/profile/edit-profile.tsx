@@ -53,8 +53,6 @@ const EditImageButton = ({
 }: EditImageButtonProps) => {
   const { showActionSheetWithOptions } = useActionSheet();
 
-  const isDark = useTheme.use.colorScheme() === 'dark';
-
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -77,7 +75,7 @@ const EditImageButton = ({
 
     showActionSheetWithOptions(
       {
-        userInterfaceStyle: isDark ? 'dark' : 'light',
+        userInterfaceStyle: useTheme.getState().colorScheme,
 
         options,
         cancelButtonIndex,

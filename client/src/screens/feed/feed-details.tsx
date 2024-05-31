@@ -99,8 +99,6 @@ export const FeedDetails = () => {
 
   const isDark = useTheme.use.colorScheme() === 'dark';
 
-  const iconColor = isDark ? 'text-neutral-400' : 'text-neutral-500';
-
   const refreshColor = isDark ? colors.neutral[400] : colors.neutral[500];
 
   const onRefresh = async () => {
@@ -255,7 +253,11 @@ export const FeedDetails = () => {
                 <Ionicons
                   name={isLiked ? 'heart' : 'heart-outline'}
                   size={18}
-                  className={isLiked ? 'text-primary-400' : iconColor}
+                  className={
+                    isLiked
+                      ? 'text-primary-400'
+                      : 'text-neutral-500 dark:text-neutral-400'
+                  }
                 />
 
                 <Text
@@ -276,7 +278,7 @@ export const FeedDetails = () => {
               <Ionicons
                 name="chatbox-outline"
                 size={16}
-                className={iconColor}
+                className="text-neutral-500 dark:text-neutral-400"
               />
 
               <Text
@@ -291,7 +293,11 @@ export const FeedDetails = () => {
               className="flex-row items-center space-x-1"
               onPress={() => onShare(POST_SHARE_MESSAGE)}
             >
-              <Ionicons name="share-outline" size={16} className={iconColor} />
+              <Ionicons
+                name="share-outline"
+                size={16}
+                className="text-neutral-500 dark:text-neutral-400"
+              />
 
               <Text
                 className="font-semibold text-gray-600 dark:text-gray-300"

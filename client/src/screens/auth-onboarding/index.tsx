@@ -92,7 +92,7 @@ export const AuthOnboardingScreen = () => {
               <FontAwesome5
                 name="google"
                 size={12}
-                className={!isDark ? 'text-white' : 'text-black'}
+                className="text-white dark:text-black"
               />
             }
             label="Continue with Google"

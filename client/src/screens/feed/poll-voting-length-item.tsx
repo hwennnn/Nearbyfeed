@@ -1,7 +1,6 @@
 import type { BottomSheetModal } from '@gorhom/bottom-sheet';
 import * as React from 'react';
 
-import { useTheme } from '@/core';
 import type { Option } from '@/ui';
 import { Options, Text, TouchableOpacity } from '@/ui';
 import { Ionicons } from '@/ui/icons/vector-icons';
@@ -35,9 +34,6 @@ export const PollVotingLengthItem = ({
     []
   );
 
-  const isDark = useTheme.use.colorScheme() === 'dark';
-  const iconColor = isDark ? 'text-neutral-400' : 'text-neutral-500';
-
   const optionsRef = React.useRef<BottomSheetModal>(null);
   const open = React.useCallback(() => optionsRef.current?.present(), []);
   const onSelect = React.useCallback(
@@ -50,7 +46,11 @@ export const PollVotingLengthItem = ({
 
   return (
     <TouchableOpacity onPress={open} className="ml-2 flex-row space-x-1">
-      <Ionicons size={20} name="chevron-down" className={iconColor} />
+      <Ionicons
+        size={20}
+        name="chevron-down"
+        className="text-neutral-500 dark:text-neutral-400"
+      />
       <Text className="font-bold text-gray-600 dark:text-gray-300" variant="sm">
         {selectedOption.label}
       </Text>

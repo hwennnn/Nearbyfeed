@@ -24,10 +24,6 @@ export const CommentList = ({ postId, refreshing, onRefetchDone }: Props) => {
 
   const { showActionSheetWithOptions } = useActionSheet();
 
-  const isDark = useTheme.use.colorScheme() === 'dark';
-
-  const iconColor = isDark ? 'text-neutral-400' : 'text-neutral-500';
-
   const {
     data,
     isLoading,
@@ -105,7 +101,7 @@ export const CommentList = ({ postId, refreshing, onRefetchDone }: Props) => {
 
     showActionSheetWithOptions(
       {
-        userInterfaceStyle: isDark ? 'dark' : 'light',
+        userInterfaceStyle: useTheme.getState().colorScheme,
         options,
         cancelButtonIndex,
         title: 'View Comments Sort',
@@ -144,7 +140,7 @@ export const CommentList = ({ postId, refreshing, onRefetchDone }: Props) => {
               <Ionicons
                 name="chevron-down-outline"
                 size={20}
-                className={iconColor}
+                className="text-neutral-500 dark:text-neutral-400"
               />
             </View>
           </Pressable>

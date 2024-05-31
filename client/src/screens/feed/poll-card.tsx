@@ -1,7 +1,6 @@
 import React from 'react';
 
 import { type PollWithOptions, useVotePoll } from '@/api';
-import { useTheme } from '@/core';
 import { useUser } from '@/core/user';
 import { LoadingButton, Pressable, Text, View } from '@/ui';
 import { FontAwesome5, Ionicons } from '@/ui/icons/vector-icons';
@@ -14,9 +13,6 @@ type Props = {
 };
 
 export const PollCard = ({ poll, showAllText = false }: Props) => {
-  const isDark = useTheme.use.colorScheme() === 'dark';
-  const iconColor = isDark ? 'text-neutral-400' : 'text-neutral-500';
-
   const [selectedVoteOption, setSelectedVoteOption] = React.useState<
     number | null
   >(null);
@@ -50,7 +46,11 @@ export const PollCard = ({ poll, showAllText = false }: Props) => {
   return (
     <View className="mt-4 flex-1 space-y-2 rounded-lg border-[0.5px] border-neutral-300 bg-neutral-100 p-4 dark:border-charcoal-850 dark:bg-charcoal-850">
       <View className="flex-1 flex-row items-center space-x-2">
-        <FontAwesome5 name="poll-h" size={20} className={iconColor} />
+        <FontAwesome5
+          name="poll-h"
+          size={20}
+          className="text-neutral-500 dark:text-neutral-400"
+        />
 
         <Text
           className="font-semibold text-gray-600 dark:text-gray-300"

@@ -2,7 +2,6 @@ import React from 'react';
 
 import type { Post } from '@/api';
 import { useVotePost } from '@/api/posts/use-vote-post';
-import { useTheme } from '@/core';
 import {
   ActivityIndicator,
   Image,
@@ -40,10 +39,6 @@ export const FeedCard = ({
   const [imageModalIndex, setImageModalIndex] = React.useState<
     number | undefined
   >(undefined);
-
-  const isDark = useTheme.use.colorScheme() === 'dark';
-
-  const iconColor = isDark ? 'text-neutral-400' : 'text-neutral-500';
 
   const isLiked = like !== undefined && like.value === 1;
 
@@ -154,7 +149,11 @@ export const FeedCard = ({
               <Ionicons
                 name={isLiked ? 'heart' : 'heart-outline'}
                 size={18}
-                className={isLiked ? 'text-primary-400' : iconColor}
+                className={
+                  isLiked
+                    ? 'text-primary-400'
+                    : 'text-neutral-500 dark:text-neutral-400'
+                }
               />
 
               <Text
@@ -172,7 +171,11 @@ export const FeedCard = ({
           </Pressable>
 
           <View className="flex-row items-center space-x-1">
-            <Ionicons name="chatbox-outline" size={16} className={iconColor} />
+            <Ionicons
+              name="chatbox-outline"
+              size={16}
+              className="text-neutral-500 dark:text-neutral-400"
+            />
 
             <Text
               className="font-semibold text-gray-600 dark:text-gray-300"
@@ -186,7 +189,11 @@ export const FeedCard = ({
             className="flex-row items-center space-x-1"
             onPress={() => onShare(POST_SHARE_MESSAGE)}
           >
-            <Ionicons name="share-outline" size={16} className={iconColor} />
+            <Ionicons
+              name="share-outline"
+              size={16}
+              className="text-neutral-500 dark:text-neutral-400"
+            />
 
             <Text
               className="font-semibold text-gray-600 dark:text-gray-300"
