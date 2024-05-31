@@ -1,5 +1,5 @@
-import { API_URL, client } from '@/api/common';
-import type { User } from '@/api/types';
+import { client } from '../common';
+import { API_URL, type User } from '../types';
 
 export const fetchSelf = async (): Promise<User> => {
   const response = await client.get(`${API_URL}/users/self`);

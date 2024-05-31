@@ -10,10 +10,11 @@ export const useForgotPassword = createMutation<
   Response,
   Variables,
   AxiosError
->(async (variables) =>
-  client({
-    url: '/auth/forgot-password',
-    method: 'POST',
-    data: variables,
-  }).then((response) => response.data)
-);
+>({
+  mutationFn: async (variables) =>
+    client({
+      url: '/auth/forgot-password',
+      method: 'POST',
+      data: variables,
+    }).then((response) => response.data),
+});

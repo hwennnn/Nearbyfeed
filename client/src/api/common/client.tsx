@@ -1,13 +1,14 @@
 import axios from 'axios';
 import { Alert } from 'react-native';
 
-import { API_URL } from '@/api/types';
 import {
   getAccessToken,
   getRefreshToken,
   signOut,
   updateToken,
 } from '@/core/auth';
+
+import { API_URL } from '../types';
 
 const client = axios.create({
   baseURL: API_URL,

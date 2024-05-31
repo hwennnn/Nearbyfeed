@@ -78,12 +78,13 @@ export const AuthOnboardingScreen = () => {
         <View className="flex-1 justify-center">
           <Image
             source={require('assets/images/rounded-icon.png')}
+            // eslint-disable-next-line tailwindcss/enforces-shorthand
             className="h-60 w-60 self-center"
             priority="high"
             placeholder={null}
           />
 
-          <Text variant="h1" className="pb-2 text-center">
+          <Text variant="h1" className="pb-2 text-center font-bold">
             Nearbyfeed
           </Text>
 
@@ -127,6 +128,7 @@ export const AuthOnboardingScreen = () => {
                 console.log(credential);
                 // signed in
               } catch (e: any) {
+                console.log(e);
                 if (e.code === 'ERR_REQUEST_CANCELED') {
                   // handle that the user canceled the sign-in flow
                 } else {

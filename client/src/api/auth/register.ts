@@ -19,10 +19,11 @@ export const useRegister = createMutation<
   RegisterResponse,
   Variables,
   AxiosError
->(async (variables) =>
-  client({
-    url: '/auth/register',
-    method: 'POST',
-    data: variables,
-  }).then((response) => response.data)
-);
+>({
+  mutationFn: async (variables) =>
+    client({
+      url: '/auth/register',
+      method: 'POST',
+      data: variables,
+    }).then((response) => response.data),
+});

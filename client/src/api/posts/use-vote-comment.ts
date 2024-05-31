@@ -2,11 +2,10 @@ import type { AxiosError } from 'axios';
 import { produce } from 'immer';
 import { createMutation } from 'react-query-kit';
 
-import type { Comment, CommentLike } from '@/api/types';
-import type { CommentsSort } from '@/core/comments';
-import { useCommentKeys } from '@/core/comments';
+import { type CommentsSort, useCommentKeys } from '@/core/comments';
 
 import { client, queryClient } from '../common';
+import type { Comment, CommentLike } from '../types';
 
 export enum CommentType {
   PARENT_COMMENT = 0,

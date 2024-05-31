@@ -96,7 +96,7 @@ PODS:
     - expo-dev-menu/SafeAreaView
   - ExpoAppleAuthentication (6.0.1):
     - ExpoModulesCore
-  - ExpoCrypto (12.2.1):
+  - ExpoCrypto (12.2.2):
     - ExpoModulesCore
   - ExpoImage (1.2.3):
     - ExpoModulesCore
@@ -817,7 +817,7 @@ SPEC CHECKSUMS:
   expo-dev-menu: 020e8853030d4b09e60f4ca75e1ece3e78fab788
   expo-dev-menu-interface: 6c82ae323c4b8724dead4763ce3ff24a2108bdb1
   ExpoAppleAuthentication: 7bd5e4150d59e8df37aa80b425850ae88adf9e65
-  ExpoCrypto: 477dfe89c81527b376f2c344ca1d2a01244b243c
+  ExpoCrypto: 9105610a09cd6290b900bd82fc5d190e489125a3
   ExpoImage: 60f8d8182e8e13b5f5c2bb6bc860c933b2fe6c25
   ExpoImagePicker: 270dea232b3a072d981dd564e2cafc63a864edb1
   ExpoKeepAwake: 69f5f627670d62318410392d03e0b5db0f85759a

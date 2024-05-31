@@ -2,10 +2,10 @@ import type { AxiosError } from 'axios';
 import { produce } from 'immer';
 import { createMutation } from 'react-query-kit';
 
-import type { Post, PostLike } from '@/api/types';
 import { usePostKeys } from '@/core/posts';
 
 import { client, queryClient } from '../common';
+import type { Post, PostLike } from '../types';
 
 type Variables = {
   postId: number;

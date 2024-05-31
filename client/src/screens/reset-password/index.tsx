@@ -65,13 +65,9 @@ export const ResetPasswordScreen = () => {
 
   return (
     <Layout className="flex-1" verticalPadding={80}>
-      <Header isDisabledBack={isLoading} />
+      <Header isDisabledBack={isLoading} headerTitle="Reset Password" />
 
       <View className="mt-8 flex-1 space-y-4 px-4">
-        <Text testID="form-title" variant="h3" className="pb-2 text-center">
-          Reset your password
-        </Text>
-
         <Text testID="form-title" variant="md" className="pb-2">
           Enter a new password to reset the password on your account.
         </Text>

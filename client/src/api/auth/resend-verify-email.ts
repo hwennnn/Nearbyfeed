@@ -13,9 +13,10 @@ export const useResendVerifyEmail = createMutation<
   Response,
   Variables,
   AxiosError
->(async (variables) =>
-  client({
-    url: `/auth/verify-email/${variables.pendingUserId}/resend`,
-    method: 'POST',
-  }).then((response) => response.data)
-);
+>({
+  mutationFn: async (variables) =>
+    client({
+      url: `/auth/verify-email/${variables.pendingUserId}/resend`,
+      method: 'POST',
+    }).then((response) => response.data),
+});

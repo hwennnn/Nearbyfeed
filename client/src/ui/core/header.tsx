@@ -19,13 +19,11 @@ export const Header = ({
 }: Props) => {
   return (
     <View className="flex-row items-center px-4">
-      <View className="flex-1">
-        <HeaderButton
-          iconName="chevron-back-outline"
-          onBack={onBack}
-          disabled={isDisabledBack}
-        />
-      </View>
+      <HeaderButton
+        iconName="chevron-back-outline"
+        onBack={onBack}
+        disabled={isDisabledBack}
+      />
 
       <View className="flex-1">
         <Text className="text-center" variant="lg">
@@ -33,7 +31,7 @@ export const Header = ({
         </Text>
       </View>
 
-      <View className="flex-1">{headerRight !== undefined && headerRight}</View>
+      <View>{headerRight !== undefined && headerRight}</View>
     </View>
   );
 };

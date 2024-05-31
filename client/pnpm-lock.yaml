@@ -1,5 +1,8 @@
 lockfileVersion: '6.0'
 
+overrides:
+  expo-constants: 14.2.1
+
 dependencies:
   '@bacons/link-assets':
     specifier: ^1.1.0
@@ -53,7 +56,7 @@ dependencies:
     specifier: ~4.0.3
     version: 4.0.3(expo@48.0.21)
   expo-constants:
-    specifier: ~14.2.1
+    specifier: 14.2.1
     version: 14.2.1(expo@48.0.21)
   expo-crypto:
     specifier: ~12.2.1
@@ -99,7 +102,7 @@ dependencies:
     version: 4.1.2
   nativewind:
     specifier: ^2.0.10
-    version: 2.0.11(react@18.2.0)(tailwindcss@3.4.3)
+    version: 2.0.11(react@18.2.0)(tailwindcss@3.3.2)
   react:
     specifier: 18.2.0
     version: 18.2.0
@@ -239,7 +242,7 @@ devDependencies:
     version: 10.0.0(eslint@8.57.0)
   eslint-plugin-tailwindcss:
     specifier: ^3.10.1
-    version: 3.17.0(tailwindcss@3.4.3)
+    version: 3.17.0(tailwindcss@3.3.2)
   eslint-plugin-unicorn:
     specifier: ^46.0.0
     version: 46.0.1(eslint@8.57.0)
@@ -277,8 +280,8 @@ devDependencies:
     specifier: ^18.2.0
     version: 18.3.1(react@18.2.0)
   tailwindcss:
-    specifier: ^3.2.7
-    version: 3.4.3(ts-node@10.9.2)
+    specifier: 3.3.2
+    version: 3.3.2(ts-node@10.9.2)
   ts-jest:
     specifier: ^29.0.5
     version: 29.1.4(@babel/core@7.24.6)(jest@29.7.0)(typescript@4.9.5)
@@ -5800,7 +5803,7 @@ packages:
       eslint: 8.57.0
     dev: true
 
-  /eslint-plugin-tailwindcss@3.17.0(tailwindcss@3.4.3):
+  /eslint-plugin-tailwindcss@3.17.0(tailwindcss@3.3.2):
     resolution: {integrity: sha512-Ofl7tNh57a3W8BKHstKZSkD2gSCEkw54ycwZ958IK9zUR8TiNYdp8b0WGoLWLeyOAbeF1VPVJFBnlkJeIM2kVg==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
@@ -5808,7 +5811,7 @@ packages:
     dependencies:
       fast-glob: 3.3.2
       postcss: 8.4.38
-      tailwindcss: 3.4.3(ts-node@10.9.2)
+      tailwindcss: 3.3.2(ts-node@10.9.2)
     dev: true
 
   /eslint-plugin-unicorn@46.0.1(eslint@8.57.0):
@@ -6065,7 +6068,7 @@ packages:
     resolution: {integrity: sha512-aHMaZkIG5/UoguINEHm2ln/KviU2m/yuryslnhCKR3KXRxiLnMhxmrONLGbknuNE0O1iCaprrl1w3y71u01Rpw==}
     dependencies:
       blueimp-md5: 2.19.0
-      expo-constants: 14.3.0(expo@48.0.21)
+      expo-constants: 14.2.1(expo@48.0.21)
       expo-file-system: 15.3.0(expo@48.0.21)
       invariant: 2.2.4
       md5-file: 3.2.3
@@ -6092,18 +6095,6 @@ packages:
 
   /expo-constants@14.2.1(expo@48.0.21):
     resolution: {integrity: sha512-DD5u4QmBds2U7uYo409apV7nX+XjudARcgqe7S9aRFJ/6kyftmuxvk1DpaU4X42Av8z/tfKwEpuxl+vl7HHx/Q==}
-    peerDependencies:
-      expo: '*'
-    dependencies:
-      '@expo/config': 8.0.5
-      expo: 48.0.21(@babel/core@7.24.6)
-      uuid: 3.4.0
-    transitivePeerDependencies:
-      - supports-color
-    dev: false
-
-  /expo-constants@14.3.0(expo@48.0.21):
-    resolution: {integrity: sha512-O8b+mZlPXZGH4wLLd+jMihGD0ZSMJRSmSsmcG7T60jHU3Dw4yDIuzHM/wMoBoL1pxLIbEwvcwDj0w8c+Sn+1sQ==}
     peerDependencies:
       expo: '*'
     dependencies:
@@ -9587,7 +9578,7 @@ packages:
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
-  /nativewind@2.0.11(react@18.2.0)(tailwindcss@3.4.3):
+  /nativewind@2.0.11(react@18.2.0)(tailwindcss@3.3.2):
     resolution: {integrity: sha512-qCEXUwKW21RYJ33KRAJl3zXq2bCq82WoI564fI21D/TiqhfmstZOqPN53RF8qK1NDK6PGl56b2xaTxgObEePEg==}
     engines: {node: '>=14.18'}
     peerDependencies:
@@ -9605,7 +9596,7 @@ packages:
       postcss-css-variables: 0.18.0(postcss@8.4.38)
       postcss-nested: 5.0.6(postcss@8.4.38)
       react-is: 18.3.1
-      tailwindcss: 3.4.3(ts-node@10.9.2)
+      tailwindcss: 3.3.2(ts-node@10.9.2)
       use-sync-external-store: 1.2.2(react@18.2.0)
     transitivePeerDependencies:
       - react
@@ -11988,8 +11979,8 @@ packages:
     resolution: {integrity: sha512-9QNk5KwDF+Bvz+PyObkmSYjI5ksVUYtjW7AU22r2NKcfLJcXp96hkDWU3+XndOsUb+AQ9QhfzfCT2O+CNWT5Tw==}
     dev: true
 
-  /tailwindcss@3.4.3(ts-node@10.9.2):
-    resolution: {integrity: sha512-U7sxQk/n397Bmx4JHbJx/iSOOv5G+II3f1kpLpY2QeUv5DcPdcTsYLlusZfq1NthHS1c1cZoyFmmkex1rzke0A==}
+  /tailwindcss@3.3.2(ts-node@10.9.2):
+    resolution: {integrity: sha512-9jPkMiIBXvPc2KywkraqsUfbfj+dHDb+JPWtSJa9MLFdrPyazI7q6WX2sUrm7R9eVR7qqv3Pas7EvQFzxKnI6w==}
     engines: {node: '>=14.0.0'}
     hasBin: true
     dependencies:
@@ -12013,6 +12004,7 @@ packages:
       postcss-load-config: 4.0.2(postcss@8.4.38)(ts-node@10.9.2)
       postcss-nested: 6.0.1(postcss@8.4.38)
       postcss-selector-parser: 6.1.0
+      postcss-value-parser: 4.2.0
       resolve: 1.22.8
       sucrase: 3.35.0
     transitivePeerDependencies:

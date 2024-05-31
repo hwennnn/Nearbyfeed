@@ -2,7 +2,8 @@ import type { AxiosError } from 'axios';
 import { createQuery } from 'react-query-kit';
 
 import { geolocationClient } from '@/api/common/geolocation-client';
-import type { GeolocationName, Place } from '@/api/types';
+
+import type { GeolocationName, Place } from '../types';
 
 type Response = GeolocationName | null;
 type Variables = {
@@ -10,9 +11,9 @@ type Variables = {
   longitude: number | null;
 };
 
-export const useLocationName = createQuery<Response, Variables, AxiosError>(
-  `locationName`,
-  async ({ queryKey: [_primaryKey, variables] }) => {
+export const useLocationName = createQuery<Response, Variables, AxiosError>({
+  primaryKey: 'locationName',
+  queryFn: async ({ queryKey: [_primaryKey, variables] }) => {
     if (variables.latitude === null || variables.longitude === null)
       return null;
 
@@ -36,5 +37,5 @@ export const useLocationName = createQuery<Response, Variables, AxiosError>(
           displayName: data.display_name,
         }
       : null;
-  }
-);
+  },
+});

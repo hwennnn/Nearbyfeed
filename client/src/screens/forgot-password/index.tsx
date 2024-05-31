@@ -48,13 +48,9 @@ export const ForgotPasswordScreen = () => {
 
   return (
     <Layout className="flex-1" canDismissKeyboard={false} verticalPadding={80}>
-      <Header isDisabledBack={isFormLoading} />
+      <Header isDisabledBack={isFormLoading} headerTitle="Forgot Password" />
 
       <View className="mt-8 flex-1 space-y-4 px-4">
-        <Text variant="h3" className="pb-2 text-center font-semibold">
-          Forgot your password?
-        </Text>
-
         <Text variant="md" className="pb-2">
           Enter your email address and we'll send you a link to reset your
           password.

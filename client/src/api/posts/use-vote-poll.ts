@@ -2,11 +2,11 @@ import type { AxiosError } from 'axios';
 import { produce } from 'immer';
 import { createMutation } from 'react-query-kit';
 
-import type { Post, VotePollResult } from '@/api/types';
 import { usePostKeys } from '@/core/posts';
 import { useUser } from '@/core/user';
 
 import { client, queryClient } from '../common';
+import type { Post, VotePollResult } from '../types';
 
 type Variables = {
   postId: number;

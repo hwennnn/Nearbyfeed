@@ -12,9 +12,9 @@ type Response = {
 };
 type Variables = {};
 
-export const useMyPosts = createInfiniteQuery<Response, Variables, AxiosError>(
-  'my-posts', // we recommend using endpoint base url as primaryKey
-  async ({ queryKey: [_primaryKey], pageParam }) => {
+export const useMyPosts = createInfiniteQuery<Response, Variables, AxiosError>({
+  primaryKey: 'my-posts',
+  queryFn: async ({ queryKey: [_primaryKey], pageParam }) => {
     // in case if variables is needed, we can use destructuring to get it from queryKey array like this: ({ queryKey: [primaryKey, variables] })
 
     const cursor = pageParam !== undefined ? pageParam.toString() : pageParam;
@@ -32,14 +32,12 @@ export const useMyPosts = createInfiniteQuery<Response, Variables, AxiosError>(
 
     return response.data;
   },
-  {
-    getNextPageParam: (lastPage, _) => {
-      if (!lastPage.hasMore) return undefined;
+  getNextPageParam: (lastPage, _) => {
+    if (!lastPage.hasMore) return undefined;
 
-      const { posts } = lastPage;
-      const lastPost = posts[posts.length - 1];
+    const { posts } = lastPage;
+    const lastPost = posts[posts.length - 1];
 
-      return lastPost.id;
-    },
-  }
-);
+    return lastPost.id;
+  },
+});

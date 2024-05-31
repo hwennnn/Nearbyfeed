@@ -1,9 +1,8 @@
 import type { AxiosError } from 'axios';
 import { createMutation } from 'react-query-kit';
 
-import type { LoginResponse } from '@/api/types';
-
 import { client } from '../common';
+import type { LoginResponse } from '../types';
 
 type Variables = { token: string };
 
@@ -11,9 +10,12 @@ export const useGoogleAuth = createMutation<
   LoginResponse,
   Variables,
   AxiosError
->(async (variables) =>
-  client({
-    url: `/auth/google/callback?token=${variables.token}`,
-    method: 'POST',
-  }).then((response) => response.data)
-);
+>({
+  mutationFn: async (variables) =>
+    client({
+      url: `/auth/google/callback?token=${variables.token}`,
+      method: 'POST',
+    }).then((response) => {
+      return response.data;
+    }),
+});
