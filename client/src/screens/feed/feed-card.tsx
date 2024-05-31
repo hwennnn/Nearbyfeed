@@ -1,9 +1,8 @@
-import { useColorScheme } from 'nativewind';
 import React from 'react';
 
 import type { Post } from '@/api';
 import { useVotePost } from '@/api/posts/use-vote-post';
-import { PollCard } from '@/screens/feed/poll-card';
+import { useTheme } from '@/core';
 import {
   ActivityIndicator,
   Image,
@@ -18,6 +17,8 @@ import { Ionicons } from '@/ui/icons/vector-icons';
 import { ImageViewer } from '@/ui/image-viewer';
 import { getInitials } from '@/utils/get-initials';
 import { onShare, POST_SHARE_MESSAGE } from '@/utils/share-utils';
+
+import { PollCard } from './poll-card';
 
 type Props = Post & { onPress?: () => void };
 
@@ -40,10 +41,9 @@ export const FeedCard = ({
     number | undefined
   >(undefined);
 
-  const { colorScheme } = useColorScheme();
+  const isDark = useTheme.use.colorScheme() === 'dark';
 
-  const iconColor =
-    colorScheme === 'dark' ? 'text-neutral-400' : 'text-neutral-500';
+  const iconColor = isDark ? 'text-neutral-400' : 'text-neutral-500';
 
   const isLiked = like !== undefined && like.value === 1;
 
@@ -62,24 +62,23 @@ export const FeedCard = ({
 
   return (
     <Pressable
-      className="block overflow-hidden bg-neutral-200 p-4 shadow-xl dark:bg-charcoal-900"
+      className="block overflow-hidden bg-white p-4 dark:bg-charcoal-900"
       onPress={onPress}
     >
       <View className="flex-1 space-y-3">
         <View className="flex-row items-center space-x-2">
-          <View className="h-[36px] w-[36px] items-center justify-center rounded-full bg-gray-100 dark:bg-gray-600">
-            {author?.image === null && (
+          <View className="h-[36px] w-[36px] items-center justify-center rounded-full bg-gray-300 dark:bg-gray-600">
+            {author?.image === null ? (
               <Text
                 className="font-medium text-gray-600 dark:text-gray-300"
                 variant="xs"
               >
                 {getInitials(author.username)}
               </Text>
-            )}
-            {author?.image !== null && (
+            ) : (
               <Image
                 source={{ uri: author?.image }}
-                className="h-[36px] w-[36px] rounded-full"
+                className="border-1 h-[36px] w-[36px] rounded-full border-solid border-neutral-800"
               />
             )}
           </View>
@@ -103,8 +102,8 @@ export const FeedCard = ({
           </View>
         </View>
 
-        <Text variant="md" numberOfLines={2} className="font-semibold">
-          {`${title}`}
+        <Text variant="md" numberOfLines={2} className="font-medium">
+          {title}
         </Text>
 
         {content !== null && content !== undefined && content.length > 0 && (
@@ -127,7 +126,7 @@ export const FeedCard = ({
                   className="flex-1"
                 >
                   <Image
-                    className="h-56 w-64 object-cover"
+                    className="h-56 w-64 rounded-md object-cover"
                     source={{
                       uri: image,
                     }}

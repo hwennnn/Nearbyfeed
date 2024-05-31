@@ -13,7 +13,6 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Keyboard } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
-import Icon from 'react-native-vector-icons/Ionicons';
 
 import { useEditProfile, useSelf } from '@/api/users';
 import { useTheme } from '@/core';
@@ -23,6 +22,7 @@ import {
   ControlledInput,
   Header,
   Image,
+  Ionicons,
   Pressable,
   showErrorMessage,
   Text,
@@ -107,7 +107,7 @@ const EditImageButton = ({
       className="absolute bottom-0 right-0 rounded-full bg-primary-400 p-[5px]"
       onPress={onPressActionSheet}
     >
-      <Icon name="ios-pencil" size={16} color="white" />
+      <Ionicons name="ios-pencil" size={16} color="white" />
     </Pressable>
   );
 };

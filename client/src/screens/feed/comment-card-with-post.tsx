@@ -15,7 +15,7 @@ export const CommentCardWithPost = ({
   points,
 }: Props) => {
   return (
-    <View className="flex-1 space-y-1 rounded-xl bg-black px-4 py-3 shadow-xl">
+    <View className="flex-1 space-y-1 rounded-xl bg-white px-4 py-3 dark:bg-black">
       <View className="flex-1 flex-col space-y-1">
         <Text variant="sm" className="font-semibold">
           {post.title}

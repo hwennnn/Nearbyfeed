@@ -2,15 +2,14 @@ import NetInfo from '@react-native-community/netinfo';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import type { RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useColorScheme } from 'nativewind';
 import type { ComponentType } from 'react';
 import * as React from 'react';
 import { hideMessage, showMessage } from 'react-native-flash-message';
 import type { SvgProps } from 'react-native-svg';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 
+import { useTheme } from '@/core';
 import { ProfileNavigator } from '@/navigation/profile-navigator';
-import { colors, Feed as FeedIcon } from '@/ui';
+import { colors, Feed as FeedIcon, Ionicons } from '@/ui';
 
 import { FeedNavigator } from './feed-navigator';
 
@@ -68,7 +67,8 @@ const BarIcon = ({ color, name, ...reset }: BarIconType) => {
 };
 
 export const TabNavigator = () => {
-  const { colorScheme } = useColorScheme();
+  const isDark = useTheme.use.colorScheme() === 'dark';
+
   const [isConnected, setIsConnected] = React.useState(true);
 
   React.useEffect(() => {
@@ -97,8 +97,9 @@ export const TabNavigator = () => {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
-        tabBarInactiveTintColor:
-          colorScheme === 'dark' ? colors.charcoal[400] : colors.neutral[400],
+        tabBarInactiveTintColor: isDark
+          ? colors.charcoal[400]
+          : colors.neutral[400],
         // eslint-disable-next-line react/no-unstable-nested-components
         tabBarIcon: ({ color }) => <BarIcon name={route.name} color={color} />,
       })}

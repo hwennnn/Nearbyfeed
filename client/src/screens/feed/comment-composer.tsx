@@ -5,11 +5,16 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Keyboard } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import { useAddComment } from '@/api/posts/use-add-comment';
 import { useCommentKeys } from '@/core/comments';
-import { ControlledInput, Pressable, showErrorMessage, View } from '@/ui';
+import {
+  ControlledInput,
+  Ionicons,
+  Pressable,
+  showErrorMessage,
+  View,
+} from '@/ui';
 
 export class CreateCommentDto {
   @IsString()

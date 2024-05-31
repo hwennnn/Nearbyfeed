@@ -43,11 +43,15 @@ export const ChildCommentList = ({
   }, [onRefetch]);
 
   const renderItem = React.useCallback(({ item }: { item: Comment }) => {
-    return <CommentCard {...item} isChildComment={true} />;
+    return (
+      <View className="flex-1 pl-6 pr-4">
+        <CommentCard {...item} isChildComment={true} />
+      </View>
+    );
   }, []);
 
   const footer = React.useCallback(() => {
-    return <View className="h-[95px]" />;
+    return <View className="h-[95px] bg-white dark:bg-black" />;
   }, []);
 
   if (isLoading) {
@@ -75,7 +79,7 @@ export const ChildCommentList = ({
   };
 
   return (
-    <View className="mt-2 min-h-[2px] flex-1 pl-6 pr-4">
+    <View className="mt-2 min-h-[2px] flex-1 bg-neutral-100 dark:bg-charcoal-900">
       <FlashList
         refreshing={false}
         data={allComments}

@@ -1,11 +1,11 @@
 import { useNavigation } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
-import { useColorScheme } from 'nativewind';
 import React, { useState } from 'react';
 import { ActivityIndicator, RefreshControl } from 'react-native';
 
 import type { Post } from '@/api';
 import { useMyPosts } from '@/api/users';
+import { useTheme } from '@/core';
 import type { RootNavigatorProp } from '@/navigation/root-navigator';
 import { FeedCard } from '@/screens';
 import { colors, EmptyList, LayoutWithoutKeyboard, Text, View } from '@/ui';
@@ -14,10 +14,9 @@ import Divider from '@/ui/core/divider';
 export const MyPosts = () => {
   const [refreshing, setRefreshing] = useState(false);
 
-  const { colorScheme } = useColorScheme();
+  const isDark = useTheme.use.colorScheme() === 'dark';
 
-  const refreshColor =
-    colorScheme === 'dark' ? colors.neutral[400] : colors.neutral[500];
+  const refreshColor = isDark ? colors.neutral[400] : colors.neutral[500];
 
   const {
     data,

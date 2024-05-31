@@ -95,9 +95,9 @@ export const FeedDetails = () => {
     number | undefined
   >(undefined);
 
-  const isDark = useTheme.use.colorScheme() === 'dark';
-
   const [refreshing, setRefreshing] = React.useState(false);
+
+  const isDark = useTheme.use.colorScheme() === 'dark';
 
   const iconColor = isDark ? 'text-neutral-400' : 'text-neutral-500';
 
@@ -159,21 +159,20 @@ export const FeedDetails = () => {
           />
         }
       >
-        <Pressable className="flex-1 space-y-3 bg-charcoal-900 pt-4">
+        <Pressable className="flex-1 space-y-3 bg-white pt-4 dark:bg-charcoal-900">
           <View className="flex-row items-center space-x-2 px-4">
-            <View className="h-[36px] w-[36px] items-center justify-center rounded-full bg-gray-100 dark:bg-gray-600">
-              {author?.image === null && (
+            <View className="h-[36px] w-[36px] items-center justify-center rounded-full bg-gray-300 dark:bg-gray-600">
+              {author?.image === null ? (
                 <Text
                   className="font-medium text-gray-600 dark:text-gray-300"
                   variant="xs"
                 >
                   {getInitials(author.username)}
                 </Text>
-              )}
-              {author?.image !== null && (
+              ) : (
                 <Image
                   source={{ uri: author?.image }}
-                  className="h-[36px] w-[36px] rounded-full"
+                  className="border-1 h-[36px] w-[36px] rounded-full border-solid border-neutral-800"
                 />
               )}
             </View>
@@ -197,7 +196,7 @@ export const FeedDetails = () => {
             </View>
           </View>
 
-          <Text className="px-4" variant="h3">
+          <Text className="px-4 font-medium" variant="lg">
             {title}
           </Text>
 
@@ -212,17 +211,19 @@ export const FeedDetails = () => {
               <ScrollView
                 showsHorizontalScrollIndicator={false}
                 className="flex-1 flex-row space-x-3"
-                contentContainerStyle="px-4"
+                contentContainerStyle="pl-4"
                 horizontal={true}
               >
                 {images.map((image, index) => (
                   <TouchableOpacity
                     key={index}
                     onPress={() => setImageModalIndex(index)}
-                    className={`flex-1`}
+                    className={`flex-1 ${
+                      index === images.length - 1 ? 'pr-12' : ''
+                    }`}
                   >
                     <Image
-                      className="h-56 w-64 object-cover"
+                      className="h-56 w-64 rounded-md object-cover"
                       source={{
                         uri: image,
                       }}
@@ -310,7 +311,7 @@ export const FeedDetails = () => {
         <View className="h-[95px]" />
       </ScrollView>
 
-      <View className="absolute bottom-0 z-50 h-fit w-full bg-charcoal-950">
+      <View className="absolute bottom-0 z-50 h-fit w-full bg-white dark:bg-charcoal-950">
         <Divider />
         <CommentComposer postId={id} />
       </View>

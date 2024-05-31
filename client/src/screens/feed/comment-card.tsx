@@ -8,6 +8,7 @@ import type { RootNavigatorProp } from '@/navigation';
 import { Image, Pressable, Text, TimeWidget, View } from '@/ui';
 import Divider from '@/ui/core/divider';
 import { Ionicons } from '@/ui/icons/vector-icons';
+import colors from '@/ui/theme/colors';
 import { getInitials } from '@/utils/get-initials';
 import { stringUtils } from '@/utils/string-utils';
 
@@ -83,11 +84,11 @@ export const CommentCard = ({
     >
       <View className="flex-1">
         <View
-          className={`space-y-1 rounded-xl ${
+          className={`space-y-1 ${
             isPreviewComment !== true && isChildComment !== true
-              ? 'bg-charcoal-900'
-              : 'bg-black'
-          } py-3 shadow-xl`}
+              ? 'bg-white dark:bg-black'
+              : 'bg-neutral-100 dark:bg-charcoal-900'
+          } py-3`}
         >
           <View className="flex-row items-center justify-between px-4">
             <View className="flex-row items-start space-x-3">
@@ -181,23 +182,23 @@ export const CommentCard = ({
         </View>
 
         {replies !== undefined && replies.length > 0 && (
-          <View className="flex-1 flex-col bg-black pb-2 pl-6 pr-4">
+          <View className="flex-1 flex-col bg-neutral-100 pb-2 pl-6 pr-4 dark:bg-charcoal-900">
             <View className="flex-1">
               {replies.slice(0, 3).map((reply) => (
                 <View className="flex-1 py-2" key={reply.id}>
                   <CommentCard {...reply} isPreviewComment={true} />
-                  <Divider />
+                  <Divider color={isDark ? '#333333' : colors.neutral['300']} />
                 </View>
               ))}
             </View>
 
-            {replies !== undefined && replies.length > 3 && (
+            {replies !== undefined && repliesCount > 3 && (
               <Pressable
                 className="flex-row pl-6"
                 onPress={() => onPressReply()}
               >
                 <Text
-                  className="font-bold text-gray-600 dark:text-gray-300"
+                  className="font-semibold text-gray-600 dark:text-gray-300"
                   variant="sm"
                 >{`View ${stringUtils.formatSingularPlural(
                   'more reply',

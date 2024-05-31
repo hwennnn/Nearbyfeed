@@ -18,7 +18,6 @@ import * as ImagePicker from 'expo-image-picker';
 import * as React from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { showMessage } from 'react-native-flash-message';
-import Icon from 'react-native-vector-icons/Ionicons';
 
 import { useAddPost } from '@/api';
 import { useTheme } from '@/core';
@@ -30,7 +29,6 @@ import {
 } from '@/screens/feed/poll-voting-length-item';
 import {
   ActivityIndicator,
-  colors,
   ControlledInput,
   HeaderButton,
   Image,
@@ -294,7 +292,11 @@ export const AddFeed = () => {
                     onPress={pickImage}
                     className="h-[150px] w-[150px] items-center justify-center border border-dotted border-charcoal-700 dark:border-white"
                   >
-                    <Icon name="add" color={colors.primary[400]} size={48} />
+                    <Ionicons
+                      name="add"
+                      className="text-primary-400"
+                      size={48}
+                    />
                   </TouchableOpacity>
                 )}
               </ScrollView>
@@ -321,7 +323,7 @@ export const AddFeed = () => {
 
           {isPollEnabled && (
             <View className="flex-1 flex-col space-y-1">
-              <View className="mt-4 flex-1 space-y-2 rounded-lg border-[0.5px] bg-charcoal-850 p-4">
+              <View className="mt-4 flex-1 space-y-2 rounded-lg border-[0.5px] border-neutral-300 bg-neutral-100 p-4 dark:border-charcoal-850 dark:bg-charcoal-850">
                 <View className="flex-1 flex-row">
                   <View className="flex-1 flex-row items-center space-x-2">
                     <FontAwesome5
@@ -404,7 +406,7 @@ export const AddFeed = () => {
         </View>
       </ScrollLayout>
 
-      <View className="absolute bottom-0 z-50 h-fit w-full bg-charcoal-950 px-4">
+      <View className="absolute bottom-0 z-50 h-fit w-full bg-white px-4 dark:bg-charcoal-950">
         <Divider />
         <View className="mx-4 mb-6 mt-2 flex-row space-x-6">
           <Pressable onPress={pickImage}>

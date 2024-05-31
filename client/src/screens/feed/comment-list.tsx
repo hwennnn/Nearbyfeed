@@ -26,6 +26,8 @@ export const CommentList = ({ postId, refreshing, onRefetchDone }: Props) => {
 
   const isDark = useTheme.use.colorScheme() === 'dark';
 
+  const iconColor = isDark ? 'text-neutral-400' : 'text-neutral-500';
+
   const {
     data,
     isLoading,
@@ -139,7 +141,11 @@ export const CommentList = ({ postId, refreshing, onRefetchDone }: Props) => {
                   ? 'Oldest'
                   : 'Newest'}
               </Text>
-              <Ionicons name="chevron-down-outline" size={20} color="white" />
+              <Ionicons
+                name="chevron-down-outline"
+                size={20}
+                className={iconColor}
+              />
             </View>
           </Pressable>
         </View>

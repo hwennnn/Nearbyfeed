@@ -1,17 +1,22 @@
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useNavigation } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
-import { useColorScheme } from 'nativewind';
 import React, { useState } from 'react';
 import { RefreshControl } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import type { GeolocationName, Post } from '@/api';
 import { usePosts } from '@/api';
 import { useTheme } from '@/core';
 import type { RootNavigatorProp } from '@/navigation/root-navigator';
-import { colors, EmptyList, Text, TouchableOpacity, View } from '@/ui';
+import {
+  colors,
+  EmptyList,
+  FontAwesome,
+  Ionicons,
+  Text,
+  TouchableOpacity,
+  View,
+} from '@/ui';
 import Divider from '@/ui/core/divider';
 
 import { FeedCard } from './feed-card';
@@ -101,10 +106,10 @@ const LocationHeader = ({
 
   return (
     <TouchableOpacity
-      className="my-4 block flex-row items-center rounded-md border border-neutral-400 p-4 shadow-xl dark:border-charcoal-700 dark:bg-charcoal-800"
+      className="mx-4 mb-4 block flex-row items-center rounded-lg border border-neutral-400 bg-white p-4 dark:border-charcoal-700 dark:bg-charcoal-800"
       onPress={() => setShowFullName((prev) => !prev)}
     >
-      <Icon name="location-arrow" color={iconColor} size={24} />
+      <FontAwesome name="location-arrow" color={iconColor} size={24} />
       <Text
         className="mx-4 flex-1 text-neutral-600 dark:text-white"
         variant="sm"
@@ -129,11 +134,8 @@ export const FeedList = ({
   setDistanceCallback,
 }: Props) => {
   const [refreshing, setRefreshing] = useState(false);
-
-  const { colorScheme } = useColorScheme();
-
-  const refreshColor =
-    colorScheme === 'dark' ? colors.neutral[400] : colors.neutral[500];
+  const isDark = useTheme.use.colorScheme() === 'dark';
+  const refreshColor = isDark ? colors.neutral[400] : colors.neutral[500];
 
   const {
     data,

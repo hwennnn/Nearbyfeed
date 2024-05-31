@@ -48,7 +48,7 @@ export const PollCard = ({ poll, showAllText = false }: Props) => {
   };
 
   return (
-    <View className="mt-4 flex-1 space-y-2 rounded-lg border-[0.5px] bg-charcoal-850 p-4">
+    <View className="mt-4 flex-1 space-y-2 rounded-lg border-[0.5px] border-neutral-300 bg-neutral-100 p-4 dark:border-charcoal-850 dark:bg-charcoal-850">
       <View className="flex-1 flex-row items-center space-x-2">
         <FontAwesome5 name="poll-h" size={20} className={iconColor} />
 
@@ -100,14 +100,12 @@ export const PollCard = ({ poll, showAllText = false }: Props) => {
                   <Ionicons
                     name="checkmark"
                     size={20}
-                    className={isDark ? 'text-white' : 'text-black'}
+                    className="text-black dark:text-white"
                   />
                 )}
 
                 <Text
-                  className={`p-2 text-gray-600 dark:text-white ${
-                    isSelected ? 'mr-6' : ''
-                  }`}
+                  className={`p-2 ${isSelected ? 'mr-6' : ''}`}
                   variant="sm"
                   numberOfLines={showAllText ? undefined : 1}
                 >

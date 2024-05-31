@@ -1,9 +1,9 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import Icon from 'react-native-vector-icons/Ionicons';
 
 import { useTheme } from '@/core';
 import type { RootNavigatorProp } from '@/navigation';
+import { Ionicons } from '@/ui/icons';
 import colors from '@/ui/theme/colors';
 
 import { TouchableOpacity } from './touchable-opacity';
@@ -31,7 +31,7 @@ export const HeaderButton = ({ iconName, disabled = false, onBack }: Props) => {
       onPress={onBack ?? closeModal}
       disabled={disabled}
     >
-      <Icon
+      <Ionicons
         name={iconName}
         size={28}
         color={isDark ? colors.white : colors.black}

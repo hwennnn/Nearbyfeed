@@ -92,13 +92,9 @@ export const ValidateEmailScreen = () => {
 
   return (
     <Layout className="flex-1" verticalPadding={80}>
-      <Header />
+      <Header isDisabledBack={isLoading} headerTitle="Verify email address" />
 
       <View className="mt-8 space-y-4 p-4">
-        <Text variant="h1" className="pb-2 text-center">
-          Verify email address
-        </Text>
-
         {typeof error === 'string' && (
           <Text className="pb-4 text-center text-red-600">{error}</Text>
         )}

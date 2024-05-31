@@ -1,7 +1,6 @@
 import { Env } from '@env';
 import { useNavigation } from '@react-navigation/native';
 import * as React from 'react';
-import Icon from 'react-native-vector-icons/Ionicons';
 
 import { useSelf } from '@/api/users';
 import { signOut, useTheme } from '@/core';
@@ -20,7 +19,7 @@ import {
 } from '@/ui';
 import { Layout } from '@/ui/core/layout';
 import { Github, Website } from '@/ui/icons';
-import { MaterialIcons } from '@/ui/icons/vector-icons';
+import { Ionicons, MaterialIcons } from '@/ui/icons/vector-icons';
 import colors from '@/ui/theme/colors';
 import { getInitials } from '@/utils/get-initials';
 
@@ -106,7 +105,7 @@ export const Profile = () => {
                 className="dark:bg- flex-row items-center justify-center space-x-2 rounded-full bg-black px-4 py-2 dark:bg-primary-600"
               >
                 <Text className="text-white">Edit Profile</Text>
-                <Icon name="chevron-forward" color={'white'} size={16} />
+                <Ionicons name="chevron-forward" color={'white'} size={16} />
               </TouchableOpacity>
             </View>
           </View>

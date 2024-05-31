@@ -2,13 +2,13 @@ import type { RouteProp } from '@react-navigation/native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useQueryClient } from '@tanstack/react-query';
 import { produce } from 'immer';
-import { useColorScheme } from 'nativewind';
 import * as React from 'react';
 import { ActivityIndicator, RefreshControl } from 'react-native';
 
 import { useComment } from '@/api/posts/use-comment';
 import type { InfiniteComments } from '@/api/posts/use-vote-comment';
 import { retrieveUseCommentsKey } from '@/api/posts/use-vote-comment';
+import { useTheme } from '@/core';
 import { useCommentKeys } from '@/core/comments';
 import type { RootStackParamList } from '@/navigation';
 import { ChildCommentList } from '@/screens/feed/child-comment-list';
@@ -25,10 +25,9 @@ export const CommentsDetails = () => {
   const { params } = useRoute<Props>();
   const { commentId, postId, repliesCount } = params;
 
-  const { colorScheme } = useColorScheme();
+  const isDark = useTheme.use.colorScheme() === 'dark';
 
-  const refreshColor =
-    colorScheme === 'dark' ? colors.neutral[400] : colors.neutral[500];
+  const refreshColor = isDark ? colors.neutral[400] : colors.neutral[500];
 
   const navigation = useNavigation();
 
@@ -122,7 +121,7 @@ export const CommentsDetails = () => {
 
   return (
     <Layout
-      className="flex-1 bg-black"
+      className="flex-1"
       hasHorizontalPadding={false}
       verticalPadding={108}
     >
@@ -139,7 +138,7 @@ export const CommentsDetails = () => {
         }
       >
         <Pressable className="flex-1">
-          <View className="flex-1 space-y-3 bg-charcoal-900 pt-2">
+          <View className="flex-1 space-y-3 bg-neutral-100 dark:bg-charcoal-900">
             <View className="flex-row items-center space-x-2">
               <CommentCard {...parentComment} />
             </View>
@@ -154,7 +153,7 @@ export const CommentsDetails = () => {
         </Pressable>
       </ScrollView>
 
-      <View className="absolute bottom-0 z-50 h-fit w-full bg-charcoal-950">
+      <View className="absolute bottom-0 z-50 h-fit w-full bg-white dark:bg-charcoal-950">
         <Divider />
         <ReplyComposer postId={postId} commentId={parentComment.id} />
       </View>

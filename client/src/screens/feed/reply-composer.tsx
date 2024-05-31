@@ -3,10 +3,9 @@ import { Transform } from 'class-transformer';
 import { IsString, MaxLength, MinLength } from 'class-validator';
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import { useAddReply } from '@/api/posts/use-add-reply';
-import { ControlledInput, Pressable, View } from '@/ui';
+import { ControlledInput, Ionicons, Pressable, View } from '@/ui';
 
 export class CreateCommentDto {
   @IsString()
