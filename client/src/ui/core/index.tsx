@@ -1,6 +1,7 @@
 export * from './activity-indicator';
 export * from './button';
 export * from './divider';
+export * from './error-component';
 export * from './header';
 export * from './header-button';
 export * from './image';

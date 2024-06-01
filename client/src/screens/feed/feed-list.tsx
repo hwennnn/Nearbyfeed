@@ -11,6 +11,7 @@ import type { RootNavigatorProp } from '@/navigation/root-navigator';
 import {
   colors,
   EmptyList,
+  ErrorComponent,
   FontAwesome,
   Ionicons,
   LoadingComponent,
@@ -208,11 +209,7 @@ export const FeedList = ({
   }
 
   if (isError) {
-    return (
-      <View>
-        <Text> Error Loading data </Text>
-      </View>
-    );
+    return <ErrorComponent onPressRetry={refetch} />;
   }
 
   const allPosts = data?.pages.flatMap((page) => page.posts) ?? [];

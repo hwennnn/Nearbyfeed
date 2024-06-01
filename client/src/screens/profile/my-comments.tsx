@@ -4,7 +4,7 @@ import React, { useCallback } from 'react';
 import type { CommentWithPost } from '@/api';
 import { useMyComments } from '@/api/users';
 import { CommentCardWithPost } from '@/screens/feed/comment-card-with-post';
-import { LoadingComponent, Text, View } from '@/ui';
+import { ErrorComponent, LoadingComponent, View } from '@/ui';
 import Divider from '@/ui/core/divider';
 
 export const MyComments = () => {
@@ -15,6 +15,7 @@ export const MyComments = () => {
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,
+    refetch,
   } = useMyComments({
     variables: {},
   });
@@ -38,11 +39,7 @@ export const MyComments = () => {
   }
 
   if (isError) {
-    return (
-      <View>
-        <Text> Error Loading data </Text>
-      </View>
-    );
+    return <ErrorComponent onPressRetry={refetch} />;
   }
 
   const allComments = data?.pages.flatMap((page) => page.comments) ?? [];

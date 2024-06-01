@@ -4,7 +4,7 @@ import React, { useCallback, useEffect } from 'react';
 import { type Comment } from '@/api';
 import { useChildComments } from '@/api/posts/use-child-comments';
 import { CommentCard } from '@/screens/feed/comment-card';
-import { LoadingComponent, Text, View } from '@/ui';
+import { ErrorComponent, LoadingComponent, View } from '@/ui';
 
 type Props = {
   postId: number;
@@ -58,13 +58,8 @@ export const ChildCommentList = ({
   }
 
   if (isError) {
-    return (
-      <View>
-        <Text> Error Loading data </Text>
-      </View>
-    );
+    return <ErrorComponent onPressRetry={refetch} />;
   }
-
   const allComments = data?.pages.flatMap((page) => page.comments) ?? [];
 
   const handleEndReached = () => {

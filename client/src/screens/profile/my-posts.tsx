@@ -11,9 +11,9 @@ import { FeedCard } from '@/screens';
 import {
   colors,
   EmptyList,
+  ErrorComponent,
   LayoutWithoutKeyboard,
   LoadingComponent,
-  Text,
   View,
 } from '@/ui';
 import Divider from '@/ui/core/divider';
@@ -67,11 +67,7 @@ export const MyPosts = () => {
   }
 
   if (isError) {
-    return (
-      <View>
-        <Text> Error Loading data </Text>
-      </View>
-    );
+    return <ErrorComponent onPressRetry={refetch} />;
   }
 
   const allPosts = data?.pages.flatMap((page) => page.posts) ?? [];
