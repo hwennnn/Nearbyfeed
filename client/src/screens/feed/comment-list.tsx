@@ -10,7 +10,7 @@ import type { CommentsSort } from '@/core/comments';
 import { setCommentsQueryKey, useCommentKeys } from '@/core/comments';
 import type { RootNavigatorProp } from '@/navigation';
 import { CommentCard } from '@/screens/feed/comment-card';
-import { LoadingComponent, Pressable, Text, View } from '@/ui';
+import { ErrorComponent, LoadingComponent, Pressable, Text, View } from '@/ui';
 import Divider from '@/ui/core/divider';
 import { Ionicons } from '@/ui/icons/vector-icons';
 
@@ -73,11 +73,7 @@ export const CommentList = ({ postId, refreshing, onRefetchDone }: Props) => {
   }
 
   if (isError) {
-    return (
-      <View>
-        <Text> Error Loading data </Text>
-      </View>
-    );
+    return <ErrorComponent onPressRetry={refetch} />;
   }
 
   const allComments = data?.pages.flatMap((page) => page.comments) ?? [];

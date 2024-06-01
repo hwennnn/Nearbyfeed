@@ -4,12 +4,17 @@ import type { RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { ComponentType } from 'react';
 import * as React from 'react';
-import { hideMessage, showMessage } from 'react-native-flash-message';
+import { hideMessage } from 'react-native-flash-message';
 import type { SvgProps } from 'react-native-svg';
 
 import { useTheme } from '@/core';
 import { ProfileNavigator } from '@/navigation/profile-navigator';
-import { colors, Feed as FeedIcon, Ionicons } from '@/ui';
+import {
+  colors,
+  Feed as FeedIcon,
+  Ionicons,
+  showNoConnectionMessage,
+} from '@/ui';
 
 import { FeedNavigator } from './feed-navigator';
 
@@ -84,11 +89,7 @@ export const TabNavigator = () => {
 
   React.useEffect(() => {
     if (!isConnected) {
-      showMessage({
-        message: 'No internet connection',
-        type: 'danger',
-        autoHide: false,
-      });
+      showNoConnectionMessage();
     } else {
       hideMessage();
     }

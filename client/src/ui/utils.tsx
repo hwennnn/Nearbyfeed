@@ -22,11 +22,20 @@ export const showError = (error: AxiosError) => {
   });
 };
 
-export const showErrorMessage = (message: string = 'Something went wrong ') => {
+export const showErrorMessage = (message: string = 'Something went wrong') => {
   showMessage({
     message,
     type: 'danger',
     duration: 4000,
+  });
+};
+
+export const showNoConnectionMessage = () => {
+  showMessage({
+    message: 'No internet connection',
+    type: 'danger',
+    autoHide: false,
+    hideOnPress: false,
   });
 };
 
@@ -51,5 +60,5 @@ export const extractError = (data: unknown): string => {
     });
     return `${messages.join('')} `;
   }
-  return 'Something went wrong ';
+  return 'Something went wrong';
 };
