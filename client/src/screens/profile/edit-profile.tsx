@@ -208,6 +208,14 @@ export const EditProfile = () => {
             name="username"
             control={control}
             placeholder="Username"
+            textContentType="name"
+            returnKeyType="send"
+            onSubmitEditing={(event) => {
+              event.preventDefault();
+              if (hasChanges) {
+                handleSubmit(onSubmit)(event);
+              }
+            }}
           />
 
           <Button

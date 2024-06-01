@@ -191,7 +191,7 @@ export const CommentCard = ({
                 <View className="flex-1 py-2" key={reply.id}>
                   <CommentCard {...reply} isPreviewComment={true} />
                   <Divider
-                    color={isDark ? colors.gray20 : colors.neutral['300']}
+                    color={isDark ? colors.divider : colors.neutral['300']}
                   />
                 </View>
               ))}

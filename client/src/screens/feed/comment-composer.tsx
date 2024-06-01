@@ -45,6 +45,7 @@ export const CommentComposer = ({ postId }: Props) => {
     useAddComment();
 
   const onSubmitComment = (dto: CreateCommentDto) => {
+    Keyboard.dismiss();
     reset();
 
     dto.content = dto.content.trim();
@@ -76,6 +77,13 @@ export const CommentComposer = ({ postId }: Props) => {
         name="content"
         placeholder="Write a comment."
         control={control}
+        returnKeyType="send"
+        onSubmitEditing={(event) => {
+          event.preventDefault();
+          if (!isCreateCommentLoading) {
+            handleSubmit(onSubmitComment)(event);
+          }
+        }}
         rightIcon={
           <Pressable
             onPress={handleSubmit(onSubmitComment)}

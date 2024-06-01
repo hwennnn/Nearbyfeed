@@ -43,7 +43,7 @@ export const ForgotPasswordScreen = () => {
       showSuccessMessage(
         'An email will be sent to you if the provided email is valid and registered with us.'
       );
-    }, getRandomIntFromInterval(3000, 5000)); // set random interval to prevent malicious attack on checking active emails
+    }, getRandomIntFromInterval(2000, 4000)); // set random interval to prevent malicious attack on checking active emails
   };
 
   return (
@@ -68,11 +68,19 @@ export const ForgotPasswordScreen = () => {
             name="email"
             placeholder="Enter your email here"
             keyboardType="email-address"
+            returnKeyType="send"
+            textContentType="emailAddress"
+            onSubmitEditing={(event) => {
+              event.preventDefault();
+              if (isFormValid && !isFormLoading) {
+                handleSubmit(onSubmit)(event);
+              }
+            }}
           />
         </View>
 
         <Button
-          disabled={!isFormValid}
+          disabled={!isFormValid || isFormLoading}
           loading={isFormLoading}
           testID="submit-button"
           label="Submit"

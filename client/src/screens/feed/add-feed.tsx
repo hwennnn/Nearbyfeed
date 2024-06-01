@@ -17,6 +17,7 @@ import {
 import * as ImagePicker from 'expo-image-picker';
 import * as React from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
+import { Keyboard } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 
 import { useAddPost } from '@/api';
@@ -101,7 +102,7 @@ export const AddFeed = () => {
   const [selectedVotingLength, setSelectedVotingLength] =
     React.useState<VotingLengthOption>(DEFAULT_VOTING_LENGTH_OPTION);
 
-  const { control, handleSubmit, register, unregister } =
+  const { control, handleSubmit, register, unregister, setFocus } =
     useForm<CreatePostDto>({
       resolver,
       mode: 'onSubmit',
@@ -140,6 +141,8 @@ export const AddFeed = () => {
 
   const onSubmit = React.useCallback(
     async (data: CreatePostDto) => {
+      console.log('🚀 ~ data:', data);
+
       const location = await retrieveCurrentPosition();
       if (location === null) {
         showErrorMessage('Location must be enabled to create a post.');
@@ -158,6 +161,7 @@ export const AddFeed = () => {
       };
 
       setAppLoading(true, 'Creating...');
+      Keyboard.dismiss();
 
       addPost(dto, {
         onSuccess: () => {
@@ -177,7 +181,7 @@ export const AddFeed = () => {
         },
       });
     },
-    [addPost, images, isPollEnabled, navigation, selectedVotingLength]
+    [addPost, images, isPollEnabled, navigation, selectedVotingLength.value]
   );
 
   const pickImage = async () => {
@@ -248,6 +252,9 @@ export const AddFeed = () => {
             numberOfLines={3}
             maxLength={70}
             multiline
+            returnKeyType="next"
+            blurOnSubmit={true}
+            onSubmitEditing={() => setFocus('content')}
           />
 
           {images.length > 0 && (
@@ -315,6 +322,18 @@ export const AddFeed = () => {
             control={control}
             multiline
             maxLength={1000}
+            returnKeyType={isPollEnabled ? 'next' : 'send'}
+            blurOnSubmit={true}
+            onSubmitEditing={(event) => {
+              event.preventDefault();
+              if (isPollEnabled) {
+                setFocus('options.0.value');
+              } else {
+                if (!isLoading) {
+                  handleSubmit(onSubmit)(event);
+                }
+              }
+            }}
           />
 
           {isPollEnabled && (
@@ -366,6 +385,20 @@ export const AddFeed = () => {
                         control={control}
                         multiline
                         maxLength={70}
+                        returnKeyType={
+                          index !== fields.length - 1 ? 'next' : 'send'
+                        }
+                        blurOnSubmit={true}
+                        onSubmitEditing={(event) => {
+                          event.preventDefault();
+                          if (index !== fields.length - 1) {
+                            setFocus(`options.${index + 1}.value`);
+                          } else {
+                            if (!isLoading) {
+                              handleSubmit(onSubmit)(event);
+                            }
+                          }
+                        }}
                         rightIcon={
                           index <= 1 ? (
                             <View />

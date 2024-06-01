@@ -46,9 +46,10 @@ export const ResetPasswordScreen = () => {
   const { token } = params;
   const { navigate } = useNavigation();
 
-  const { handleSubmit, control, formState } = useForm<ResetPasswordDto>({
-    resolver,
-  });
+  const { handleSubmit, control, formState, setFocus } =
+    useForm<ResetPasswordDto>({
+      resolver,
+    });
 
   const isFormValid = formState.isValid;
 
@@ -85,6 +86,9 @@ export const ResetPasswordScreen = () => {
           secureTextEntry={true}
           placeholder="********"
           autoFocus={true}
+          returnKeyType="next"
+          textContentType="password"
+          onSubmitEditing={() => setFocus('confirmPassword')}
         />
 
         <ControlledInput
@@ -93,6 +97,14 @@ export const ResetPasswordScreen = () => {
           label="Confirm your password"
           placeholder="********"
           secureTextEntry={true}
+          returnKeyType="send"
+          textContentType="newPassword"
+          onSubmitEditing={(event) => {
+            event.preventDefault();
+            if (isFormValid && !isLoading) {
+              handleSubmit(onSubmit)(event);
+            }
+          }}
         />
 
         <Button

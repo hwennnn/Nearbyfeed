@@ -12,11 +12,11 @@ export const OverlayLoadingSpinner = () => {
 
   if (isLoading)
     return (
-      <View className="bg-gray20 absolute inset-0 h-full w-full items-center justify-center opacity-80">
+      <View className="absolute inset-0 h-full w-full items-center justify-center bg-black opacity-75">
         <View className="flex-col space-y-3 rounded-sm p-6">
-          <ActivityIndicator size="large" />
+          <ActivityIndicator size="large" color="white" />
           {loadingText && (
-            <Text className="text-gray-300" variant="sm">
+            <Text className="font-normal text-gray-100" variant="sm">
               {loadingText}
             </Text>
           )}

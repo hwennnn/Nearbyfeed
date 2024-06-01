@@ -33,9 +33,7 @@ export const Header = ({
         </Text>
       </View>
 
-      <View className="flex-1 justify-end">
-        {headerRight !== undefined && headerRight}
-      </View>
+      <View className="flex-1">{headerRight !== undefined && headerRight}</View>
     </View>
   );
 };

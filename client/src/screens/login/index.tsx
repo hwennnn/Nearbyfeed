@@ -44,7 +44,7 @@ export const EmailLoginScreen = () => {
     },
   });
 
-  const { handleSubmit, control } = useForm<LoginDto>({
+  const { handleSubmit, control, setFocus } = useForm<LoginDto>({
     resolver,
   });
 
@@ -75,6 +75,9 @@ export const EmailLoginScreen = () => {
           placeholder="Email"
           keyboardType="email-address"
           autoFocus={true}
+          textContentType="emailAddress"
+          returnKeyType="next"
+          onSubmitEditing={() => setFocus('password')}
         />
 
         <ControlledInput
@@ -84,6 +87,14 @@ export const EmailLoginScreen = () => {
           label="Password"
           placeholder="********"
           secureTextEntry={true}
+          returnKeyType="send"
+          textContentType="password"
+          onSubmitEditing={(event) => {
+            event.preventDefault();
+            if (!isLoading) {
+              handleSubmit(onSubmit)(event);
+            }
+          }}
         />
 
         <Pressable onPress={navToForgotPassword}>

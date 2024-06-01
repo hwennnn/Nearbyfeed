@@ -3,6 +3,7 @@ import { Transform } from 'class-transformer';
 import { IsString, MaxLength, MinLength } from 'class-validator';
 import React from 'react';
 import { useForm } from 'react-hook-form';
+import { Keyboard } from 'react-native';
 
 import { useAddReply } from '@/api/posts/use-add-reply';
 import { ControlledInput, Ionicons, Pressable, View } from '@/ui';
@@ -36,6 +37,7 @@ export const ReplyComposer = ({ postId, commentId }: Props) => {
     useAddReply();
 
   const onSubmitComment = (dto: CreateCommentDto) => {
+    Keyboard.dismiss();
     reset();
 
     dto.content = dto.content.trim();
@@ -45,10 +47,7 @@ export const ReplyComposer = ({ postId, commentId }: Props) => {
       // TODO: Flash message is underneath the modal
       // {
       //   onSuccess: () => {
-      //     showMessage({
-      //       message: 'Reply added successfully',
-      //       type: 'success',
-      //     });
+      //     showSuccessMessage('Reply added successfully');
       //   },
       //   onError: () => {
       //     showErrorMessage('Error adding reply');
@@ -65,6 +64,13 @@ export const ReplyComposer = ({ postId, commentId }: Props) => {
         name="content"
         placeholder="Write a reply."
         control={control}
+        returnKeyType="send"
+        onSubmitEditing={(event) => {
+          event.preventDefault();
+          if (!isCreateCommentLoading) {
+            handleSubmit(onSubmitComment)(event);
+          }
+        }}
         rightIcon={
           <Pressable
             onPress={handleSubmit(onSubmitComment)}

@@ -60,7 +60,7 @@ export const EmailRegisterScreen = () => {
   });
   const { navigate } = useNavigation();
 
-  const { handleSubmit, control } = useForm<RegisterDto>({
+  const { handleSubmit, control, setFocus } = useForm<RegisterDto>({
     resolver,
   });
 
@@ -86,6 +86,9 @@ export const EmailRegisterScreen = () => {
           label="Username"
           placeholder="Username"
           autoFocus={true}
+          textContentType="name"
+          returnKeyType="next"
+          onSubmitEditing={() => setFocus('email')}
         />
         <ControlledInput
           testID="email-input"
@@ -94,6 +97,9 @@ export const EmailRegisterScreen = () => {
           label="Email"
           placeholder="Email"
           keyboardType="email-address"
+          returnKeyType="next"
+          textContentType="emailAddress"
+          onSubmitEditing={() => setFocus('password')}
         />
         <ControlledInput
           testID="password-input"
@@ -102,6 +108,14 @@ export const EmailRegisterScreen = () => {
           label="Password"
           placeholder="********"
           secureTextEntry={true}
+          returnKeyType="send"
+          textContentType="password"
+          onSubmitEditing={(event) => {
+            event.preventDefault();
+            if (!isLoading) {
+              handleSubmit(onSubmit)(event);
+            }
+          }}
         />
         <Button
           loading={isLoading}
