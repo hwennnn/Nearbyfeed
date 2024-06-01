@@ -19,7 +19,7 @@ export const LoadingButton = ({
   return (
     <TouchableOpacity
       disabled={disabled || isLoading}
-      className={`flex-row items-center justify-center rounded-lg bg-primary-600 px-12 py-2 ${
+      className={`flex-row items-center justify-center rounded-lg bg-primary-500 px-12 py-2 dark:bg-primary-600 ${
         disabled ? 'opacity-50' : ''
       }`}
       {...props}

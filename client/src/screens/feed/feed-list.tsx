@@ -102,31 +102,34 @@ const LocationHeader = ({
       : location.locationName;
 
   return (
-    <TouchableOpacity
-      className="mx-4 mb-4 block flex-row items-center rounded-lg border border-neutral-400 bg-white p-4 dark:border-charcoal-700 dark:bg-charcoal-800"
-      onPress={() => setShowFullName((prev) => !prev)}
-    >
-      <FontAwesome
-        name="location-arrow"
-        className="text-neutral-500 dark:text-neutral-400"
-        size={24}
-      />
-      <Text
-        className="mx-4 flex-1 text-neutral-600 dark:text-white"
-        variant="sm"
+    <>
+      <TouchableOpacity
+        className="mx-4 mb-4 block flex-row items-center rounded-lg border border-neutral-400 bg-white p-4 dark:border-charcoal-700 dark:bg-charcoal-800"
+        onPress={() => setShowFullName((prev) => !prev)}
       >
-        {`Displaying feeds within ${formatDistanceName(
-          distance
-        )} from ${locationName}`}
-      </Text>
-      <TouchableOpacity onPress={onPressActionSheet}>
-        <Ionicons
-          name="ios-filter"
+        <FontAwesome
+          name="location-arrow"
           className="text-neutral-500 dark:text-neutral-400"
           size={24}
         />
+        <Text
+          className="mx-4 flex-1 text-neutral-600 dark:text-white"
+          variant="sm"
+        >
+          {`Displaying feeds within ${formatDistanceName(
+            distance
+          )} from ${locationName}`}
+        </Text>
+        <TouchableOpacity onPress={onPressActionSheet}>
+          <Ionicons
+            name="ios-filter"
+            className="text-neutral-500 dark:text-neutral-400"
+            size={24}
+          />
+        </TouchableOpacity>
       </TouchableOpacity>
-    </TouchableOpacity>
+      <Divider />
+    </>
   );
 };
 
@@ -191,7 +194,12 @@ export const FeedList = ({
   }, [distance, location, setDistanceCallback]);
 
   const footer = React.useCallback(() => {
-    return <View className="py-6" />;
+    return (
+      <>
+        <Divider />
+        <View className="bg-white py-6 dark:bg-charcoal-900" />
+      </>
+    );
   }, []);
 
   if (isError) {

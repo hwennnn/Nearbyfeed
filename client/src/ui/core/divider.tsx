@@ -23,7 +23,8 @@ const Divider: React.FC<DividerProps> = ({
     { width: orientation === 'horizontal' ? '100%' : width },
     { height: orientation === 'vertical' ? '100%' : width },
     {
-      backgroundColor: color ?? (isDark ? '#333333' : colors.neutral['200']),
+      backgroundColor:
+        color ?? (isDark ? colors.gray20 : colors.neutral['200']),
     },
   ];
 

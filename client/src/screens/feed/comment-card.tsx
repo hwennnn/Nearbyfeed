@@ -91,7 +91,7 @@ export const CommentCard = ({
         >
           <View className="flex-row items-center justify-between px-4">
             <View className="flex-row items-start space-x-3">
-              <View className="h-[36px] w-[36px] items-center justify-center rounded-full bg-gray-100 dark:bg-gray-600">
+              <View className="h-[36px] w-[36px] items-center justify-center rounded-full bg-gray-300 dark:bg-gray-600">
                 {author?.image === null && (
                   <Text
                     className="font-medium text-gray-600 dark:text-gray-300"
@@ -190,7 +190,9 @@ export const CommentCard = ({
               {replies.slice(0, 3).map((reply) => (
                 <View className="flex-1 py-2" key={reply.id}>
                   <CommentCard {...reply} isPreviewComment={true} />
-                  <Divider color={isDark ? '#333333' : colors.neutral['300']} />
+                  <Divider
+                    color={isDark ? colors.gray20 : colors.neutral['300']}
+                  />
                 </View>
               ))}
             </View>

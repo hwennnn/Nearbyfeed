@@ -90,7 +90,7 @@ export const PollCard = ({ poll, showAllText = false }: Props) => {
             <View className="flex-1 flex-row space-x-6" key={option.id}>
               <View className="flex-1 flex-row items-center space-x-2">
                 <View
-                  className="absolute h-full rounded-md bg-primary-500"
+                  className="absolute h-full rounded-md bg-primary-300 dark:bg-primary-500"
                   style={{
                     width: `${percentage}%`,
                   }}
@@ -128,7 +128,9 @@ export const PollCard = ({ poll, showAllText = false }: Props) => {
               disabled={isLoading || isPollVoted || isPollExpired}
               key={option.id}
               className={`flex-1 flex-row items-center space-x-2 rounded-lg p-2 ${
-                isSelected ? 'bg-primary-400' : 'bg-charcoal-700'
+                isSelected
+                  ? 'bg-primary-300 dark:bg-primary-400'
+                  : 'bg-neutral-300 dark:bg-charcoal-700'
               }`}
             >
               <View className="h-4 w-4 items-center justify-center rounded-xl border border-white">
