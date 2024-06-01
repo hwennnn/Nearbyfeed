@@ -2,7 +2,6 @@ import { useActionSheet } from '@expo/react-native-action-sheet';
 import { useNavigation } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import React, { useCallback, useEffect } from 'react';
-import { ActivityIndicator } from 'react-native';
 
 import { type Comment } from '@/api';
 import { useComments } from '@/api/posts/use-comments';
@@ -11,7 +10,7 @@ import type { CommentsSort } from '@/core/comments';
 import { setCommentsQueryKey, useCommentKeys } from '@/core/comments';
 import type { RootNavigatorProp } from '@/navigation';
 import { CommentCard } from '@/screens/feed/comment-card';
-import { Pressable, Text, View } from '@/ui';
+import { LoadingComponent, Pressable, Text, View } from '@/ui';
 import Divider from '@/ui/core/divider';
 import { Ionicons } from '@/ui/icons/vector-icons';
 
@@ -70,11 +69,7 @@ export const CommentList = ({ postId, refreshing, onRefetchDone }: Props) => {
   );
 
   if (isLoading) {
-    return (
-      <View className="flex-1 items-center justify-center">
-        <ActivityIndicator />
-      </View>
-    );
+    return <LoadingComponent />;
   }
 
   if (isError) {

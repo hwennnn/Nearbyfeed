@@ -8,16 +8,15 @@ import type { RootNavigatorProp } from '@/navigation';
 import type { ProfileNavigatorProp } from '@/navigation/profile-navigator';
 import { LanguageItem } from '@/screens/profile/language-item';
 import {
-  ActivityIndicator,
   Image,
   LayoutWithoutKeyboard,
+  LoadingComponent,
   Pressable,
   ScrollView,
   Text,
   TouchableOpacity,
   View,
 } from '@/ui';
-import { Layout } from '@/ui/core/layout';
 import { Github, Website } from '@/ui/icons';
 import { Ionicons, MaterialIcons } from '@/ui/icons/vector-icons';
 import colors from '@/ui/theme/colors';
@@ -58,11 +57,7 @@ export const Profile = () => {
   };
 
   if (isLoading) {
-    return (
-      <Layout className="flex-1 items-center justify-center">
-        <ActivityIndicator />
-      </Layout>
-    );
+    return <LoadingComponent />;
   }
 
   const signOutUser = (): void => {

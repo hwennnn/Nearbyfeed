@@ -9,6 +9,7 @@ export * from './layout';
 export * from './layout-without-keyboard';
 export * from './list';
 export * from './loading-button';
+export * from './loading-component';
 export * from './overlay-loading-spinner';
 export * from './pressable';
 export * from './scroll-view';

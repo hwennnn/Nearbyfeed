@@ -1,11 +1,10 @@
 import { FlashList } from '@shopify/flash-list';
 import React, { useCallback } from 'react';
-import { ActivityIndicator } from 'react-native';
 
 import type { CommentWithPost } from '@/api';
 import { useMyComments } from '@/api/users';
 import { CommentCardWithPost } from '@/screens/feed/comment-card-with-post';
-import { Text, View } from '@/ui';
+import { LoadingComponent, Text, View } from '@/ui';
 import Divider from '@/ui/core/divider';
 
 export const MyComments = () => {
@@ -35,11 +34,7 @@ export const MyComments = () => {
   );
 
   if (isLoading) {
-    return (
-      <View className="flex-1 items-center justify-center">
-        <ActivityIndicator />
-      </View>
-    );
+    return <LoadingComponent />;
   }
 
   if (isError) {

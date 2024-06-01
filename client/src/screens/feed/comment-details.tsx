@@ -3,7 +3,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { useQueryClient } from '@tanstack/react-query';
 import { produce } from 'immer';
 import * as React from 'react';
-import { ActivityIndicator, RefreshControl } from 'react-native';
+import { RefreshControl } from 'react-native';
 
 import { useComment } from '@/api/posts/use-comment';
 import type { InfiniteComments } from '@/api/posts/use-vote-comment';
@@ -14,7 +14,14 @@ import type { RootStackParamList } from '@/navigation';
 import { ChildCommentList } from '@/screens/feed/child-comment-list';
 import { CommentCard } from '@/screens/feed/comment-card';
 import { ReplyComposer } from '@/screens/feed/reply-composer';
-import { colors, HeaderButton, Pressable, ScrollView, View } from '@/ui';
+import {
+  colors,
+  HeaderButton,
+  LoadingComponent,
+  Pressable,
+  ScrollView,
+  View,
+} from '@/ui';
 import Divider from '@/ui/core/divider';
 import { Layout } from '@/ui/core/layout';
 import { stringUtils } from '@/utils/string-utils';
@@ -112,11 +119,7 @@ export const CommentsDetails = () => {
   };
 
   if (isLoading || parentComment === undefined) {
-    return (
-      <View className="flex-1 items-center justify-center">
-        <ActivityIndicator />
-      </View>
-    );
+    return <LoadingComponent />;
   }
 
   return (

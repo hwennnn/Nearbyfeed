@@ -7,11 +7,12 @@ import { setPostsQueryKey } from '@/core/posts';
 import type { RootNavigatorProp } from '@/navigation';
 import { FeedList } from '@/screens/feed/feed-list';
 import {
-  ActivityIndicator,
   FontAwesome,
   Image,
+  LoadingComponent,
   Text,
   TouchableOpacity,
+  View,
 } from '@/ui';
 import { Layout } from '@/ui/core/layout';
 import { retrieveCurrentPosition } from '@/utils/geolocation-utils';
@@ -66,16 +67,13 @@ export const Feed = () => {
   };
 
   if (isLoading) {
-    return (
-      <Layout className="flex-1 items-center justify-center">
-        <ActivityIndicator />
-      </Layout>
-    );
+    return <LoadingComponent />;
   }
 
+  // TODO: To check if the changes in device settings trigger an update of the update location fn
   if (longitude === null || latitude === null) {
     return (
-      <Layout className="items-center justify-center">
+      <View className="flex-1 items-center justify-center px-4">
         <Image
           source={require('assets/images/location-permission.png')}
           className="h-72 w-72"
@@ -89,7 +87,7 @@ export const Feed = () => {
         <Text className="pt-2 text-primary-400" onPress={openAppSettings}>
           Enable your location in Settings
         </Text>
-      </Layout>
+      </View>
     );
   }
 

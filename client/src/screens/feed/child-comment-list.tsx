@@ -1,11 +1,10 @@
 import { FlashList } from '@shopify/flash-list';
 import React, { useCallback, useEffect } from 'react';
-import { ActivityIndicator } from 'react-native';
 
 import { type Comment } from '@/api';
 import { useChildComments } from '@/api/posts/use-child-comments';
 import { CommentCard } from '@/screens/feed/comment-card';
-import { Text, View } from '@/ui';
+import { LoadingComponent, Text, View } from '@/ui';
 
 type Props = {
   postId: number;
@@ -55,11 +54,7 @@ export const ChildCommentList = ({
   }, []);
 
   if (isLoading) {
-    return (
-      <View className="flex-1 items-center justify-center">
-        <ActivityIndicator />
-      </View>
-    );
+    return <LoadingComponent />;
   }
 
   if (isError) {

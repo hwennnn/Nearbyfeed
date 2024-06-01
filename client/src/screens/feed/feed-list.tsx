@@ -13,6 +13,7 @@ import {
   EmptyList,
   FontAwesome,
   Ionicons,
+  LoadingComponent,
   Text,
   TouchableOpacity,
   View,
@@ -202,6 +203,10 @@ export const FeedList = ({
     );
   }, []);
 
+  if (isLoading) {
+    return <LoadingComponent />;
+  }
+
   if (isError) {
     return (
       <View>
@@ -227,7 +232,7 @@ export const FeedList = ({
         renderItem={renderItem}
         keyExtractor={(_, index) => `item-${index}`}
         estimatedItemSize={200}
-        ListEmptyComponent={<EmptyList isLoading={isLoading} />}
+        ListEmptyComponent={<EmptyList />}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}

@@ -1,14 +1,21 @@
 import { useNavigation } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import React, { useState } from 'react';
-import { ActivityIndicator, RefreshControl } from 'react-native';
+import { RefreshControl } from 'react-native';
 
 import type { Post } from '@/api';
 import { useMyPosts } from '@/api/users';
 import { useTheme } from '@/core';
 import type { RootNavigatorProp } from '@/navigation/root-navigator';
 import { FeedCard } from '@/screens';
-import { colors, EmptyList, LayoutWithoutKeyboard, Text, View } from '@/ui';
+import {
+  colors,
+  EmptyList,
+  LayoutWithoutKeyboard,
+  LoadingComponent,
+  Text,
+  View,
+} from '@/ui';
 import Divider from '@/ui/core/divider';
 
 export const MyPosts = () => {
@@ -56,11 +63,7 @@ export const MyPosts = () => {
   }, []);
 
   if (isLoading) {
-    return (
-      <View className="flex-1 items-center justify-center">
-        <ActivityIndicator />
-      </View>
-    );
+    return <LoadingComponent />;
   }
 
   if (isError) {
@@ -90,7 +93,7 @@ export const MyPosts = () => {
           renderItem={renderItem}
           keyExtractor={(_, index) => `item-${index}`}
           estimatedItemSize={200}
-          ListEmptyComponent={<EmptyList isLoading={isLoading} />}
+          ListEmptyComponent={<EmptyList />}
           refreshControl={
             <RefreshControl
               refreshing={refreshing}

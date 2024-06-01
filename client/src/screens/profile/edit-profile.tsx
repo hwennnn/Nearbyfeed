@@ -17,12 +17,12 @@ import { showMessage } from 'react-native-flash-message';
 import { useEditProfile, useSelf } from '@/api/users';
 import { useTheme } from '@/core';
 import {
-  ActivityIndicator,
   Button,
   ControlledInput,
   Header,
   Image,
   Ionicons,
+  LoadingComponent,
   Pressable,
   showErrorMessage,
   Text,
@@ -163,11 +163,7 @@ export const EditProfile = () => {
     (user?.image !== image || user?.username !== watch().username);
 
   if (isLoading) {
-    return (
-      <Layout className="flex-1 items-center justify-center">
-        <ActivityIndicator />
-      </Layout>
-    );
+    return <LoadingComponent />;
   }
 
   return (

@@ -3,7 +3,7 @@ import { useRoute } from '@react-navigation/native';
 import { useQueryClient } from '@tanstack/react-query';
 import { produce } from 'immer';
 import * as React from 'react';
-import { ActivityIndicator, RefreshControl } from 'react-native';
+import { RefreshControl } from 'react-native';
 
 import type { InfinitePosts } from '@/api';
 import { usePost, useVotePost } from '@/api';
@@ -16,6 +16,7 @@ import { PollCard } from '@/screens/feed/poll-card';
 import {
   colors,
   Image,
+  LoadingComponent,
   Pressable,
   ScrollView,
   Text,
@@ -107,11 +108,7 @@ export const FeedDetails = () => {
   };
 
   if (isLoading || post === undefined) {
-    return (
-      <View className="flex-1 items-center justify-center">
-        <ActivityIndicator />
-      </View>
-    );
+    return <LoadingComponent />;
   }
 
   const {
