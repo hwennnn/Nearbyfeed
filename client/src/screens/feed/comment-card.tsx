@@ -5,12 +5,16 @@ import React from 'react';
 
 import type { Comment } from '@/api';
 import { CommentType, useVoteComment } from '@/api/posts/use-vote-comment';
+import { useBlockUser } from '@/api/users/block-user';
 import { useTheme } from '@/core';
+import { useUser } from '@/core/user';
 import type { RootNavigatorProp } from '@/navigation';
 import { ReportCommentBottomSheet } from '@/screens/feed/report-comment-bottom-sheet';
 import {
   Image,
   Pressable,
+  showErrorMessage,
+  showSuccessMessage,
   Text,
   TimeWidget,
   TouchableOpacity,
@@ -32,6 +36,7 @@ export const CommentCard = ({
   content,
   createdAt,
   author,
+  authorId,
   points,
   like,
   isOptimistic,
@@ -84,17 +89,48 @@ export const CommentCard = ({
 
   const { showActionSheetWithOptions } = useActionSheet();
 
-  const onPressActionSheet = () => {
-    const options = ['Report', 'Block this user', 'Cancel'];
+  const { mutate: mutateBlockUser } = useBlockUser();
 
-    const cancelButtonIndex = 2;
+  const currentUser = useUser.getState().user;
+  const isMyComment = authorId === currentUser?.id;
+
+  const blockUser = () => {
+    if (isMyComment || currentUser?.id === undefined || authorId === undefined)
+      return;
+
+    mutateBlockUser(
+      {
+        userId: currentUser.id,
+        blockedId: authorId,
+      },
+      {
+        onSuccess: () => {
+          showSuccessMessage('You have successfully blocked the user');
+        },
+        onError: () => {
+          showErrorMessage('There is an error. Please try again');
+        },
+      }
+    );
+  };
+
+  const onPressActionSheet = () => {
+    const options = ['Report'];
+
+    if (!isMyComment) {
+      options.push('Block this user');
+    }
+
+    options.push('Cancel');
+
+    const cancelButtonIndex = options.length - 1;
 
     showActionSheetWithOptions(
       {
         userInterfaceStyle: useTheme.getState().colorScheme,
         options,
         cancelButtonIndex,
-        destructiveButtonIndex: [0, 1],
+        destructiveButtonIndex: [0], // Only the 'Report' option is destructive
       },
       (selectedIndex: number | undefined) => {
         switch (selectedIndex) {
@@ -103,9 +139,11 @@ export const CommentCard = ({
             break;
 
           case 1:
+            if (!isMyComment) {
+              blockUser();
+            }
             break;
 
-          case undefined:
           case cancelButtonIndex:
           default:
             break;

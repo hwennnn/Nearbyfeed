@@ -199,7 +199,7 @@ export const FeedList = ({
     return (
       <>
         <Divider />
-        <View className="bg-white py-6 dark:bg-charcoal-900" />
+        <View className="bg-white py-6 dark:bg-black" />
       </>
     );
   }, []);

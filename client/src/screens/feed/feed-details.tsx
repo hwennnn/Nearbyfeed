@@ -10,8 +10,10 @@ import { RefreshControl } from 'react-native';
 
 import type { InfinitePosts } from '@/api';
 import { usePost, useVotePost } from '@/api';
+import { useBlockUser } from '@/api/users/block-user';
 import { useTheme } from '@/core';
 import { usePostKeys } from '@/core/posts';
+import { useUser } from '@/core/user';
 import type { RootStackParamList } from '@/navigation';
 import { CommentComposer } from '@/screens/feed/comment-composer';
 import { CommentList } from '@/screens/feed/comment-list';
@@ -23,6 +25,8 @@ import {
   LoadingComponent,
   Pressable,
   ScrollView,
+  showErrorMessage,
+  showSuccessMessage,
   Text,
   TimeWidget,
   TouchableOpacity,
@@ -126,18 +130,29 @@ export const FeedDetails = () => {
     []
   );
 
-  React.useLayoutEffect(() => {
-    const onPressActionSheet = () => {
-      const options = ['Report', 'Block this user', 'Cancel'];
+  const { mutate: mutateBlockUser } = useBlockUser();
 
-      const cancelButtonIndex = 2;
+  React.useLayoutEffect(() => {
+    const currentUser = useUser.getState().user;
+    const isMyPost = post?.authorId === currentUser?.id;
+
+    const onPressActionSheet = () => {
+      const options = ['Report'];
+
+      if (!isMyPost) {
+        options.push('Block this user');
+      }
+
+      options.push('Cancel');
+
+      const cancelButtonIndex = options.length - 1;
 
       showActionSheetWithOptions(
         {
           userInterfaceStyle: useTheme.getState().colorScheme,
           options,
           cancelButtonIndex,
-          destructiveButtonIndex: [0, 1],
+          destructiveButtonIndex: [0], // Only the 'Report' option is destructive
         },
         (selectedIndex: number | undefined) => {
           switch (selectedIndex) {
@@ -146,13 +161,39 @@ export const FeedDetails = () => {
               break;
 
             case 1:
+              if (!isMyPost) {
+                blockUser();
+              }
               break;
 
-            case undefined:
             case cancelButtonIndex:
             default:
               break;
           }
+        }
+      );
+    };
+
+    const blockUser = () => {
+      if (
+        isMyPost ||
+        currentUser?.id === undefined ||
+        post?.authorId === undefined
+      )
+        return;
+
+      mutateBlockUser(
+        {
+          userId: currentUser.id,
+          blockedId: post.authorId,
+        },
+        {
+          onSuccess: () => {
+            showSuccessMessage('You have successfully blocked the user');
+          },
+          onError: () => {
+            showErrorMessage('There is an error. Please try again');
+          },
         }
       );
     };
@@ -163,12 +204,19 @@ export const FeedDetails = () => {
           <Ionicons
             name="ellipsis-horizontal"
             size={20}
-            className="text-neutral-300"
+            className="text-black dark:text-white"
           />
         </TouchableOpacity>
       ),
     });
-  }, [isLoading, openReportSheet, setOptions, showActionSheetWithOptions]);
+  }, [
+    post?.authorId,
+    isLoading,
+    mutateBlockUser,
+    openReportSheet,
+    setOptions,
+    showActionSheetWithOptions,
+  ]);
 
   if (isLoading || post === undefined) {
     return <LoadingComponent />;

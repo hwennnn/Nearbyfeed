@@ -98,6 +98,11 @@ export class PostsService {
     const degreesPerMeter = 1 / 111320; // 1 degree is approximately 111320 meters
     const degreesPerDistance = dto.distance * degreesPerMeter;
 
+    const blockedIds =
+      dto.userId !== undefined
+        ? await this.usersService.findBlockedUsersIds(+dto.userId)
+        : [];
+
     const limit = dto.take ?? 15;
 
     const selectLikes =
@@ -133,9 +138,14 @@ export class PostsService {
             lte: dto.longitude + degreesPerDistance,
             gte: dto.longitude - degreesPerDistance,
           },
+          isDeleted: false,
+          authorId: {
+            notIn: blockedIds,
+          },
         },
         select: {
           id: true,
+          isDeleted: true,
           title: true,
           content: true,
           latitude: true,
@@ -240,10 +250,12 @@ export class PostsService {
       .findFirst({
         where: {
           id: +postId,
+          isDeleted: false,
         },
         select: {
           id: true,
           title: true,
+          isDeleted: true,
           content: true,
           latitude: true,
           longitude: true,

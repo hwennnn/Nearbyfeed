@@ -365,6 +365,7 @@ export class UsersService {
           title: true,
           content: true,
           latitude: true,
+          isDeleted: true,
           longitude: true,
           locationName: true,
           fullLocationName: true,
@@ -517,11 +518,18 @@ export class UsersService {
 
   async blockUser(blockerId: number, blockedId: number): Promise<void> {
     await this.prismaService.blockedUser
-      .create({
-        data: {
+      .upsert({
+        where: {
+          blockerId_blockedId: {
+            blockerId,
+            blockedId,
+          },
+        },
+        create: {
           blockerId,
           blockedId,
         },
+        update: {}, // do nothing if already exists
       })
       .catch((e) => {
         this.logger.error(
@@ -532,5 +540,43 @@ export class UsersService {
 
         throw new BadRequestException('Failed to block user');
       });
+  }
+
+  async deleteBlock(blockerId: number, blockedId: number): Promise<void> {
+    await this.prismaService.blockedUser
+      .delete({
+        where: {
+          blockerId_blockedId: {
+            blockerId,
+            blockedId,
+          },
+        },
+      })
+      .catch((e) => {
+        this.logger.error(
+          `Failed to delete block user record ${blockedId}`,
+          e instanceof Error ? e.stack : undefined,
+          UsersService.name,
+        );
+
+        throw new BadRequestException(
+          `Failed to delete block user record ${blockedId}`,
+        );
+      });
+  }
+
+  async findBlockedUsersIds(blockerId: number): Promise<number[]> {
+    const result = (
+      await this.prismaService.blockedUser.findMany({
+        where: {
+          blockerId,
+        },
+        select: {
+          blockedId: true,
+        },
+      })
+    ).map((result) => result.blockedId);
+
+    return result;
   }
 }

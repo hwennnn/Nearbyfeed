@@ -1,6 +1,8 @@
 import {
+  BadRequestException,
   Body,
   Controller,
+  Delete,
   ForbiddenException,
   Get,
   Param,
@@ -101,6 +103,27 @@ export class UsersController {
       throw new ForbiddenException('Invalid credentials');
     }
 
+    if (userId === blockedId) {
+      throw new BadRequestException('You cannot block yourself');
+    }
+
     await this.usersService.blockUser(+userId, +blockedId);
+  }
+
+  @Delete(':id/block/:blockedId')
+  async deleteBlockUser(
+    @Param('id') id: string,
+    @GetUser('userId') userId: string,
+    @Param('blockedId') blockedId: string,
+  ): Promise<void> {
+    if (id !== userId) {
+      throw new ForbiddenException('Invalid credentials');
+    }
+
+    if (userId === blockedId) {
+      throw new BadRequestException('Invalid request');
+    }
+
+    await this.usersService.deleteBlock(+userId, +blockedId);
   }
 }
