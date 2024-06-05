@@ -72,6 +72,13 @@ export type User = {
   image: string | null;
   createdAt: Date;
   updatedAt: Date;
+  blockedUsers: BlockedUser[];
+};
+
+export type BlockedUser = {
+  id: number;
+  username: string;
+  image: string | null;
 };
 
 export type PostLike = {

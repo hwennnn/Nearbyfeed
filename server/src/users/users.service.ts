@@ -11,6 +11,7 @@ import {
 
 import {
   type PendingUserWithoutPassword,
+  type UserWithBlockedAccounts,
   type UserWithoutPassword,
 } from 'src/users/entities';
 import { dayInMs, exclude } from 'src/utils';
@@ -206,38 +207,45 @@ export class UsersService {
       });
   }
 
-  async findOne(id: number): Promise<UserWithoutPassword> {
-    return this.excludePasswordFromUser(
-      await this.prismaService.user
-        .findUniqueOrThrow({
-          where: {
-            id,
-          },
-          include: {
-            blockedUsers: {
-              select: {
-                id: true,
-                blocker: {
-                  select: {
-                    id: true,
-                    username: true,
-                    image: true,
-                  },
+  async findOne(id: number): Promise<UserWithBlockedAccounts> {
+    const user = await this.prismaService.user
+      .findUniqueOrThrow({
+        where: {
+          id,
+        },
+        include: {
+          blockedUsers: {
+            select: {
+              id: true,
+              blocked: {
+                select: {
+                  id: true,
+                  username: true,
+                  image: true,
                 },
               },
             },
           },
-        })
-        .catch((e) => {
-          this.logger.error(
-            `Failed to find user with id ${id}`,
-            e instanceof Error ? e.stack : undefined,
-            UsersService.name,
-          );
+        },
+      })
+      .catch((e) => {
+        this.logger.error(
+          `Failed to find user with id ${id}`,
+          e instanceof Error ? e.stack : undefined,
+          UsersService.name,
+        );
 
-          throw new BadRequestException('Failed to find user');
-        }),
-    );
+        throw new BadRequestException('Failed to find user');
+      });
+
+    const blockedUsers = user.blockedUsers.map((b) => b.blocked);
+
+    const result: UserWithBlockedAccounts = {
+      ...user,
+      blockedUsers,
+    };
+
+    return result;
   }
 
   async findOneByEmail(email: string): Promise<User | null> {

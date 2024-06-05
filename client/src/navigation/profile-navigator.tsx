@@ -3,11 +3,13 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
 
 import { Profile } from '@/screens';
+import { BlockedAccountScreen } from '@/screens/profile/blocked-accounts';
 import { EditProfile } from '@/screens/profile/edit-profile';
 
 export type ProfileStackParamList = {
   Profile: undefined;
   EditProfile: undefined;
+  BlockedAccounts: undefined;
 };
 
 const Stack = createNativeStackNavigator<ProfileStackParamList>();
@@ -38,6 +40,8 @@ export const ProfileNavigator = () => {
           headerTitle: 'Edit Profile',
         }}
       />
+
+      <Stack.Screen name="BlockedAccounts" component={BlockedAccountScreen} />
     </Stack.Navigator>
   );
 };

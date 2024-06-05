@@ -19,7 +19,7 @@ export const LoadingButton = ({
   return (
     <TouchableOpacity
       disabled={disabled || isLoading}
-      className={`flex-row items-center justify-center rounded-lg bg-primary-500 px-12 py-2 dark:bg-primary-600 ${
+      className={`flex-row items-center justify-center rounded-lg bg-primary-500 px-4 py-2 dark:bg-primary-600 ${
         disabled ? 'opacity-50' : ''
       }`}
       {...props}
@@ -27,7 +27,9 @@ export const LoadingButton = ({
       {isLoading ? (
         <ActivityIndicator color="white" size="small" />
       ) : (
-        <Text variant="sm">{label}</Text>
+        <Text variant="sm" className="text-black dark:text-white">
+          {label}
+        </Text>
       )}
     </TouchableOpacity>
   );

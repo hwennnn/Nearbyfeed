@@ -56,6 +56,12 @@ export const Profile = () => {
     }
   };
 
+  const navToBlockedAccounts = () => {
+    if (user !== null && user !== undefined) {
+      navigate('BlockedAccounts');
+    }
+  };
+
   if (isLoading) {
     return <LoadingComponent />;
   }
@@ -110,6 +116,10 @@ export const Profile = () => {
             <BottomSheetItem
               text="settings.my_comments"
               onPress={navToMyComments}
+            />
+            <BottomSheetItem
+              text="settings.blocked_accounts"
+              onPress={navToBlockedAccounts}
             />
           </ItemsContainer>
 
