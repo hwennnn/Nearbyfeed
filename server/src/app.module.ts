@@ -12,6 +12,7 @@ import { ImagesController } from './images/images.controller';
 import { ImagesModule } from './images/images.module';
 import { RedisModule } from './redis/redis.module';
 import { UsersModule } from './users/users.module';
+import { ReportsModule } from './reports/reports.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { UsersModule } from './users/users.module';
     ImagesModule,
     FilterModule,
     GeocodingModule,
+    ReportsModule,
   ],
   controllers: [ImagesController],
 })

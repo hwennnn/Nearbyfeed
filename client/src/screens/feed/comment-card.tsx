@@ -1,3 +1,5 @@
+import { useActionSheet } from '@expo/react-native-action-sheet';
+import type { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 
@@ -5,7 +7,15 @@ import type { Comment } from '@/api';
 import { CommentType, useVoteComment } from '@/api/posts/use-vote-comment';
 import { useTheme } from '@/core';
 import type { RootNavigatorProp } from '@/navigation';
-import { Image, Pressable, Text, TimeWidget, View } from '@/ui';
+import { ReportCommentBottomSheet } from '@/screens/feed/report-comment-bottom-sheet';
+import {
+  Image,
+  Pressable,
+  Text,
+  TimeWidget,
+  TouchableOpacity,
+  View,
+} from '@/ui';
 import Divider from '@/ui/core/divider';
 import { Ionicons } from '@/ui/icons/vector-icons';
 import colors from '@/ui/theme/colors';
@@ -72,6 +82,50 @@ export const CommentCard = ({
     }
   };
 
+  const { showActionSheetWithOptions } = useActionSheet();
+
+  const onPressActionSheet = () => {
+    const options = ['Report', 'Block this user', 'Cancel'];
+
+    const cancelButtonIndex = 2;
+
+    showActionSheetWithOptions(
+      {
+        userInterfaceStyle: useTheme.getState().colorScheme,
+        options,
+        cancelButtonIndex,
+        destructiveButtonIndex: [0, 1],
+      },
+      (selectedIndex: number | undefined) => {
+        switch (selectedIndex) {
+          case 0:
+            openReportSheet();
+            break;
+
+          case 1:
+            break;
+
+          case undefined:
+          case cancelButtonIndex:
+          default:
+            break;
+        }
+      }
+    );
+  };
+
+  const optionsRef = React.useRef<BottomSheetModal>(null);
+
+  const openReportSheet = React.useCallback(
+    () => optionsRef.current?.present(),
+    []
+  );
+
+  const closeReportSheet = React.useCallback(
+    () => optionsRef.current?.dismiss(),
+    []
+  );
+
   return (
     <Pressable
       className="flex-1"
@@ -82,6 +136,12 @@ export const CommentCard = ({
       }}
     >
       <View className="flex-1">
+        <ReportCommentBottomSheet
+          ref={optionsRef}
+          commentId={id}
+          onClose={closeReportSheet}
+        />
+
         <View
           className={`space-y-1 ${
             isPreviewComment !== true && isChildComment !== true
@@ -180,6 +240,17 @@ export const CommentCard = ({
                   )}
                 </View>
               </View>
+
+              <TouchableOpacity
+                className="items-center justify-center"
+                onPress={onPressActionSheet}
+              >
+                <Ionicons
+                  name="ellipsis-horizontal"
+                  className="text-black dark:text-white"
+                  size={16}
+                />
+              </TouchableOpacity>
             </View>
           </View>
         </View>

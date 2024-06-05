@@ -213,6 +213,20 @@ export class UsersService {
           where: {
             id,
           },
+          include: {
+            blockedUsers: {
+              select: {
+                id: true,
+                blocker: {
+                  select: {
+                    id: true,
+                    username: true,
+                    image: true,
+                  },
+                },
+              },
+            },
+          },
         })
         .catch((e) => {
           this.logger.error(
@@ -499,5 +513,24 @@ export class UsersService {
       comments,
       hasMore,
     };
+  }
+
+  async blockUser(blockerId: number, blockedId: number): Promise<void> {
+    await this.prismaService.blockedUser
+      .create({
+        data: {
+          blockerId,
+          blockedId,
+        },
+      })
+      .catch((e) => {
+        this.logger.error(
+          `Failed to block user ${blockedId}`,
+          e instanceof Error ? e.stack : undefined,
+          UsersService.name,
+        );
+
+        throw new BadRequestException('Failed to block user');
+      });
   }
 }

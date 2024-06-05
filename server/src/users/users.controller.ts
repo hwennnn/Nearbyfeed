@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Patch,
+  Post,
   Query,
   UploadedFile,
   UseGuards,
@@ -31,7 +32,6 @@ export class UsersController {
   ) {}
 
   @Get('self')
-  @UseGuards(JwtAuthGuard)
   async getSelf(
     @GetUser('userId') userId: string,
   ): Promise<UserWithoutPassword> {
@@ -89,5 +89,18 @@ export class UsersController {
     }
 
     return await this.usersService.findOwnComments(+id, paginationDto);
+  }
+
+  @Post(':id/block/:blockedId')
+  async blockUser(
+    @Param('id') id: string,
+    @GetUser('userId') userId: string,
+    @Param('blockedId') blockedId: string,
+  ): Promise<void> {
+    if (id !== userId) {
+      throw new ForbiddenException('Invalid credentials');
+    }
+
+    await this.usersService.blockUser(+userId, +blockedId);
   }
 }

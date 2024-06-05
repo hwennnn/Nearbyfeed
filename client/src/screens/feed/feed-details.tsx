@@ -1,5 +1,8 @@
+/* eslint-disable react/no-unstable-nested-components */
+import { useActionSheet } from '@expo/react-native-action-sheet';
+import type { BottomSheetModal } from '@gorhom/bottom-sheet';
 import type { RouteProp } from '@react-navigation/native';
-import { useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { useQueryClient } from '@tanstack/react-query';
 import { produce } from 'immer';
 import * as React from 'react';
@@ -13,6 +16,7 @@ import type { RootStackParamList } from '@/navigation';
 import { CommentComposer } from '@/screens/feed/comment-composer';
 import { CommentList } from '@/screens/feed/comment-list';
 import { PollCard } from '@/screens/feed/poll-card';
+import { ReportPostBottomSheet } from '@/screens/feed/report-post-bottom-sheet';
 import {
   colors,
   Image,
@@ -37,6 +41,7 @@ export const FeedDetails = () => {
   const { params } = useRoute<Props>();
   const { postId } = params;
 
+  const { setOptions } = useNavigation();
   const queryClient = useQueryClient();
 
   const {
@@ -107,6 +112,64 @@ export const FeedDetails = () => {
     refetchFeed();
   };
 
+  const { showActionSheetWithOptions } = useActionSheet();
+
+  const optionsRef = React.useRef<BottomSheetModal>(null);
+
+  const openReportSheet = React.useCallback(
+    () => optionsRef.current?.present(),
+    []
+  );
+
+  const closeReportSheet = React.useCallback(
+    () => optionsRef.current?.dismiss(),
+    []
+  );
+
+  React.useLayoutEffect(() => {
+    const onPressActionSheet = () => {
+      const options = ['Report', 'Block this user', 'Cancel'];
+
+      const cancelButtonIndex = 2;
+
+      showActionSheetWithOptions(
+        {
+          userInterfaceStyle: useTheme.getState().colorScheme,
+          options,
+          cancelButtonIndex,
+          destructiveButtonIndex: [0, 1],
+        },
+        (selectedIndex: number | undefined) => {
+          switch (selectedIndex) {
+            case 0:
+              openReportSheet();
+              break;
+
+            case 1:
+              break;
+
+            case undefined:
+            case cancelButtonIndex:
+            default:
+              break;
+          }
+        }
+      );
+    };
+
+    setOptions({
+      headerRight: () => (
+        <TouchableOpacity disabled={isLoading} onPress={onPressActionSheet}>
+          <Ionicons
+            name="ellipsis-horizontal"
+            size={20}
+            className="text-neutral-300"
+          />
+        </TouchableOpacity>
+      ),
+    });
+  }, [isLoading, openReportSheet, setOptions, showActionSheetWithOptions]);
+
   if (isLoading || post === undefined) {
     return <LoadingComponent />;
   }
@@ -142,6 +205,12 @@ export const FeedDetails = () => {
       hasHorizontalPadding={false}
       verticalPadding={80}
     >
+      <ReportPostBottomSheet
+        ref={optionsRef}
+        postId={id}
+        onClose={closeReportSheet}
+      />
+
       <ScrollView
         className="flex-1"
         refreshControl={

@@ -1,4 +1,5 @@
 import { MMKV } from 'react-native-mmkv';
+import type { StateStorage } from 'zustand/middleware';
 
 export const storage = new MMKV();
 
@@ -14,8 +15,6 @@ export async function setItem<T>(key: string, value: T) {
 export async function removeItem(key: string) {
   storage.delete(key);
 }
-
-import type { StateStorage } from 'zustand/middleware';
 
 export const zustandStorage: StateStorage = {
   setItem: (name, value) => {
