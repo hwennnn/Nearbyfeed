@@ -104,6 +104,7 @@ export const TabNavigator = () => {
         // eslint-disable-next-line react/no-unstable-nested-components
         tabBarIcon: ({ color }) => <BarIcon name={route.name} color={color} />,
       })}
+      initialRouteName="FeedNavigator"
     >
       <Tab.Group
         screenOptions={{

@@ -11,7 +11,7 @@ import {
 } from '@/screens';
 
 export type AuthStackParamList = {
-  AuthOnboarding: undefined;
+  AuthOnboarding: { isCloseButton?: boolean };
   Login: undefined;
   Register: undefined;
   ValidateEmail: { pendingUserId: string; email: string; sessionId: string };
@@ -29,6 +29,7 @@ export const AuthNavigator = () => {
       screenOptions={{
         headerShown: false,
         gestureEnabled: false,
+        animation: 'default',
       }}
     >
       <Stack.Screen name="AuthOnboarding" component={AuthOnboardingScreen} />

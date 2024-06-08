@@ -5,7 +5,7 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 
 import { useLogin } from '@/api';
-import { signIn } from '@/core';
+import { signIn, useIsFirstTime } from '@/core';
 import { setUser } from '@/core/user';
 import {
   Button,
@@ -29,6 +29,8 @@ export class LoginDto {
 const resolver = classValidatorResolver(LoginDto);
 
 export const EmailLoginScreen = () => {
+  const [_, setIsFirstTime] = useIsFirstTime();
+
   const { navigate } = useNavigation();
 
   const {
@@ -41,6 +43,7 @@ export const EmailLoginScreen = () => {
 
       signIn(tokens);
       setUser(result.user);
+      setIsFirstTime(false);
     },
   });
 

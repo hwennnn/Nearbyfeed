@@ -6,7 +6,7 @@ import React from 'react';
 import { useColorScheme } from 'react-native';
 
 import type { ColorSchemeType } from '@/core';
-import { setSystemColorScheme, useAuth } from '@/core';
+import { setSystemColorScheme, useAuth, useIsFirstTime } from '@/core';
 import { TabNavigator } from '@/navigation/tab-navigator';
 import type { RootStackParamList } from '@/navigation/types';
 import { AddFeed, FeedDetails } from '@/screens';
@@ -23,6 +23,8 @@ type Props = NativeStackScreenProps<RootStackParamList>;
 export type RootNavigatorProp = Props['navigation'];
 
 export const Root = () => {
+  const [isFirstTime] = useIsFirstTime();
+
   const status = useAuth.use.status();
   const systemColorScheme = useColorScheme();
 
@@ -46,68 +48,79 @@ export const Root = () => {
         screenOptions={{
           headerShown: false,
           gestureEnabled: false,
-          animation: 'none',
         }}
+        initialRouteName={isFirstTime ? 'Auth' : 'App'}
       >
-        <Stack.Group>
-          {status === 'signOut' ? (
-            <Stack.Screen name="Auth" component={AuthNavigator} />
-          ) : (
-            <>
-              <Stack.Screen name="App" component={TabNavigator} />
-              <Stack.Group
-                screenOptions={{
-                  headerShown: true,
-                  animation: 'default',
-                  gestureEnabled: true,
-                }}
-              >
-                <Stack.Screen
-                  name="AddFeed"
-                  component={AddFeed}
-                  options={{
-                    headerTitle: 'Create a Feed',
-                  }}
-                />
-                <Stack.Screen
-                  name="FeedDetails"
-                  component={FeedDetails}
-                  options={{
-                    headerTitle: 'Feed',
-                    headerLeft: () => (
-                      <HeaderButton iconName="chevron-back-outline" />
-                    ),
-                  }}
-                />
-                <Stack.Screen
-                  name="CommentDetails"
-                  component={CommentsDetails}
-                  options={{
-                    presentation: 'modal',
-                    animation: 'default',
-                    headerTitle: 'Comment',
-                    headerLeft: () => (
-                      <HeaderButton iconName="chevron-back-outline" />
-                    ),
-                  }}
-                />
-                <Stack.Screen
-                  name="MyPosts"
-                  component={MyPosts}
-                  options={{
-                    headerTitle: 'My Posts',
-                  }}
-                />
-                <Stack.Screen
-                  name="MyComments"
-                  component={MyComments}
-                  options={{
-                    headerTitle: 'My Comments',
-                  }}
-                />
-              </Stack.Group>
-            </>
-          )}
+        <Stack.Screen
+          name="App"
+          component={TabNavigator}
+          options={{
+            animation: 'fade',
+            animationTypeForReplace: 'push',
+          }}
+        />
+
+        {status === 'signOut' && (
+          <Stack.Screen
+            name="Auth"
+            component={AuthNavigator}
+            options={{
+              animation: 'slide_from_bottom',
+              animationTypeForReplace: 'push',
+            }}
+          />
+        )}
+
+        <Stack.Group
+          screenOptions={{
+            headerShown: true,
+            animation: 'default',
+            gestureEnabled: true,
+          }}
+        >
+          <Stack.Screen
+            name="AddFeed"
+            component={AddFeed}
+            options={{
+              headerTitle: 'Create a Feed',
+            }}
+          />
+          <Stack.Screen
+            name="FeedDetails"
+            component={FeedDetails}
+            options={{
+              headerTitle: 'Feed',
+              headerLeft: () => (
+                <HeaderButton iconName="chevron-back-outline" />
+              ),
+            }}
+          />
+          <Stack.Screen
+            name="CommentDetails"
+            component={CommentsDetails}
+            options={{
+              presentation: 'modal',
+              animation: 'default',
+              headerTitle: 'Comment',
+              headerLeft: () => (
+                <HeaderButton iconName="chevron-back-outline" />
+              ),
+            }}
+          />
+          <Stack.Screen
+            name="MyPosts"
+            component={MyPosts}
+            options={{
+              headerTitle: 'My Posts',
+            }}
+          />
+          <Stack.Screen
+            name="MyComments"
+            component={MyComments}
+            options={{
+              headerTitle: 'My Comments',
+            }}
+          />
         </Stack.Group>
       </Stack.Navigator>
     </View>

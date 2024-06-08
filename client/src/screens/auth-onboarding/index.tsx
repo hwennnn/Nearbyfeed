@@ -1,23 +1,42 @@
 /* eslint-disable react-native/no-inline-styles */
 import { Env } from '@env';
 import { useNavigation } from '@react-navigation/core';
+import type { RouteProp } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import * as Google from 'expo-auth-session/providers/google';
 import React from 'react';
+import { Platform } from 'react-native';
 
 import { useGoogleAuth } from '@/api';
-import { useTheme } from '@/core';
+import { useIsFirstTime, useTheme } from '@/core';
 import { signIn } from '@/core/auth';
 import { setAppLoading } from '@/core/loading';
 import { setUser } from '@/core/user';
-import { Button, Image, LayoutWithoutKeyboard, Text, View } from '@/ui';
+import type { AuthStackParamList } from '@/navigation';
+import {
+  Button,
+  HeaderButton,
+  Image,
+  LayoutWithoutKeyboard,
+  Text,
+  TouchableOpacity,
+  View,
+} from '@/ui';
 import { FontAwesome5, Ionicons } from '@/ui/icons/vector-icons';
 
 const config = {
   iosClientId: Env.GOOGLE_AUTH_IOS_CLIENT_ID,
 };
 
+type Props = RouteProp<AuthStackParamList, 'AuthOnboarding'>;
+
 export const AuthOnboardingScreen = () => {
+  const { params } = useRoute<Props>();
+  const isCloseButton = params?.isCloseButton === true;
+
+  const [_, setIsFirstTime] = useIsFirstTime();
+
   const isDark = useTheme.use.colorScheme() === 'dark';
 
   const { isLoading: isGoogleLoading, mutate: mutateGoogleAuth } =
@@ -28,6 +47,7 @@ export const AuthOnboardingScreen = () => {
 
         signIn(tokens);
         setUser(result.user);
+        setIsFirstTime(false);
       },
       onError: (_error) => {
         // TODO: show error toast
@@ -66,13 +86,27 @@ export const AuthOnboardingScreen = () => {
     await promptAsync();
   };
 
+  const skipAuth = () => {
+    setIsFirstTime(false);
+    navigate('App', {
+      screen: 'Feed',
+      initial: false,
+    });
+  };
+
   return (
     <LayoutWithoutKeyboard className="flex-1">
       <View className="flex-1 px-4">
         <View className="items-end">
-          <Text variant="md" className="text-bold">
-            Skip
-          </Text>
+          {isCloseButton ? (
+            <HeaderButton iconName="close" />
+          ) : (
+            <TouchableOpacity onPress={skipAuth}>
+              <Text variant="md" className="text-bold">
+                Skip
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
 
         <View className="flex-1 justify-center">
@@ -85,6 +119,11 @@ export const AuthOnboardingScreen = () => {
 
           <Text variant="h1" className="pb-2 text-center font-bold">
             Nearbyfeed
+          </Text>
+
+          <Text className="mb-6 text-center" variant="md">
+            Discover and connect with your local community through real-time
+            updates and engaging posts.
           </Text>
 
           <Button
@@ -101,41 +140,43 @@ export const AuthOnboardingScreen = () => {
             loading={isGoogleLoading}
           />
 
-          <AppleAuthentication.AppleAuthenticationButton
-            buttonType={
-              AppleAuthentication.AppleAuthenticationButtonType.CONTINUE
-            }
-            buttonStyle={
-              isDark
-                ? AppleAuthentication.AppleAuthenticationButtonStyle.WHITE
-                : AppleAuthentication.AppleAuthenticationButtonStyle.BLACK
-            }
-            cornerRadius={5}
-            style={{
-              width: '100%',
-              height: 44,
-            }}
-            onPress={async () => {
-              try {
-                const credential = await AppleAuthentication.signInAsync({
-                  requestedScopes: [
-                    AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
-                    AppleAuthentication.AppleAuthenticationScope.EMAIL,
-                  ],
-                });
-                // TODO: implement apple backend authentication
-                console.log(credential);
-                // signed in
-              } catch (e: any) {
-                console.log(e);
-                if (e.code === 'ERR_REQUEST_CANCELED') {
-                  // handle that the user canceled the sign-in flow
-                } else {
-                  // handle other errors
-                }
+          {Platform.OS === 'ios' && (
+            <AppleAuthentication.AppleAuthenticationButton
+              buttonType={
+                AppleAuthentication.AppleAuthenticationButtonType.CONTINUE
               }
-            }}
-          />
+              buttonStyle={
+                isDark
+                  ? AppleAuthentication.AppleAuthenticationButtonStyle.WHITE
+                  : AppleAuthentication.AppleAuthenticationButtonStyle.BLACK
+              }
+              cornerRadius={5}
+              style={{
+                width: '100%',
+                height: 44,
+              }}
+              onPress={async () => {
+                try {
+                  const credential = await AppleAuthentication.signInAsync({
+                    requestedScopes: [
+                      AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+                      AppleAuthentication.AppleAuthenticationScope.EMAIL,
+                    ],
+                  });
+                  // TODO: implement apple backend authentication
+                  console.log(credential);
+                  // signed in
+                } catch (e: any) {
+                  console.log(e);
+                  if (e.code === 'ERR_REQUEST_CANCELED') {
+                    // handle that the user canceled the sign-in flow
+                  } else {
+                    // handle other errors
+                  }
+                }
+              }}
+            />
+          )}
 
           <Button
             label="Continue with Email"

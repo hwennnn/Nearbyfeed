@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import OtpTextInput from 'react-native-text-input-otp';
 
 import { useResendVerifyEmail, useVerifyEmail } from '@/api';
-import { signIn } from '@/core';
+import { signIn, useIsFirstTime } from '@/core';
 import { setUser } from '@/core/user';
 import type { AuthStackParamList } from '@/navigation/auth-navigator';
 import {
@@ -23,6 +23,8 @@ import { timeUtils } from '@/utils/time-utils';
 type Props = RouteProp<AuthStackParamList, 'ValidateEmail'>;
 
 export const ValidateEmailScreen = () => {
+  const [_, setIsFirstTime] = useIsFirstTime();
+
   const { params } = useRoute<Props>();
   let { pendingUserId, email, sessionId: sessionIdFromProps } = params;
 
@@ -47,6 +49,7 @@ export const ValidateEmailScreen = () => {
 
       signIn(tokens);
       setUser(result.user);
+      setIsFirstTime(false);
     },
   });
 
