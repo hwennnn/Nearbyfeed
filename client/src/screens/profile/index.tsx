@@ -1,6 +1,7 @@
 import { Env } from '@env';
 import { useNavigation } from '@react-navigation/native';
 import * as React from 'react';
+import { Alert } from 'react-native';
 
 import { useSelf } from '@/api/users';
 import { signOut, useAuth, useTheme } from '@/core';
@@ -81,7 +82,26 @@ export const Profile = () => {
   }
 
   const signOutUser = (): void => {
-    signOut();
+    Alert.alert(
+      'Confirm Logout',
+      'Are you sure you want to log out? You will need to log in again to access your account.',
+      [
+        {
+          text: 'Logout',
+          onPress: () => {
+            signOut();
+          },
+          style: 'destructive',
+        },
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+      ],
+      {
+        userInterfaceStyle: isDark ? 'dark' : 'light',
+      }
+    );
   };
 
   return (
