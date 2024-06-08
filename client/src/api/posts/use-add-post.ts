@@ -150,5 +150,19 @@ export const useAddPost = createMutation<
       }
       return oldData;
     });
+
+    // Update the my-posts cache by adding the new post to the existing list
+    const myPostsQueryKey = ['my-posts', {}];
+    queryClient.setQueryData<InfinitePosts>(myPostsQueryKey, (oldData) => {
+      if (oldData) {
+        return {
+          pageParams: oldData.pageParams,
+          pages: produce(oldData.pages, (draftPages) => {
+            draftPages[0].posts.unshift(data);
+          }),
+        };
+      }
+      return oldData;
+    });
   },
 });

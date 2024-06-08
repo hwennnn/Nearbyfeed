@@ -3,7 +3,6 @@ import { produce } from 'immer';
 import { createMutation } from 'react-query-kit';
 
 import { usePostKeys } from '@/core/posts';
-import { useUser } from '@/core/user';
 
 import { client, queryClient } from '../common';
 import type { Post, VotePollResult } from '../types';
@@ -95,13 +94,7 @@ export const useVotePoll = createMutation<Response, Variables, AxiosError>({
       return oldData;
     });
 
-    const userId = useUser.getState().user?.id;
-    const myPostsQueryKey = [
-      'my-posts',
-      {
-        userId,
-      },
-    ];
+    const myPostsQueryKey = ['my-posts', {}];
 
     queryClient.setQueryData<InfinitePosts>(myPostsQueryKey, (oldData) => {
       if (oldData) {

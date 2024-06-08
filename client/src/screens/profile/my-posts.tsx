@@ -80,8 +80,6 @@ export const MyPosts = () => {
 
   return (
     <LayoutWithoutKeyboard>
-      {/* <Header headerTitle="My Posts" isDisabledBack={isLoading} /> */}
-
       <View className="min-h-[2px] flex-1">
         <FlashList
           ItemSeparatorComponent={Divider}
