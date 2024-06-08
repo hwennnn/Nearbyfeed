@@ -1,4 +1,5 @@
 import { classValidatorResolver } from '@hookform/resolvers/class-validator';
+import { useNavigation } from '@react-navigation/native';
 import { Transform } from 'class-transformer';
 import { IsString, MaxLength, MinLength } from 'class-validator';
 import React from 'react';
@@ -6,7 +7,9 @@ import { useForm } from 'react-hook-form';
 import { Keyboard } from 'react-native';
 
 import { useAddReply } from '@/api/posts/use-add-reply';
+import type { RootNavigatorProp } from '@/navigation';
 import { ControlledInput, Ionicons, Pressable, View } from '@/ui';
+import { promptSignIn } from '@/utils/auth-utils';
 
 export class CreateCommentDto {
   @IsString()
@@ -36,8 +39,22 @@ export const ReplyComposer = ({ postId, commentId }: Props) => {
   const { mutate: addComment, isLoading: isCreateCommentLoading } =
     useAddReply();
 
+  const { navigate: navigateRoot } = useNavigation<RootNavigatorProp>();
+
   const onSubmitComment = (dto: CreateCommentDto) => {
     Keyboard.dismiss();
+
+    const shouldProceed = promptSignIn(() => {
+      navigateRoot('Auth', {
+        screen: 'AuthOnboarding',
+        params: {
+          isCloseButton: true,
+        },
+      });
+    });
+
+    if (!shouldProceed) return;
+
     reset();
 
     dto.content = dto.content.trim();

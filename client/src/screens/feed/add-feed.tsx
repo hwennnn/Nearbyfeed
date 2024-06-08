@@ -22,6 +22,7 @@ import { showMessage } from 'react-native-flash-message';
 
 import { useAddPost } from '@/api';
 import { setAppLoading } from '@/core/loading';
+import type { RootNavigatorProp } from '@/navigation';
 import type { VotingLengthOption } from '@/screens/feed/poll-voting-length-item';
 import {
   DEFAULT_VOTING_LENGTH_OPTION,
@@ -44,6 +45,7 @@ import { Layout } from '@/ui/core/layout';
 import { ScrollLayout } from '@/ui/core/scroll-layout';
 import { FontAwesome5, Ionicons } from '@/ui/icons/vector-icons';
 import { ImageViewer } from '@/ui/image-viewer';
+import { promptSignIn } from '@/utils/auth-utils';
 import { retrieveCurrentPosition } from '@/utils/geolocation-utils';
 import { checkFileSize } from '@/utils/image-utils';
 
@@ -139,9 +141,22 @@ export const AddFeed = () => {
 
   const navigation = useNavigation();
 
+  const { navigate: navigateRoot } = useNavigation<RootNavigatorProp>();
+
   const onSubmit = React.useCallback(
     async (data: CreatePostDto) => {
       console.log('🚀 ~ data:', data);
+
+      const shouldProceed = promptSignIn(() => {
+        navigateRoot('Auth', {
+          screen: 'AuthOnboarding',
+          params: {
+            isCloseButton: true,
+          },
+        });
+      });
+
+      if (!shouldProceed) return;
 
       const location = await retrieveCurrentPosition();
       if (location === null) {
@@ -181,7 +196,14 @@ export const AddFeed = () => {
         },
       });
     },
-    [addPost, images, isPollEnabled, navigation, selectedVotingLength.value]
+    [
+      addPost,
+      images,
+      isPollEnabled,
+      navigateRoot,
+      navigation,
+      selectedVotingLength.value,
+    ]
   );
 
   const pickImage = async () => {

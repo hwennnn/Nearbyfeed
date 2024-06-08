@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { Alert } from 'react-native';
 
 import {
   getAccessToken,
@@ -39,8 +38,7 @@ const refreshAuthToken = async (): Promise<void> => {
   } catch (error: any) {
     if (error.response?.status === 401 || error.response?.status === 403) {
       console.error('There was an error when refreshing the token');
-      Alert.alert('You have been signed out');
-      signOut();
+      signOut(true);
     }
   }
 };
@@ -78,8 +76,7 @@ client.interceptors.response.use(
 
         return axios(originalRequest);
       } else {
-        Alert.alert('You have been signed out');
-        signOut();
+        signOut(true);
         console.log('res error : Session expired.');
         // could be showing popup alert -> your session has expired, please login to continue.
         const errorMessage =

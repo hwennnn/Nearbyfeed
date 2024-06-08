@@ -23,6 +23,7 @@ import {
 import Divider from '@/ui/core/divider';
 import { Ionicons } from '@/ui/icons/vector-icons';
 import colors from '@/ui/theme/colors';
+import { promptSignIn } from '@/utils/auth-utils';
 import { getInitials } from '@/utils/get-initials';
 import { stringUtils } from '@/utils/string-utils';
 
@@ -58,6 +59,17 @@ export const CommentCard = ({
 
   const handleVote = (voteValue: number) => {
     if (isOptimistic === true) return;
+
+    const shouldProceed = promptSignIn(() => {
+      navigate('Auth', {
+        screen: 'AuthOnboarding',
+        params: {
+          isCloseButton: true,
+        },
+      });
+    });
+
+    if (!shouldProceed) return;
 
     let value = voteValue === like?.value ? 0 : voteValue;
 
@@ -95,8 +107,18 @@ export const CommentCard = ({
   const isMyComment = authorId === currentUser?.id;
 
   const blockUser = () => {
-    if (isMyComment || currentUser?.id === undefined || authorId === undefined)
-      return;
+    if (isMyComment || authorId === undefined) return;
+
+    const shouldProceed = promptSignIn(() => {
+      navigate('Auth', {
+        screen: 'AuthOnboarding',
+        params: {
+          isCloseButton: true,
+        },
+      });
+    });
+
+    if (!shouldProceed || currentUser?.id === undefined) return;
 
     mutateBlockUser(
       {

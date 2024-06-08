@@ -1,7 +1,9 @@
+import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 
 import type { Post } from '@/api';
 import { useVotePost } from '@/api/posts/use-vote-post';
+import type { RootNavigatorProp } from '@/navigation';
 import {
   ActivityIndicator,
   Image,
@@ -14,6 +16,7 @@ import {
 } from '@/ui';
 import { Ionicons } from '@/ui/icons/vector-icons';
 import { ImageViewer } from '@/ui/image-viewer';
+import { promptSignIn } from '@/utils/auth-utils';
 import { getInitials } from '@/utils/get-initials';
 import { onShare, POST_SHARE_MESSAGE } from '@/utils/share-utils';
 
@@ -36,6 +39,8 @@ export const FeedCard = ({
   commentsCount,
   poll,
 }: Props) => {
+  const { navigate } = useNavigation<RootNavigatorProp>();
+
   const [imageModalIndex, setImageModalIndex] = React.useState<
     number | undefined
   >(undefined);
@@ -46,6 +51,17 @@ export const FeedCard = ({
 
   const handleVote = (voteValue: number) => {
     if (isOptimistic === true) return;
+
+    const shouldProceed = promptSignIn(() => {
+      navigate('Auth', {
+        screen: 'AuthOnboarding',
+        params: {
+          isCloseButton: true,
+        },
+      });
+    });
+
+    if (!shouldProceed) return;
 
     let value = voteValue === like?.value ? 0 : voteValue;
 

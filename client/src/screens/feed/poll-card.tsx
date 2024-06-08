@@ -1,9 +1,12 @@
+import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 
 import { type PollWithOptions, useVotePoll } from '@/api';
 import { useUser } from '@/core/user';
+import type { RootNavigatorProp } from '@/navigation';
 import { LoadingButton, Pressable, Text, View } from '@/ui';
 import { FontAwesome5, Ionicons } from '@/ui/icons/vector-icons';
+import { promptSignIn } from '@/utils/auth-utils';
 import { stringUtils } from '@/utils/string-utils';
 import { timeUtils } from '@/utils/time-utils';
 
@@ -13,6 +16,8 @@ type Props = {
 };
 
 export const PollCard = ({ poll, showAllText = false }: Props) => {
+  const { navigate } = useNavigation<RootNavigatorProp>();
+
   const [selectedVoteOption, setSelectedVoteOption] = React.useState<
     number | null
   >(null);
@@ -35,6 +40,17 @@ export const PollCard = ({ poll, showAllText = false }: Props) => {
     if (isPollVoted || isPollExpired || selectedVoteOption === null) {
       return;
     }
+
+    const shouldProceed = promptSignIn(() => {
+      navigate('Auth', {
+        screen: 'AuthOnboarding',
+        params: {
+          isCloseButton: true,
+        },
+      });
+    });
+
+    if (!shouldProceed) return;
 
     mutate({
       postId: poll.postId,

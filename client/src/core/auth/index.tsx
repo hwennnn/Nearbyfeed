@@ -1,3 +1,4 @@
+import { Alert } from 'react-native';
 import { create } from 'zustand';
 
 import type { AuthToken } from '@/core/auth/utils';
@@ -15,7 +16,7 @@ interface AuthState {
   token: AuthToken | null;
   status: 'idle' | 'signOut' | 'signIn';
   signIn: (data: AuthToken, shouldUpdateToken?: boolean) => void;
-  signOut: () => void;
+  signOut: (showAlert?: boolean) => void;
   hydrate: () => void;
   updateToken: (data: AuthToken) => void;
 }
@@ -30,7 +31,10 @@ const _useAuth = create<AuthState>((set, get) => ({
 
     set({ status: 'signIn', token });
   },
-  signOut: () => {
+  signOut: (showAlert = false) => {
+    if (get().status === 'signIn' && showAlert) {
+      Alert.alert('Your session has expired, please login to continue.');
+    }
     logoutUser();
     removeTokensFromStorage();
     set({ status: 'signOut', token: null });
@@ -62,7 +66,8 @@ export const getAuthToken = () => _useAuth.getState().token;
 export const getAccessToken = () => _useAuth.getState().token?.accessToken;
 export const getRefreshToken = () => _useAuth.getState().token?.refreshToken;
 
-export const signOut = () => _useAuth.getState().signOut();
+export const signOut = (showAlert?: boolean) =>
+  _useAuth.getState().signOut(showAlert);
 export const signIn = (token: AuthToken) => _useAuth.getState().signIn(token);
 export const hydrateAuth = () => _useAuth.getState().hydrate();
 export const updateToken = (token: AuthToken) =>

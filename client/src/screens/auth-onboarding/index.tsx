@@ -65,7 +65,6 @@ export const AuthOnboardingScreen = () => {
     if (response !== null) {
       if (response.type === 'success') {
         const accessToken = response.authentication!.accessToken;
-        console.log('🚀 ~ useEffect ~ accessToken:', accessToken);
         mutateGoogleAuth({
           token: accessToken,
         });

@@ -14,7 +14,8 @@ import { useBlockUser } from '@/api/users/block-user';
 import { useTheme } from '@/core';
 import { usePostKeys } from '@/core/posts';
 import { useUser } from '@/core/user';
-import type { RootStackParamList } from '@/navigation';
+import type { RootNavigatorProp } from '@/navigation';
+import { type RootStackParamList } from '@/navigation';
 import { CommentComposer } from '@/screens/feed/comment-composer';
 import { CommentList } from '@/screens/feed/comment-list';
 import { PollCard } from '@/screens/feed/poll-card';
@@ -36,6 +37,7 @@ import Divider from '@/ui/core/divider';
 import { Layout } from '@/ui/core/layout';
 import { Ionicons } from '@/ui/icons/vector-icons';
 import { ImageViewer } from '@/ui/image-viewer';
+import { promptSignIn } from '@/utils/auth-utils';
 import { getInitials } from '@/utils/get-initials';
 import { onShare, POST_SHARE_MESSAGE } from '@/utils/share-utils';
 
@@ -45,7 +47,7 @@ export const FeedDetails = () => {
   const { params } = useRoute<Props>();
   const { postId } = params;
 
-  const { setOptions } = useNavigation();
+  const { setOptions, navigate } = useNavigation<RootNavigatorProp>();
   const queryClient = useQueryClient();
 
   const {
@@ -175,12 +177,18 @@ export const FeedDetails = () => {
     };
 
     const blockUser = () => {
-      if (
-        isMyPost ||
-        currentUser?.id === undefined ||
-        post?.authorId === undefined
-      )
-        return;
+      if (isMyPost || post?.authorId === undefined) return;
+
+      const shouldProceed = promptSignIn(() => {
+        navigate('Auth', {
+          screen: 'AuthOnboarding',
+          params: {
+            isCloseButton: true,
+          },
+        });
+      });
+
+      if (!shouldProceed || currentUser?.id === undefined) return;
 
       mutateBlockUser(
         {
@@ -216,6 +224,7 @@ export const FeedDetails = () => {
     openReportSheet,
     setOptions,
     showActionSheetWithOptions,
+    navigate,
   ]);
 
   if (isLoading || post === undefined) {
@@ -239,6 +248,17 @@ export const FeedDetails = () => {
   const isLiked = like !== undefined && like.value === 1;
 
   const handleVote = (voteValue: number) => {
+    const shouldProceed = promptSignIn(() => {
+      navigate('Auth', {
+        screen: 'AuthOnboarding',
+        params: {
+          isCloseButton: true,
+        },
+      });
+    });
+
+    if (!shouldProceed) return;
+
     let value = voteValue === like?.value ? 0 : voteValue;
 
     mutate({

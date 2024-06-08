@@ -4,8 +4,9 @@ import * as Linking from 'expo-linking';
 import * as React from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import { useAuth } from '@/core';
+import { useAuth, useTheme } from '@/core';
 import type { RootStackParamList } from '@/navigation/types';
+import { LoadingComponent } from '@/ui';
 
 import { useThemeConfig } from './use-theme-config';
 
@@ -39,6 +40,7 @@ export const NavigationContainer = ({
   const isLoggedIn = useAuth.use.status() === 'signIn';
   const theme = useThemeConfig();
   const url = Linking.useURL();
+  const isDark = useTheme.use.colorScheme() === 'dark';
 
   if (url) {
     const { hostname, path, queryParams, scheme } = Linking.parse(url);
@@ -51,11 +53,16 @@ export const NavigationContainer = ({
   }
 
   return (
-    <SafeAreaProvider>
+    <SafeAreaProvider
+      // eslint-disable-next-line react-native/no-inline-styles
+      style={{
+        backgroundColor: isDark ? 'black' : 'white',
+      }}
+    >
       <RNNavigationContainer
         linking={isLoggedIn ? AppLinking : AuthLinking}
         theme={theme}
-        // fallback={<Text>Loading...</Text>}
+        fallback={<LoadingComponent />}
       >
         {children}
       </RNNavigationContainer>
