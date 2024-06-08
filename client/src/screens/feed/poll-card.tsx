@@ -77,7 +77,7 @@ export const PollCard = ({ poll, showAllText = false }: Props) => {
 
         <View className="mx-1 h-4/5 w-[0.5px] bg-white" />
 
-        <Text className="font-semibold text-black dark:text-white" variant="xs">
+        <Text className="font-medium text-black dark:text-white" variant="xs">
           {stringUtils.formatSingularPlural(
             'Participant',
             'Participants',
@@ -87,11 +87,7 @@ export const PollCard = ({ poll, showAllText = false }: Props) => {
         </Text>
       </View>
 
-      <Text className="text-gray-600 dark:text-gray-300" variant="xs">
-        Select only one answer
-      </Text>
-
-      <View className="flex-1 space-y-2">
+      <View className="flex-1 space-y-2 pt-2">
         {poll.options.map((option) => {
           const isSelected = isPollVoted
             ? option.id === poll.vote?.pollOptionId
@@ -106,7 +102,7 @@ export const PollCard = ({ poll, showAllText = false }: Props) => {
             <View className="flex-1 flex-row space-x-6" key={option.id}>
               <View className="flex-1 flex-row items-center space-x-2">
                 <View
-                  className="absolute h-full rounded-md bg-primary-300 dark:bg-primary-500"
+                  className="absolute h-full rounded-md bg-primary-300 dark:bg-primary-400"
                   style={{
                     width: `${percentage}%`,
                   }}
@@ -145,16 +141,18 @@ export const PollCard = ({ poll, showAllText = false }: Props) => {
               key={option.id}
               className={`flex-1 flex-row items-center space-x-2 rounded-lg p-2 ${
                 isSelected
-                  ? 'bg-primary-300 dark:bg-primary-400'
-                  : 'bg-neutral-300 dark:bg-charcoal-700'
+                  ? 'bg-primary-200 dark:bg-primary-400'
+                  : 'bg-gray-300 dark:bg-charcoal-700'
               }`}
             >
-              <View className="h-4 w-4 items-center justify-center rounded-xl border border-white">
-                {isSelected && <View className="h-2 w-2 rounded-md bg-white" />}
+              <View className="h-4 w-4 items-center justify-center rounded-xl border border-black dark:border-white">
+                {isSelected && (
+                  <View className="h-2 w-2 rounded-md bg-black dark:bg-white" />
+                )}
               </View>
 
               <Text
-                className="pr-6 text-gray-600 dark:text-white"
+                className="pl-2 pr-6 font-normal text-black dark:text-white"
                 variant="sm"
                 numberOfLines={showAllText ? undefined : 1}
               >
@@ -177,13 +175,11 @@ export const PollCard = ({ poll, showAllText = false }: Props) => {
               isLoading ||
               isPollVoted
             }
+            textProps={{
+              variant: 'sm',
+              className: 'text-neutral-100 dark:text-white font-semibold',
+            }}
           />
-        )}
-
-        {isPollExpired && (
-          <Text variant="sm" className="text-center text-primary-400">
-            Poll closed
-          </Text>
         )}
 
         {!isPollExpired && (

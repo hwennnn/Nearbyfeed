@@ -2,18 +2,21 @@ import React from 'react';
 import type { TouchableOpacityProps } from 'react-native';
 
 import { ActivityIndicator } from './activity-indicator';
+import type { ITextProps } from './text';
 import { Text } from './text';
 import { TouchableOpacity } from './touchable-opacity';
 
 interface Props extends TouchableOpacityProps {
   label?: string;
   isLoading?: boolean;
+  textProps?: ITextProps;
 }
 
 export const LoadingButton = ({
   label,
   isLoading = false,
   disabled = false,
+  textProps,
   ...props
 }: Props) => {
   return (
@@ -27,7 +30,11 @@ export const LoadingButton = ({
       {isLoading ? (
         <ActivityIndicator color="white" size="small" />
       ) : (
-        <Text variant="sm" className="text-black dark:text-white">
+        <Text
+          variant="sm"
+          className="text-black dark:text-white"
+          {...textProps}
+        >
           {label}
         </Text>
       )}
