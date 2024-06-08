@@ -152,7 +152,7 @@ export const PollCard = ({ poll, showAllText = false }: Props) => {
               </View>
 
               <Text
-                className="pl-2 pr-6 font-normal text-black dark:text-white"
+                className="pr-6 font-normal text-black dark:text-white"
                 variant="sm"
                 numberOfLines={showAllText ? undefined : 1}
               >

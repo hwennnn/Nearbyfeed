@@ -36,7 +36,7 @@ import {
 import Divider from '@/ui/core/divider';
 import { Layout } from '@/ui/core/layout';
 import { Ionicons } from '@/ui/icons/vector-icons';
-import { ImageViewer } from '@/ui/image-viewer';
+import { ImageCarousel } from '@/ui/image-carousel';
 import { promptSignIn } from '@/utils/auth-utils';
 import { getInitials } from '@/utils/get-initials';
 import { onShare, POST_SHARE_MESSAGE } from '@/utils/share-utils';
@@ -102,6 +102,8 @@ export const FeedDetails = () => {
   });
 
   const { mutate } = useVotePost();
+
+  const [imageCarouselIndex, setImageCarouselIndex] = React.useState(0);
 
   const [imageModalIndex, setImageModalIndex] = React.useState<
     number | undefined
@@ -339,38 +341,13 @@ export const FeedDetails = () => {
           )}
 
           {images !== null && images !== undefined && images.length > 0 && (
-            <View className="mt-1 flex-1 flex-row">
-              <ScrollView
-                showsHorizontalScrollIndicator={false}
-                className="flex-1 flex-row space-x-3"
-                contentContainerStyle="pl-4"
-                horizontal={true}
-              >
-                {images.map((image, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    onPress={() => setImageModalIndex(index)}
-                    className={`flex-1 ${
-                      index === images.length - 1 ? 'pr-12' : ''
-                    }`}
-                  >
-                    <Image
-                      className="h-56 w-64 rounded-md object-cover"
-                      source={{
-                        uri: image,
-                      }}
-                    />
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
-
-              <ImageViewer
-                images={images.map((url) => ({
-                  uri: url,
-                }))}
-                visible={imageModalIndex !== undefined}
-                onClose={() => setImageModalIndex(undefined)}
-                imageIndex={imageModalIndex}
+            <View className="px-4">
+              <ImageCarousel
+                images={images}
+                imageCarouselIndex={imageCarouselIndex}
+                imageModalIndex={imageModalIndex}
+                setImageCarouselIndex={setImageCarouselIndex}
+                setImageModalIndex={setImageModalIndex}
               />
             </View>
           )}
