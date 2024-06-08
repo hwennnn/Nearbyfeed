@@ -41,8 +41,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     [
       'expo-image-picker',
       {
-        photosPermission:
-          'This app requires access to the photo library to select images.',
+        photosPermission: 'Allow Nearbyfeed to access your photos',
+        cameraPermission: 'Allow Nearbyfeed to access your camera',
       },
     ],
     [

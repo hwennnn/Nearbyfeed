@@ -1,34 +1,10 @@
 import * as Permissions from 'expo-location';
 
-import { showErrorMessage } from '@/ui';
+import { requestLocationPermission } from '@/utils/permission-utils';
 
 export type Location = {
   latitude: number;
   longitude: number;
-};
-
-// Function to request location permission
-export const requestLocationPermission = async (): Promise<boolean> => {
-  try {
-    let { status } = await Permissions.requestForegroundPermissionsAsync();
-
-    if (status === 'granted') {
-      console.log('Location permission granted');
-      // Location permission granted, you can now proceed with location-related functionality
-      return true;
-    } else {
-      console.log('Location permission denied');
-      // Location permission denied, handle it accordingly
-      return false;
-    }
-  } catch (error) {
-    console.log('Error requesting location permission:', error);
-    showErrorMessage(
-      'There is an error when requesting location permission. Please try again.'
-    );
-    // Handle the error, display an error message, etc.
-    return false;
-  }
 };
 
 export const retrieveCurrentPosition = async (): Promise<Location | null> => {

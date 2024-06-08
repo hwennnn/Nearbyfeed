@@ -48,6 +48,10 @@ import { ImageViewer } from '@/ui/image-viewer';
 import { promptSignIn } from '@/utils/auth-utils';
 import { retrieveCurrentPosition } from '@/utils/geolocation-utils';
 import { checkFileSize } from '@/utils/image-utils';
+import {
+  requestCameraPermission,
+  requestMediaLibraryPermission,
+} from '@/utils/permission-utils';
 
 export class CreatePostDto {
   @IsString()
@@ -175,8 +179,8 @@ export const AddFeed = () => {
         votingLength: isPollEnabled ? selectedVotingLength.value : undefined,
       };
 
-      setAppLoading(true, 'Creating...');
       Keyboard.dismiss();
+      setAppLoading(true, 'Creating...');
 
       addPost(dto, {
         onSuccess: () => {
@@ -206,8 +210,41 @@ export const AddFeed = () => {
     ]
   );
 
+  const takePhoto = async () => {
+    const hasCameraPermission = await requestCameraPermission();
+    if (!hasCameraPermission) return;
+
+    let result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      aspect: [4, 3],
+      quality: 0.2,
+      selectionLimit: 5 - images.length,
+      allowsMultipleSelection: true,
+    });
+
+    if (!result.canceled && result.assets.length > 0) {
+      let isValid = true;
+      for (const asset of result.assets) {
+        const fileSize = await checkFileSize(asset.uri);
+        if (fileSize === null || fileSize > 5 * 1024 * 1024) {
+          showErrorMessage(
+            'The images is too large. Please select smaller images.'
+          );
+          isValid = false;
+          break;
+        }
+      }
+
+      if (isValid) {
+        setImages((prevImages) => prevImages.concat(result.assets));
+      }
+    }
+  };
+
   const pickImage = async () => {
-    // No permissions request is necessary for launching the images library
+    const hasMediaLibraryPermission = await requestMediaLibraryPermission();
+    if (!hasMediaLibraryPermission) return;
+
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       aspect: [4, 3],
@@ -222,7 +259,7 @@ export const AddFeed = () => {
         const fileSize = await checkFileSize(asset.uri);
         if (fileSize === null || fileSize > 5 * 1024 * 1024) {
           showErrorMessage(
-            'The images is too large. Please select a smaller images.'
+            'The images is too large. Please select smaller images.'
           );
           isValid = false;
           break;
@@ -464,6 +501,14 @@ export const AddFeed = () => {
       <View className="absolute bottom-0 z-50 h-fit w-full bg-white px-4 dark:bg-charcoal-950">
         <Divider />
         <View className="mx-4 mb-6 mt-2 flex-row space-x-6">
+          <Pressable onPress={takePhoto}>
+            <FontAwesome5
+              name="camera"
+              size={24}
+              className="text-neutral-500 dark:text-neutral-400"
+            />
+          </Pressable>
+
           <Pressable onPress={pickImage}>
             <FontAwesome5
               name="images"

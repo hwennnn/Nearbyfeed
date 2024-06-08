@@ -95,7 +95,7 @@ export const Feed = () => {
     <Layout className="flex-1" hasHorizontalPadding={false}>
       <TouchableOpacity
         onPress={() => navigate('AddFeed')}
-        className="absolute bottom-3 right-3 z-10 items-center justify-center rounded-full bg-primary-400 p-[14px]"
+        className="absolute bottom-3 right-3 z-10 items-center justify-center rounded-full bg-primary-400 p-[16px]"
       >
         <FontAwesome name="pencil" size={24} color="white" />
       </TouchableOpacity>
