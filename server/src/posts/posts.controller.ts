@@ -24,6 +24,7 @@ import JwtAuthGuard from 'src/auth/guards/jwt-auth.guard';
 import { OptionalJwtAuthGuard } from 'src/auth/guards/optional-jwt-auth.guard';
 import { imageUploadOptions } from 'src/images/constants';
 import { ImagesService } from 'src/images/images.service';
+import { CommentsService } from './comments.service';
 import {
   CreateCommentDto,
   GetChildCommentDto,
@@ -32,17 +33,20 @@ import {
   UpdateCommentDto,
   UpdatePostDto,
   VotePollDto,
-} from 'src/posts/dto';
-import { CreatePostDto } from 'src/posts/dto/create-post.dto';
-import { LikeDto } from 'src/posts/dto/like.dto';
+} from './dto';
+import { CreatePostDto } from './dto/create-post.dto';
+import { LikeDto } from './dto/like.dto';
 import {
   type CommentWithLike,
   type PollWithOptions,
   type PostWithLike,
   type VotePollResult,
-} from 'src/posts/entities';
-import { PollService } from 'src/posts/poll.service';
-import { CommentsService } from './comments.service';
+} from './entities';
+import CommentActiveGuard from './guards/comment-active.guard';
+import CommentMutateGuard from './guards/comment-mutate.guard';
+import PostActiveGuard from './guards/post-active.guard';
+import PostMutateGuard from './guards/post-mutate.guard';
+import { PollService } from './poll.service';
 import { PostsService } from './posts.service';
 
 @Controller('posts')
@@ -89,29 +93,29 @@ export class PostsController {
     return await this.postsService.findNearbyPosts(parsedDto);
   }
 
-  @Get(':id')
-  @UseGuards(new OptionalJwtAuthGuard(true))
+  @Get(':postId')
+  @UseGuards(new OptionalJwtAuthGuard(true), PostActiveGuard)
   async findPost(
-    @Param('id') postId: string,
+    @Param('postId') postId: string,
     @GetUser() user: TokenUser | null,
   ): Promise<PostWithLike | null> {
     return await this.postsService.findPost(+postId, user?.userId);
   }
 
-  @Patch(':id')
-  @UseGuards(JwtAuthGuard)
+  @Patch(':postId')
+  @UseGuards(JwtAuthGuard, PostMutateGuard)
   async updatePost(
-    @Param('id') postId: string,
+    @Param('postId') postId: string,
     @Body() updatePostDto: UpdatePostDto,
   ): Promise<PostEntity> {
     return await this.postsService.updatePost(+postId, updatePostDto);
   }
 
-  @Put(':id/vote')
-  @UseGuards(JwtAuthGuard)
+  @Put(':postId/vote')
+  @UseGuards(JwtAuthGuard, PostActiveGuard)
   async votePost(
     @GetUser('userId') userId: string,
-    @Param('id') postId: string,
+    @Param('postId') postId: string,
     @Body() likeDto: LikeDto,
   ): Promise<{
     like: PostLike;
@@ -120,12 +124,12 @@ export class PostsController {
     return await this.postsService.votePost(+userId, +postId, likeDto.value);
   }
 
-  @Post(':id/comments/:parentCommentId?')
-  @UseGuards(JwtAuthGuard)
+  @Post(':postId/comments/:parentCommentId?')
+  @UseGuards(JwtAuthGuard, PostActiveGuard)
   async createComment(
     @Body() createCommentDto: CreateCommentDto,
     @GetUser('userId') userId: string,
-    @Param('id') postId: string,
+    @Param('postId') postId: string,
     @Param('parentCommentId') parentCommentId?: string,
   ): Promise<CommentEntity> {
     return await this.commentsService.createComment(
@@ -137,7 +141,11 @@ export class PostsController {
   }
 
   @Get(':postId/comments/:commentId')
-  @UseGuards(new OptionalJwtAuthGuard(true))
+  @UseGuards(
+    new OptionalJwtAuthGuard(true),
+    PostActiveGuard,
+    CommentActiveGuard,
+  )
   async findComment(
     @Param('postId') postId: string,
     @Param('commentId') commentId: string,
@@ -150,10 +158,10 @@ export class PostsController {
     );
   }
 
-  @Get(':id/comments')
-  @UseGuards(new OptionalJwtAuthGuard(true))
+  @Get(':postId/comments')
+  @UseGuards(new OptionalJwtAuthGuard(true), PostActiveGuard)
   async findComments(
-    @Param('id') postId: string,
+    @Param('postId') postId: string,
     @Query() getCommentDto: GetCommentDto,
     @GetUser() user: TokenUser | null,
   ): Promise<{ comments: CommentWithLike[]; hasMore: boolean }> {
@@ -168,7 +176,11 @@ export class PostsController {
   }
 
   @Get(':postId/comments/:commentId/replies')
-  @UseGuards(new OptionalJwtAuthGuard(true))
+  @UseGuards(
+    new OptionalJwtAuthGuard(true),
+    PostActiveGuard,
+    CommentActiveGuard,
+  )
   async findChildComments(
     @Param('postId') postId: string,
     @Param('commentId') commentId: string,
@@ -191,10 +203,10 @@ export class PostsController {
     );
   }
 
-  @Patch(':postId/comments/:id')
-  @UseGuards(JwtAuthGuard)
+  @Patch(':postId/comments/:commentId')
+  @UseGuards(JwtAuthGuard, PostActiveGuard, CommentMutateGuard)
   async updateComment(
-    @Param('id') commentId: string,
+    @Param('commentId') commentId: string,
     @Body() updateCommentDto: UpdateCommentDto,
   ): Promise<CommentEntity> {
     return await this.commentsService.updateComment(
@@ -204,7 +216,7 @@ export class PostsController {
   }
 
   @Put(':postId/comments/:commentId/vote')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, PostActiveGuard, CommentActiveGuard)
   async voteComment(
     @GetUser('userId') userId: string,
     @Param('postId') postId: string,
@@ -223,7 +235,7 @@ export class PostsController {
   }
 
   @Get(':postId/polls/:pollId')
-  @UseGuards(new OptionalJwtAuthGuard(true))
+  @UseGuards(new OptionalJwtAuthGuard(true), PostActiveGuard)
   async findPoll(
     @Param('postId') postId: string,
     @Param('pollId') pollId: string,
@@ -233,7 +245,7 @@ export class PostsController {
   }
 
   @Post(':postId/polls/:pollId/vote')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, PostActiveGuard)
   async votePoll(
     @Body() votePollDto: VotePollDto,
     @GetUser('userId') userId: string,

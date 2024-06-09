@@ -88,6 +88,10 @@ export class UsersService {
     try {
       let user = await this.findOneByEmail(dto.email);
 
+      if (user?.isDeleted === true) {
+        throw new BadRequestException('The account has already been deleted');
+      }
+
       if (user === null) {
         // create new user if the user with this email does not exist
         user = await this.prismaService.user.create({
@@ -366,6 +370,7 @@ export class UsersService {
         skip,
         where: {
           authorId: userId,
+          isDeleted: false,
         },
         cursor: postCursor,
         select: {

@@ -23,6 +23,8 @@ import { ImagesService } from 'src/images/images.service';
 import { type PostWithLike } from 'src/posts/entities';
 import { PaginationDto, UpdateUserDto } from 'src/users/dto';
 import { type UserWithoutPassword } from 'src/users/entities/userWithoutPassword';
+import UserActiveGuard from 'src/users/guards/user-active.guard';
+import UserMutateGuard from 'src/users/guards/user-mutate.guard';
 import { UsersService } from './users.service';
 
 @Controller('users')
@@ -34,6 +36,7 @@ export class UsersController {
   ) {}
 
   @Get('self')
+  @UseGuards(UserActiveGuard)
   async getSelf(
     @GetUser('userId') userId: string,
   ): Promise<UserWithoutPassword> {
@@ -41,6 +44,7 @@ export class UsersController {
   }
 
   @Patch(':id')
+  @UseGuards(UserMutateGuard)
   @UseInterceptors(FileInterceptor('image', imageUploadOptions))
   async update(
     @Param('id') id: string,
@@ -62,6 +66,7 @@ export class UsersController {
   }
 
   @Get(':id/posts')
+  @UseGuards(UserActiveGuard)
   async findOwnPosts(
     @Param('id') id: string,
     @GetUser('userId') userId: string,
@@ -94,6 +99,7 @@ export class UsersController {
   }
 
   @Post(':id/block/:blockedId')
+  @UseGuards(UserMutateGuard)
   async blockUser(
     @Param('id') id: string,
     @GetUser('userId') userId: string,
@@ -111,6 +117,7 @@ export class UsersController {
   }
 
   @Delete(':id/block/:blockedId')
+  @UseGuards(UserMutateGuard)
   async deleteBlockUser(
     @Param('id') id: string,
     @GetUser('userId') userId: string,
