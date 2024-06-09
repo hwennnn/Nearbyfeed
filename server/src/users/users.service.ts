@@ -370,7 +370,7 @@ export class UsersService {
         skip,
         where: {
           authorId: userId,
-          isDeleted: false,
+          isActive: true,
         },
         cursor: postCursor,
         select: {
@@ -378,7 +378,8 @@ export class UsersService {
           title: true,
           content: true,
           latitude: true,
-          isDeleted: true,
+          isActive: true,
+          isEdited: true,
           longitude: true,
           locationName: true,
           fullLocationName: true,
@@ -486,7 +487,7 @@ export class UsersService {
       .findMany({
         where: {
           authorId: userId,
-          isDeleted: false,
+          isActive: true,
         },
         cursor,
         take: limit + 1,
@@ -502,7 +503,7 @@ export class UsersService {
           postId: true,
           points: true,
           authorId: true,
-          isDeleted: true,
+          isActive: true,
           parentCommentId: true,
           repliesCount: true,
           post: true,

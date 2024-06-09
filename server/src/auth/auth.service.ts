@@ -97,7 +97,7 @@ export class AuthService {
       throw new ForbiddenException('Invalid credentials');
     }
 
-    if (user.isDeleted === true) {
+    if (user.isDeleted) {
       throw new BadRequestException('User is deleted');
     }
 
@@ -247,7 +247,7 @@ export class AuthService {
     const userId = payload.sub;
     const user = await this.usersService.findOne(parseInt(userId));
 
-    if (userId !== user.id.toString() || user.isDeleted === true) {
+    if (userId !== user.id.toString() || user.isDeleted) {
       throw new BadRequestException('Invalid user');
     }
 
@@ -306,7 +306,7 @@ export class AuthService {
   async sendResetPasswordEmail(email: string): Promise<void> {
     const user = await this.usersService.findOneByEmail(email);
 
-    if (user === null || user.isDeleted === true) {
+    if (user === null || user.isDeleted) {
       return;
     }
 

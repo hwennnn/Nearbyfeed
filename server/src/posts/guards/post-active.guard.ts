@@ -16,12 +16,8 @@ export default class PostActiveGuard implements CanActivate {
 
     const post = await this.postsService.findPost(+postId);
 
-    if (post === null) {
+    if (post === null || post.isActive !== true) {
       throw new NotFoundException('Post not found');
-    }
-
-    if (post.isDeleted) {
-      throw new NotFoundException('Post has been deleted');
     }
 
     return true;

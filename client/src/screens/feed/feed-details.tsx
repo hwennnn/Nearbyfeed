@@ -9,9 +9,10 @@ import * as React from 'react';
 import { RefreshControl } from 'react-native';
 
 import type { InfinitePosts } from '@/api';
-import { usePost, useVotePost } from '@/api';
+import { useDeletePost, usePost, useVotePost } from '@/api';
 import { useBlockUser } from '@/api/users/block-user';
 import { useTheme } from '@/core';
+import { setAppLoading } from '@/core/loading';
 import { usePostKeys } from '@/core/posts';
 import { useUser } from '@/core/user';
 import type { RootNavigatorProp } from '@/navigation';
@@ -102,6 +103,11 @@ export const FeedDetails = () => {
   });
 
   const { mutate } = useVotePost();
+  const { mutate: deletePost } = useDeletePost({
+    onMutate: () => {
+      setAppLoading(true, 'Deleting...');
+    },
+  });
 
   const [imageCarouselIndex, setImageCarouselIndex] = React.useState(0);
 
@@ -144,6 +150,25 @@ export const FeedDetails = () => {
     }
   }, [isLoading, navigate, post?.content, post?.title, postId]);
 
+  const handleDeletePost = React.useCallback(() => {
+    deletePost(
+      {
+        postId,
+      },
+      {
+        onSuccess: () => {
+          showSuccessMessage('Post deleted successfully');
+          navigate('App', {
+            screen: 'Feed',
+          });
+        },
+        onSettled: () => {
+          setAppLoading(false);
+        },
+      }
+    );
+  }, [deletePost, navigate, postId]);
+
   const { mutate: mutateBlockUser } = useBlockUser();
 
   React.useLayoutEffect(() => {
@@ -151,12 +176,13 @@ export const FeedDetails = () => {
     const isMyPost = post?.authorId === currentUser?.id;
 
     const onPressActionSheet = () => {
-      const options = [];
+      const options: string[] = [];
 
       if (!isMyPost) {
         options.push('Block this user');
       } else {
         options.push('Edit this post');
+        options.push('Delete this post');
       }
 
       options.push('Report');
@@ -169,25 +195,31 @@ export const FeedDetails = () => {
           userInterfaceStyle: useTheme.getState().colorScheme,
           options,
           cancelButtonIndex,
-          destructiveButtonIndex: options.findIndex(
-            (v) => v === 'Report' || v === 'Block this user'
-          ), // Only the 'Report' option is destructive
+          destructiveButtonIndex: options
+            .map((_, index) => index)
+            .filter((index) => options[index] !== 'Edit this post'),
         },
         (selectedIndex: number | undefined) => {
-          switch (selectedIndex) {
-            case 0:
-              if (!isMyPost) {
-                blockUser();
-              } else {
-                navToEditFeed();
-              }
-              break;
+          if (selectedIndex === undefined) {
+            return;
+          }
 
-            case 1:
+          const option = options[selectedIndex];
+
+          switch (option) {
+            case 'Block this user':
+              blockUser();
+              break;
+            case 'Edit this post':
+              navToEditFeed();
+              break;
+            case 'Delete this post':
+              handleDeletePost();
+              break;
+            case 'Report':
               openReportSheet();
               break;
-
-            case cancelButtonIndex:
+            case 'Cancel':
             default:
               break;
           }
@@ -245,6 +277,7 @@ export const FeedDetails = () => {
     showActionSheetWithOptions,
     navigate,
     navToEditFeed,
+    handleDeletePost,
   ]);
 
   if (isLoading || post === undefined) {

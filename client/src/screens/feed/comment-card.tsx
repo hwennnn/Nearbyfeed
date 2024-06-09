@@ -137,11 +137,15 @@ export const CommentCard = ({
   };
 
   const onPressActionSheet = () => {
-    const options = ['Report'];
+    const options = [];
 
     if (!isMyComment) {
       options.push('Block this user');
+    } else {
+      options.push('Delete this comment');
     }
+
+    options.push('Report');
 
     options.push('Cancel');
 
@@ -152,7 +156,9 @@ export const CommentCard = ({
         userInterfaceStyle: useTheme.getState().colorScheme,
         options,
         cancelButtonIndex,
-        destructiveButtonIndex: [0], // Only the 'Report' option is destructive
+        destructiveButtonIndex: options.findIndex(
+          (v) => v === 'Report' || v === 'Block this user'
+        ),
       },
       (selectedIndex: number | undefined) => {
         switch (selectedIndex) {

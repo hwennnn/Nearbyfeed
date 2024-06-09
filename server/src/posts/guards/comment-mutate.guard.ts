@@ -18,12 +18,8 @@ export default class CommentMutateGuard implements CanActivate {
 
     const comment = await this.commentsService.findComment(+postId, +commentId);
 
-    if (comment === null) {
+    if (comment === null || comment.isActive !== true) {
       throw new NotFoundException('Comment not found');
-    }
-
-    if (comment.isDeleted) {
-      throw new NotFoundException('Comment has been deleted');
     }
 
     const user = request.user;

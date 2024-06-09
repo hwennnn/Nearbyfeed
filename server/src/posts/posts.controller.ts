@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -30,7 +31,6 @@ import {
   GetChildCommentDto,
   GetCommentDto,
   GetPostsDto,
-  UpdateCommentDto,
   UpdatePostDto,
   VotePollDto,
 } from './dto';
@@ -124,6 +124,12 @@ export class PostsController {
     return await this.postsService.votePost(+userId, +postId, likeDto.value);
   }
 
+  @Delete(':postId')
+  @UseGuards(JwtAuthGuard, PostMutateGuard)
+  async deletePost(@Param('postId') postId: string): Promise<void> {
+    await this.postsService.deletePost(+postId);
+  }
+
   @Post(':postId/comments/:parentCommentId?')
   @UseGuards(JwtAuthGuard, PostActiveGuard)
   async createComment(
@@ -203,16 +209,10 @@ export class PostsController {
     );
   }
 
-  @Patch(':postId/comments/:commentId')
+  @Delete(':postId/comments/:commentId')
   @UseGuards(JwtAuthGuard, PostActiveGuard, CommentMutateGuard)
-  async updateComment(
-    @Param('commentId') commentId: string,
-    @Body() updateCommentDto: UpdateCommentDto,
-  ): Promise<CommentEntity> {
-    return await this.commentsService.updateComment(
-      +commentId,
-      updateCommentDto,
-    );
+  async deleteComment(@Param('commentId') commentId: string): Promise<void> {
+    await this.commentsService.deleteComment(+commentId);
   }
 
   @Put(':postId/comments/:commentId/vote')

@@ -5,7 +5,6 @@ import {
   GetCommentsSort,
   type CreateCommentDto,
   type GetCommentDto,
-  type UpdateCommentDto,
 } from 'src/posts/dto';
 import { type CommentWithLike } from 'src/posts/entities';
 
@@ -130,7 +129,7 @@ export class CommentsService {
           points: true,
           authorId: true,
           author: true,
-          isDeleted: true,
+          isActive: true,
           parentCommentId: true,
           repliesCount: true,
           likes: selectLikes,
@@ -216,7 +215,7 @@ export class CommentsService {
       .findMany({
         where: {
           postId,
-          isDeleted: false,
+          isActive: true,
           parentCommentId: null,
         },
         cursor,
@@ -232,7 +231,7 @@ export class CommentsService {
           points: true,
           authorId: true,
           author: true,
-          isDeleted: true,
+          isActive: true,
           parentCommentId: true,
           repliesCount: true,
           likes: selectLikes,
@@ -255,7 +254,7 @@ export class CommentsService {
               points: true,
               authorId: true,
               author: true,
-              isDeleted: true,
+              isActive: true,
               parentCommentId: true,
               repliesCount: true,
               likes: selectLikes,
@@ -350,7 +349,7 @@ export class CommentsService {
     const comments = await this.prismaService.comment
       .findMany({
         where: {
-          isDeleted: false,
+          isActive: true,
           parentCommentId: commentId,
         },
         cursor,
@@ -366,7 +365,7 @@ export class CommentsService {
           points: true,
           authorId: true,
           author: true,
-          isDeleted: true,
+          isActive: true,
           parentCommentId: true,
           repliesCount: true,
           likes: selectLikes,
@@ -410,29 +409,19 @@ export class CommentsService {
     };
   }
 
-  async updateComment(
-    commentId: number,
-    updateCommentDto: UpdateCommentDto,
-  ): Promise<Comment> {
-    const data = { ...updateCommentDto };
-
-    if (updateCommentDto.content !== undefined) {
-      data.content = this.filterService.filterText(updateCommentDto.content);
-    }
-
-    return await this.prismaService.comment
-      .update({
+  async deleteComment(commentId: number): Promise<void> {
+    this.prismaService.comment
+      .delete({
         where: { id: commentId },
-        data,
       })
       .catch((e) => {
         this.logger.error(
-          `Failed to update comment ${commentId}`,
+          `Failed to delete comment ${commentId}`,
           e instanceof Error ? e.stack : undefined,
           CommentsService.name,
         );
 
-        throw new BadRequestException('Failed to update comment');
+        throw new BadRequestException('Failed to delete comment');
       });
   }
 

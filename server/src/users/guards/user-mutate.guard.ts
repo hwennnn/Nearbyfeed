@@ -18,12 +18,8 @@ export default class UserMutateGuard implements CanActivate {
 
     const user = await this.usersService.findOne(userIdFromToken);
 
-    if (user === null) {
+    if (user === null || user.isDeleted) {
       throw new NotFoundException('User not found');
-    }
-
-    if (user.isDeleted === true) {
-      throw new NotFoundException('User has been deleted');
     }
 
     if (userIdFromParams !== userIdFromToken) {

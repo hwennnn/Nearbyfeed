@@ -138,14 +138,15 @@ export class PostsService {
             lte: dto.longitude + degreesPerDistance,
             gte: dto.longitude - degreesPerDistance,
           },
-          isDeleted: false,
+          isActive: true,
           authorId: {
             notIn: blockedIds,
           },
         },
         select: {
           id: true,
-          isDeleted: true,
+          isActive: true,
+          isEdited: true,
           title: true,
           content: true,
           latitude: true,
@@ -250,12 +251,13 @@ export class PostsService {
       .findFirst({
         where: {
           id: +postId,
-          isDeleted: false,
+          isActive: true,
         },
         select: {
           id: true,
           title: true,
-          isDeleted: true,
+          isActive: true,
+          isEdited: true,
           content: true,
           latitude: true,
           longitude: true,
@@ -355,6 +357,22 @@ export class PostsService {
         );
 
         throw new BadRequestException('Failed to update post');
+      });
+  }
+
+  async deletePost(id: number): Promise<void> {
+    await this.prismaService.post
+      .delete({
+        where: { id },
+      })
+      .catch((e) => {
+        this.logger.error(
+          `Failed to delete post ${id}`,
+          e instanceof Error ? e.stack : undefined,
+          PostsService.name,
+        );
+
+        throw new BadRequestException('Failed to delete post');
       });
   }
 
