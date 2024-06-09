@@ -7,6 +7,11 @@ export type RootStackParamList = {
   Auth: NavigatorScreenParams<AuthStackParamList>;
   App: NavigatorScreenParams<FeedStackParamList>;
   AddFeed: undefined;
+  EditFeed: {
+    postId: number;
+    title: string;
+    content?: string;
+  };
   FeedDetails: { postId: number };
   CommentDetails: { commentId: number; postId: number; repliesCount: number };
   MyPosts: undefined;

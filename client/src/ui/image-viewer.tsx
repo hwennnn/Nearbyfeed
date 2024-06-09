@@ -17,9 +17,11 @@ type ImageViewerProps = {
 const Footer = ({ index, length }: { index: number; length: number }) => {
   return (
     <View className="flex-row items-center justify-center pb-12">
-      <Text className="font-semibold text-white">
-        {`${index + 1} / ${length}`}
-      </Text>
+      <View className="z-50 rounded-full bg-black px-3 py-1">
+        <Text className="font-semibold text-white">
+          {`${index + 1} / ${length}`}
+        </Text>
+      </View>
     </View>
   );
 };

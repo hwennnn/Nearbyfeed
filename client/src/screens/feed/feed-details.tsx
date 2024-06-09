@@ -134,6 +134,16 @@ export const FeedDetails = () => {
     []
   );
 
+  const navToEditFeed = React.useCallback(() => {
+    if (!isLoading) {
+      navigate('EditFeed', {
+        postId,
+        title: post?.title ?? '',
+        content: post?.content ?? undefined,
+      });
+    }
+  }, [isLoading, navigate, post?.content, post?.title, postId]);
+
   const { mutate: mutateBlockUser } = useBlockUser();
 
   React.useLayoutEffect(() => {
@@ -141,12 +151,15 @@ export const FeedDetails = () => {
     const isMyPost = post?.authorId === currentUser?.id;
 
     const onPressActionSheet = () => {
-      const options = ['Report'];
+      const options = [];
 
       if (!isMyPost) {
         options.push('Block this user');
+      } else {
+        options.push('Edit this post');
       }
 
+      options.push('Report');
       options.push('Cancel');
 
       const cancelButtonIndex = options.length - 1;
@@ -156,18 +169,22 @@ export const FeedDetails = () => {
           userInterfaceStyle: useTheme.getState().colorScheme,
           options,
           cancelButtonIndex,
-          destructiveButtonIndex: [0], // Only the 'Report' option is destructive
+          destructiveButtonIndex: options.findIndex(
+            (v) => v === 'Report' || v === 'Block this user'
+          ), // Only the 'Report' option is destructive
         },
         (selectedIndex: number | undefined) => {
           switch (selectedIndex) {
             case 0:
-              openReportSheet();
+              if (!isMyPost) {
+                blockUser();
+              } else {
+                navToEditFeed();
+              }
               break;
 
             case 1:
-              if (!isMyPost) {
-                blockUser();
-              }
+              openReportSheet();
               break;
 
             case cancelButtonIndex:
@@ -227,6 +244,7 @@ export const FeedDetails = () => {
     setOptions,
     showActionSheetWithOptions,
     navigate,
+    navToEditFeed,
   ]);
 
   if (isLoading || post === undefined) {
@@ -341,7 +359,7 @@ export const FeedDetails = () => {
           )}
 
           {images !== null && images !== undefined && images.length > 0 && (
-            <View className="px-4">
+            <View className="flex-1 px-4">
               <ImageCarousel
                 images={images}
                 imageCarouselIndex={imageCarouselIndex}

@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { Dimensions, TouchableOpacity } from 'react-native';
+import { Dimensions } from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
 
-import { Image, Text, View } from '@/ui/core';
+import { Image, Pressable, Text, View } from '@/ui/core';
 
 import { ImageViewer } from './image-viewer';
 
@@ -39,7 +39,7 @@ export const ImageCarousel = ({
         data={images}
         onSnapToItem={(index) => setImageCarouselIndex(index)}
         renderItem={({ index }) => (
-          <TouchableOpacity
+          <Pressable
             key={index}
             onPress={() => setImageModalIndex(index)}
             className="flex-1"
@@ -51,7 +51,7 @@ export const ImageCarousel = ({
               }}
               contentFit="cover"
             />
-          </TouchableOpacity>
+          </Pressable>
         )}
       />
 

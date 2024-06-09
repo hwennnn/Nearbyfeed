@@ -11,6 +11,7 @@ import { TabNavigator } from '@/navigation/tab-navigator';
 import type { RootStackParamList } from '@/navigation/types';
 import { AddFeed, FeedDetails } from '@/screens';
 import { CommentsDetails } from '@/screens/feed/comment-details';
+import { EditFeed } from '@/screens/feed/edit-feed';
 import { MyComments } from '@/screens/profile/my-comments';
 import { MyPosts } from '@/screens/profile/my-posts';
 import { HeaderButton, View } from '@/ui';
@@ -83,6 +84,13 @@ export const Root = () => {
             component={AddFeed}
             options={{
               headerTitle: 'Create a Feed',
+            }}
+          />
+          <Stack.Screen
+            name="EditFeed"
+            component={EditFeed}
+            options={{
+              headerTitle: 'Edit Feed',
             }}
           />
           <Stack.Screen

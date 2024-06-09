@@ -4,6 +4,7 @@ export * from './use-add-reply';
 export * from './use-child-comments';
 export * from './use-comment';
 export * from './use-comments';
+export * from './use-edit-post';
 export * from './use-location-name';
 export * from './use-post';
 export * from './use-posts';
