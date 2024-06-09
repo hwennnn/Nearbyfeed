@@ -53,15 +53,17 @@ export const ResetPasswordScreen = () => {
 
   const isFormValid = formState.isValid;
 
-  const { isLoading, error, mutateAsync } = useResetPassword();
+  const { isLoading, error, mutateAsync } = useResetPassword({
+    onSuccess: () => {
+      showSuccessMessage(
+        'You have successfully reset your password. You can now proceed to log in.'
+      );
+      navigate('Auth', { screen: 'Login' });
+    },
+  });
 
   const onSubmit = async (data: ResetPasswordDto): Promise<void> => {
     await mutateAsync({ token, newPassword: data.password });
-
-    showSuccessMessage(
-      'You have successfully reset your password. You can now proceed to log in.'
-    );
-    navigate('Auth', { screen: 'Login' });
   };
 
   return (

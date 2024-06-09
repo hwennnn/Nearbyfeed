@@ -38,7 +38,7 @@ export class MailService {
     resetId: string,
   ): Promise<void> {
     const resetEmailLink =
-      'http://localhost:3000/auth/reset-password/' + resetId;
+      'http://localhost:3000/auth/password/reset/' + resetId;
 
     await this.mailerService
       .sendMail({

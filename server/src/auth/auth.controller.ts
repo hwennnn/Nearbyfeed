@@ -63,7 +63,7 @@ export class AuthController {
     return await this.authService.verifyEmail(pendingUserId, verifyEmailDto);
   }
 
-  @Post('verify-email/:id/resend')
+  @Put('verify-email/:id/resend')
   async requestEmailOTP(@Param('id') pendingUserId: string): Promise<{
     sessionId: string;
   }> {
@@ -79,7 +79,7 @@ export class AuthController {
     return await this.authService.refreshTokens(refreshToken, payload);
   }
 
-  @Post('forgot-password')
+  @Post('password/forgot')
   async forgotPassword(
     @Body() forgotPasswordDto: ForgotPasswordDto,
   ): Promise<void> {
@@ -88,7 +88,7 @@ export class AuthController {
     await this.authService.sendResetPasswordEmail(email);
   }
 
-  @Get('reset-password/:token')
+  @Get('password/reset/:token')
   async resetPasswordProxy(
     @Param('token') token: string,
     @Res() res: Response,
@@ -101,7 +101,7 @@ export class AuthController {
     res.redirect(resetEmailLink);
   }
 
-  @Put('reset-password')
+  @Put('password/reset')
   async resetPassword(
     @Body() resetPasswordDto: ResetPasswordDto,
   ): Promise<void> {

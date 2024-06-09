@@ -13,7 +13,7 @@ export const useForgotPassword = createMutation<
 >({
   mutationFn: async (variables) =>
     client({
-      url: '/auth/forgot-password',
+      url: '/auth/password/forgot',
       method: 'POST',
       data: variables,
     }).then((response) => response.data),

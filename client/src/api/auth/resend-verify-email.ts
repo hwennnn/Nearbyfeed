@@ -17,6 +17,6 @@ export const useResendVerifyEmail = createMutation<
   mutationFn: async (variables) =>
     client({
       url: `/auth/verify-email/${variables.pendingUserId}/resend`,
-      method: 'POST',
+      method: 'PUT',
     }).then((response) => response.data),
 });

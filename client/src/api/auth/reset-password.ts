@@ -10,7 +10,7 @@ export const useResetPassword = createMutation<Response, Variables, AxiosError>(
   {
     mutationFn: async (variables) =>
       client({
-        url: '/auth/reset-password',
+        url: '/auth/password/reset',
         method: 'PUT',
         data: variables,
       }).then((response) => response.data),
