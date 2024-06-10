@@ -5,9 +5,8 @@ import { produce } from 'immer';
 import * as React from 'react';
 import { RefreshControl } from 'react-native';
 
-import { useComment } from '@/api/posts/use-comment';
-import type { InfiniteComments } from '@/api/posts/use-vote-comment';
-import { retrieveUseCommentsKey } from '@/api/posts/use-vote-comment';
+import type { InfiniteComments } from '@/api/comments';
+import { retrieveUseCommentsKey, useComment } from '@/api/comments';
 import { useTheme } from '@/core';
 import { useCommentKeys } from '@/core/comments';
 import type { RootStackParamList } from '@/navigation';
@@ -107,15 +106,21 @@ export const CommentsDetails = () => {
         'Reply',
         'Replies',
         '0 Reply',
-        repliesCount
+        parentComment?.repliesCount ?? repliesCount
       )}`,
       // eslint-disable-next-line react/no-unstable-nested-components
       headerLeft: () => <HeaderButton iconName="close-outline" />,
     });
-  }, [navigation, repliesCount]);
+  }, [navigation, parentComment?.repliesCount, repliesCount]);
 
   const onRefresh = async () => {
     setRefreshing(true);
+  };
+
+  const navToFeedDetails = () => {
+    navigation.navigate('FeedDetails', {
+      postId,
+    });
   };
 
   if (isLoading || parentComment === undefined) {
@@ -143,7 +148,10 @@ export const CommentsDetails = () => {
         <Pressable className="flex-1">
           <View className="flex-1 space-y-3 bg-neutral-100 dark:bg-charcoal-900">
             <View className="flex-row items-center space-x-2">
-              <CommentCard {...parentComment} />
+              <CommentCard
+                {...parentComment}
+                onDeleteComment={navToFeedDetails}
+              />
             </View>
           </View>
 

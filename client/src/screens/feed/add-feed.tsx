@@ -149,8 +149,6 @@ export const AddFeed = () => {
 
   const onSubmit = React.useCallback(
     async (data: CreatePostDto) => {
-      console.log('🚀 ~ data:', data);
-
       const shouldProceed = promptSignIn(() => {
         navigateRoot('Auth', {
           screen: 'AuthOnboarding',

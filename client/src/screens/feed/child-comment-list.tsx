@@ -2,7 +2,7 @@ import { FlashList } from '@shopify/flash-list';
 import React, { useCallback, useEffect } from 'react';
 
 import { type Comment } from '@/api';
-import { useChildComments } from '@/api/posts/use-child-comments';
+import { useChildComments } from '@/api/comments';
 import { CommentCard } from '@/screens/feed/comment-card';
 import { ErrorComponent, LoadingComponent, View } from '@/ui';
 

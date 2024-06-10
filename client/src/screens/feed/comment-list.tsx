@@ -4,7 +4,7 @@ import { FlashList } from '@shopify/flash-list';
 import React, { useCallback, useEffect } from 'react';
 
 import { type Comment } from '@/api';
-import { useComments } from '@/api/posts/use-comments';
+import { useComments } from '@/api/comments';
 import { useTheme } from '@/core';
 import type { CommentsSort } from '@/core/comments';
 import { setCommentsQueryKey, useCommentKeys } from '@/core/comments';

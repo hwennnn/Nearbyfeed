@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { Linking } from 'react-native';
 
-import { useLocationName } from '@/api/posts/use-location-name';
+import { useLocationName } from '@/api/geolocation';
 import { setPostsQueryKey } from '@/core/posts';
 import type { RootNavigatorProp } from '@/navigation';
 import { FeedList } from '@/screens/feed/feed-list';

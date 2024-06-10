@@ -6,6 +6,7 @@ import { usePostKeys } from '@/core/posts';
 
 import { client, queryClient } from '../common';
 import type { Post } from '../types';
+import type { InfinitePosts } from './types';
 
 type Variables = {
   postId: number;
@@ -13,14 +14,6 @@ type Variables = {
   content?: string;
 };
 type Response = Post;
-type PostsResponse = {
-  posts: Post[];
-  hasMore: boolean;
-};
-type InfinitePosts = {
-  pages: PostsResponse[];
-  pageParams: unknown[];
-};
 type Context = {
   previousPost?: Post;
   previousPosts?: InfinitePosts;
@@ -49,11 +42,12 @@ export const useEditPost = createMutation<
     return response.data;
   },
   onMutate: async (variables) => {
-    const queryKey = ['posts', usePostKeys.getState().postsQueryKey];
-    await queryClient.cancelQueries({ queryKey });
-    const previousPosts = queryClient.getQueryData<InfinitePosts>(queryKey);
+    const postsQueryKey = ['posts', usePostKeys.getState().postsQueryKey];
+    await queryClient.cancelQueries({ queryKey: postsQueryKey });
+    const previousPosts =
+      queryClient.getQueryData<InfinitePosts>(postsQueryKey);
 
-    queryClient.setQueryData<InfinitePosts>(queryKey, (oldData) => {
+    queryClient.setQueryData<InfinitePosts>(postsQueryKey, (oldData) => {
       if (oldData) {
         return {
           pageParams: oldData.pageParams,
@@ -75,6 +69,7 @@ export const useEditPost = createMutation<
     });
 
     const myPostsQueryKey = ['my-posts', {}];
+    await queryClient.cancelQueries({ queryKey: myPostsQueryKey });
     const previousMyPosts =
       queryClient.getQueryData<InfinitePosts>(myPostsQueryKey);
 
@@ -105,6 +100,7 @@ export const useEditPost = createMutation<
         id: variables.postId,
       },
     ];
+    await queryClient.cancelQueries({ queryKey: postQueryKey });
     const previousPost = queryClient.getQueryData<Post>(postQueryKey);
 
     queryClient.setQueryData<Post>(postQueryKey, (oldData) => {
@@ -122,8 +118,11 @@ export const useEditPost = createMutation<
   },
   // If the mutation fails, use the context we returned above
   onError: (_err, variables, context) => {
-    const queryKey = ['posts', usePostKeys.getState().postsQueryKey];
-    queryClient.setQueryData<InfinitePosts>(queryKey, context?.previousPosts);
+    const postsQueryKey = ['posts', usePostKeys.getState().postsQueryKey];
+    queryClient.setQueryData<InfinitePosts>(
+      postsQueryKey,
+      context?.previousPosts
+    );
 
     const myPostsQueryKey = ['my-posts', {}];
     queryClient.setQueryData<InfinitePosts>(
@@ -140,10 +139,10 @@ export const useEditPost = createMutation<
     queryClient.setQueryData<Post>(postQueryKey, context?.previousPost);
   },
   onSuccess: (data, variables, _context) => {
-    const queryKey = ['posts', usePostKeys.getState().postsQueryKey];
+    const postsQueryKey = ['posts', usePostKeys.getState().postsQueryKey];
 
     // Update the cache with the response data from the API
-    queryClient.setQueryData<InfinitePosts>(queryKey, (oldData) => {
+    queryClient.setQueryData<InfinitePosts>(postsQueryKey, (oldData) => {
       if (oldData) {
         return {
           pageParams: oldData.pageParams,

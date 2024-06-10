@@ -8,6 +8,7 @@ import { useUser } from '@/core/user';
 
 import { client, queryClient } from '../common';
 import type { Post, User } from '../types';
+import type { InfinitePosts } from './types';
 
 type Variables = {
   title: string;
@@ -19,14 +20,6 @@ type Variables = {
   options?: string[];
 };
 type Response = Post;
-type PostsResponse = {
-  posts: Post[];
-  hasMore: boolean;
-};
-export type InfinitePosts = {
-  pages: PostsResponse[];
-  pageParams: unknown[];
-};
 type Context = {
   previousPosts?: InfinitePosts;
   variables: Variables;
@@ -80,14 +73,11 @@ export const useAddPost = createMutation<
     return response.data;
   },
   onMutate: async (variables) => {
-    const queryKey = ['posts', usePostKeys.getState().postsQueryKey];
+    const postsQueryKey = ['posts', usePostKeys.getState().postsQueryKey];
+    await queryClient.cancelQueries({ queryKey: postsQueryKey });
+    const previousPosts =
+      queryClient.getQueryData<InfinitePosts>(postsQueryKey);
 
-    // Cancel any outgoing refetches
-    // (so they don't overwrite our optimistic update)
-    await queryClient.cancelQueries({ queryKey });
-
-    // Snapshot the previous value
-    const previousPosts = queryClient.getQueryData<InfinitePosts>(queryKey);
     const optimisticPostId = new Date().getTime();
     const currentUser = useUser.getState().user as User;
 
@@ -106,7 +96,7 @@ export const useAddPost = createMutation<
     };
 
     // Update the cache optimistically by adding the new post to the existing list
-    queryClient.setQueryData<InfinitePosts>(queryKey, (oldData) => {
+    queryClient.setQueryData<InfinitePosts>(postsQueryKey, (oldData) => {
       if (oldData) {
         return {
           pageParams: oldData.pageParams,
@@ -122,16 +112,19 @@ export const useAddPost = createMutation<
   },
   // If the mutation fails, use the context we returned above
   onError: (_err, _newPost, context) => {
-    const queryKey = ['posts', usePostKeys.getState().postsQueryKey];
+    const postsQueryKey = ['posts', usePostKeys.getState().postsQueryKey];
 
-    queryClient.setQueryData<InfinitePosts>(queryKey, context?.previousPosts);
+    queryClient.setQueryData<InfinitePosts>(
+      postsQueryKey,
+      context?.previousPosts
+    );
   },
   onSuccess: (data, _variables, context) => {
-    const queryKey = ['posts', usePostKeys.getState().postsQueryKey];
+    const postsQueryKey = ['posts', usePostKeys.getState().postsQueryKey];
     const optimisticPostId = context?.optimisticPostId;
 
     // Update the cache with the response data from the API
-    queryClient.setQueryData<InfinitePosts>(queryKey, (oldData) => {
+    queryClient.setQueryData<InfinitePosts>(postsQueryKey, (oldData) => {
       if (oldData) {
         return {
           pageParams: oldData.pageParams,

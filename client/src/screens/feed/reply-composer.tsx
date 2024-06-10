@@ -6,7 +6,7 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Keyboard } from 'react-native';
 
-import { useAddReply } from '@/api/posts/use-add-reply';
+import { useAddReply } from '@/api/comments';
 import type { RootNavigatorProp } from '@/navigation';
 import { ControlledInput, Ionicons, Pressable, View } from '@/ui';
 import { promptSignIn } from '@/utils/auth-utils';

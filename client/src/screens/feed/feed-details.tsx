@@ -6,7 +6,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { useQueryClient } from '@tanstack/react-query';
 import { produce } from 'immer';
 import * as React from 'react';
-import { RefreshControl } from 'react-native';
+import { Alert, RefreshControl } from 'react-native';
 
 import type { InfinitePosts } from '@/api';
 import { useDeletePost, usePost, useVotePost } from '@/api';
@@ -103,11 +103,7 @@ export const FeedDetails = () => {
   });
 
   const { mutate } = useVotePost();
-  const { mutate: deletePost } = useDeletePost({
-    onMutate: () => {
-      setAppLoading(true, 'Deleting...');
-    },
-  });
+  const { mutate: deletePost } = useDeletePost();
 
   const [imageCarouselIndex, setImageCarouselIndex] = React.useState(0);
 
@@ -151,23 +147,51 @@ export const FeedDetails = () => {
   }, [isLoading, navigate, post?.content, post?.title, postId]);
 
   const handleDeletePost = React.useCallback(() => {
+    setAppLoading(true, 'Deleting...');
+
     deletePost(
       {
         postId,
       },
       {
+        onSettled: () => {
+          setAppLoading(false);
+        },
         onSuccess: () => {
-          showSuccessMessage('Post deleted successfully');
+          showSuccessMessage('Feed deleted successfully');
           navigate('App', {
             screen: 'Feed',
           });
         },
-        onSettled: () => {
-          setAppLoading(false);
+        onError: () => {
+          showErrorMessage('Failed to delete feed');
         },
       }
     );
   }, [deletePost, navigate, postId]);
+
+  const alertDeletePost = React.useCallback(() => {
+    Alert.alert(
+      'Confirm Deletion',
+      'This action is irreversible. Are you sure you want to delete this post?',
+      [
+        {
+          text: 'Delete',
+          onPress: () => {
+            handleDeletePost();
+          },
+          style: 'destructive',
+        },
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+      ],
+      {
+        userInterfaceStyle: isDark ? 'dark' : 'light',
+      }
+    );
+  }, [handleDeletePost, isDark]);
 
   const { mutate: mutateBlockUser } = useBlockUser();
 
@@ -214,7 +238,7 @@ export const FeedDetails = () => {
               navToEditFeed();
               break;
             case 'Delete this post':
-              handleDeletePost();
+              alertDeletePost();
               break;
             case 'Report':
               openReportSheet();
@@ -278,6 +302,7 @@ export const FeedDetails = () => {
     navigate,
     navToEditFeed,
     handleDeletePost,
+    alertDeletePost,
   ]);
 
   if (isLoading || post === undefined) {

@@ -74,8 +74,6 @@ export const EditFeed = () => {
 
   const onSubmit = React.useCallback(
     async (data: EditPostDto) => {
-      console.log('🚀 ~ data:', data);
-
       const dto = {
         title: data.title.trim(),
         content: data.content?.trim(),

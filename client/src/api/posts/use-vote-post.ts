@@ -6,6 +6,7 @@ import { usePostKeys } from '@/core/posts';
 
 import { client, queryClient } from '../common';
 import type { Post, PostLike } from '../types';
+import type { InfinitePosts } from './types';
 
 type Variables = {
   postId: number;
@@ -15,17 +16,9 @@ type Response = {
   like: PostLike;
   post: Post;
 };
-type PostsResponse = {
-  posts: Post[];
-  hasMore: boolean;
-};
-type InfinitePosts = {
-  pages: PostsResponse[];
-  pageParams: unknown[];
-};
 type Context = {
-  previousPosts?: InfinitePosts;
   variables: Variables;
+  previousPosts?: InfinitePosts;
   previousPost?: Post;
   previousMyPosts?: InfinitePosts;
 };
@@ -154,7 +147,7 @@ export const useVotePost = createMutation<
     // Return a context with the previous and new todo
     return {
       previousPosts,
-      variables: variables,
+      variables,
       previousPost,
       previousMyPosts,
     };

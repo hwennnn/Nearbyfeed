@@ -2,9 +2,10 @@ import { useActionSheet } from '@expo/react-native-action-sheet';
 import type { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
+import { Alert } from 'react-native';
 
 import type { Comment } from '@/api';
-import { CommentType, useVoteComment } from '@/api/posts/use-vote-comment';
+import { CommentType, useDeleteComment, useVoteComment } from '@/api/comments';
 import { useBlockUser } from '@/api/users/block-user';
 import { useTheme } from '@/core';
 import { useUser } from '@/core/user';
@@ -31,6 +32,7 @@ type Props = Comment & {
   onPressCard?: () => void;
   isChildComment?: boolean;
   isPreviewComment?: boolean;
+  onDeleteComment?: () => void;
 };
 
 export const CommentCard = ({
@@ -48,6 +50,7 @@ export const CommentCard = ({
   isPreviewComment,
   parentCommentId,
   replies,
+  onDeleteComment,
 }: Props) => {
   const { navigate } = useNavigation<RootNavigatorProp>();
 
@@ -56,6 +59,69 @@ export const CommentCard = ({
   const isLiked = like !== undefined && like.value === 1;
 
   const { mutate } = useVoteComment();
+  const { mutate: deleteComment } = useDeleteComment();
+
+  const handleDeleteComment = () => {
+    if (isOptimistic === true) return;
+
+    const shouldProceed = promptSignIn(() => {
+      navigate('Auth', {
+        screen: 'AuthOnboarding',
+        params: {
+          isCloseButton: true,
+        },
+      });
+    });
+
+    if (!shouldProceed) return;
+
+    deleteComment(
+      {
+        postId: postId,
+        commentId: id,
+        commentType: isPreviewComment
+          ? CommentType.PREVIEW_COMMENT
+          : isChildComment !== true
+          ? CommentType.PARENT_COMMENT
+          : CommentType.REPLY_COMMENT,
+        parentCommentId,
+      },
+      {
+        onSuccess: () => {
+          showSuccessMessage('Comment deleted successfully');
+          if (onDeleteComment !== undefined) {
+            onDeleteComment();
+          }
+        },
+        onError: () => {
+          showErrorMessage('Failed to delete comment');
+        },
+      }
+    );
+  };
+
+  const alertDeleteComment = () => {
+    Alert.alert(
+      'Confirm Deletion',
+      'This action is irreversible. Are you sure you want to delete this comment?',
+      [
+        {
+          text: 'Delete',
+          onPress: () => {
+            handleDeleteComment();
+          },
+          style: 'destructive',
+        },
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+      ],
+      {
+        userInterfaceStyle: isDark ? 'dark' : 'light',
+      }
+    );
+  };
 
   const handleVote = (voteValue: number) => {
     if (isOptimistic === true) return;
@@ -156,20 +222,20 @@ export const CommentCard = ({
         userInterfaceStyle: useTheme.getState().colorScheme,
         options,
         cancelButtonIndex,
-        destructiveButtonIndex: options.findIndex(
-          (v) => v === 'Report' || v === 'Block this user'
-        ),
+        destructiveButtonIndex: [0, 1],
       },
       (selectedIndex: number | undefined) => {
         switch (selectedIndex) {
           case 0:
-            openReportSheet();
+            if (!isMyComment) {
+              blockUser();
+            } else {
+              alertDeleteComment();
+            }
             break;
 
           case 1:
-            if (!isMyComment) {
-              blockUser();
-            }
+            openReportSheet();
             break;
 
           case cancelButtonIndex:
@@ -346,7 +412,7 @@ export const CommentCard = ({
                   'more reply',
                   'more replies',
                   'more reply',
-                  repliesCount - 3
+                  repliesCount - replies.length
                 )}`}</Text>
 
                 <Ionicons

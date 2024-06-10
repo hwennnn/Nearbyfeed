@@ -2,10 +2,14 @@ import type { AxiosError } from 'axios';
 import { produce } from 'immer';
 import { createMutation } from 'react-query-kit';
 
+import type { InfiniteComments } from '@/api/comments/types';
+import type { InfinitePosts } from '@/api/posts';
 import { useUser } from '@/core/user';
+import type { PostsQueryData } from '@/utils/cache-utils';
+import { revertPostsCache, updatePostsCache } from '@/utils/cache-utils';
 
 import { client, queryClient } from '../common';
-import type { Comment, User } from '../types';
+import type { Comment, Post, User } from '../types';
 
 type Variables = {
   content: string;
@@ -13,15 +17,10 @@ type Variables = {
   sort: 'latest' | 'oldest' | 'top';
 };
 type Response = Comment;
-type CommentsResponse = {
-  comments: Comment[];
-  hasMore: boolean;
-};
-type InfiniteComments = {
-  pages: CommentsResponse[];
-  pageParams: unknown[];
-};
 type Context = {
+  previousPosts?: InfinitePosts;
+  previousMyPosts?: InfinitePosts;
+  previousPost?: Post;
   previousComments?: InfiniteComments;
   variables: Variables;
   optimisticCommentId: number;
@@ -107,8 +106,18 @@ export const useAddComment = createMutation<
       return oldData;
     });
 
+    const { previousMyPosts, previousPost, previousPosts } =
+      await updatePostsCache(variables.postId, retrieveNewOptimisticPost);
+
     // Return a context with the previous and new comment
-    return { previousComments, variables, optimisticCommentId };
+    return {
+      previousComments,
+      variables,
+      optimisticCommentId,
+      previousMyPosts,
+      previousPost,
+      previousPosts,
+    };
   },
   // If the mutation fails, use the context we returned above
   onError: (_err, variables, context) => {
@@ -124,8 +133,16 @@ export const useAddComment = createMutation<
       queryKey,
       context?.previousComments
     );
+
+    const postsQueryData: PostsQueryData = {
+      previousMyPosts: context?.previousMyPosts,
+      previousPost: context?.previousPost,
+      previousPosts: context?.previousPosts,
+    };
+
+    revertPostsCache(variables.postId, postsQueryData);
   },
-  onSuccess: (data, variables, context) => {
+  onSuccess: async (data, variables, context) => {
     const queryKey = [
       'comments',
       {
@@ -155,5 +172,14 @@ export const useAddComment = createMutation<
       }
       return oldData;
     });
+
+    await queryClient.invalidateQueries(['my-comments', {}]);
   },
 });
+
+const retrieveNewOptimisticPost = (post: Post): Post => {
+  return {
+    ...post,
+    commentsCount: post.commentsCount + 1,
+  };
+};

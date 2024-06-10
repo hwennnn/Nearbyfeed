@@ -36,8 +36,6 @@ export const ValidateEmailScreen = () => {
 
   const [disabledResend, setDisabledResend] = useState(false);
 
-  console.log(pendingUserId, email, sessionId);
-
   const {
     isLoading,
     error,

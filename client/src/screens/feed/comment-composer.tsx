@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import { Keyboard } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 
-import { useAddComment } from '@/api/posts/use-add-comment';
+import { useAddComment } from '@/api/comments';
 import { useCommentKeys } from '@/core/comments';
 import type { RootNavigatorProp } from '@/navigation';
 import {

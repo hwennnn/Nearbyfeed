@@ -6,6 +6,7 @@ import { usePostKeys } from '@/core/posts';
 
 import { client, queryClient } from '../common';
 import type { Post, VotePollResult } from '../types';
+import type { InfinitePosts } from './types';
 
 type Variables = {
   postId: number;
@@ -13,14 +14,6 @@ type Variables = {
   pollOptionId: number;
 };
 type Response = VotePollResult;
-type PostsResponse = {
-  posts: Post[];
-  hasMore: boolean;
-};
-type InfinitePosts = {
-  pages: PostsResponse[];
-  pageParams: unknown[];
-};
 
 export const useVotePoll = createMutation<Response, Variables, AxiosError>({
   mutationFn: async (variables) =>
@@ -36,10 +29,11 @@ export const useVotePoll = createMutation<Response, Variables, AxiosError>({
         return Promise.reject(error);
       }),
   // Update the cache after success:
-  onSuccess: (data, variables) => {
-    const queryKey = ['posts', usePostKeys.getState().postsQueryKey];
+  onSuccess: async (data, variables) => {
+    const postsQueryKey = ['posts', usePostKeys.getState().postsQueryKey];
+    await queryClient.cancelQueries({ queryKey: postsQueryKey });
 
-    queryClient.setQueryData<InfinitePosts>(queryKey, (oldData) => {
+    queryClient.setQueryData<InfinitePosts>(postsQueryKey, (oldData) => {
       if (oldData) {
         return {
           pageParams: oldData.pageParams,
@@ -72,7 +66,7 @@ export const useVotePoll = createMutation<Response, Variables, AxiosError>({
     });
 
     const postQueryKey = ['posts', { id: variables.postId }];
-
+    await queryClient.cancelQueries({ queryKey: postQueryKey });
     queryClient.setQueryData<Post>(postQueryKey, (oldData) => {
       if (oldData) {
         return produce(oldData, (draftPost) => {
@@ -95,7 +89,7 @@ export const useVotePoll = createMutation<Response, Variables, AxiosError>({
     });
 
     const myPostsQueryKey = ['my-posts', {}];
-
+    await queryClient.cancelQueries({ queryKey: myPostsQueryKey });
     queryClient.setQueryData<InfinitePosts>(myPostsQueryKey, (oldData) => {
       if (oldData) {
         return {

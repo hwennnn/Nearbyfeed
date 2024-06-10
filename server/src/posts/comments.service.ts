@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-import { type Comment, type CommentLike } from '@prisma/client';
+import { type Comment, type CommentLike, type Post } from '@prisma/client';
 import { FilterService } from 'src/filter/filter.service';
 import {
   GetCommentsSort,
@@ -409,11 +409,41 @@ export class CommentsService {
     };
   }
 
-  async deleteComment(commentId: number): Promise<void> {
-    this.prismaService.comment
-      .delete({
+  async deleteComment(postId: number, commentId: number): Promise<Post> {
+    const comment = await this.findComment(postId, commentId);
+
+    if (comment === null) {
+      throw new BadRequestException(`Failed to find comment ${commentId}`);
+    }
+
+    const count = 1 + comment.repliesCount;
+
+    const transactionItems: any = [
+      this.prismaService.comment.delete({
         where: { id: commentId },
-      })
+      }),
+      this.prismaService.post.update({
+        where: { id: postId },
+        data: {
+          commentsCount: {
+            increment: -count,
+          },
+        },
+      }),
+      comment.parentCommentId !== null
+        ? this.prismaService.comment.update({
+            where: { id: comment.parentCommentId },
+            data: {
+              repliesCount: {
+                increment: -1,
+              },
+            },
+          })
+        : null,
+    ].filter((item) => item !== null);
+
+    const [, post] = await this.prismaService
+      .$transaction(transactionItems)
       .catch((e) => {
         this.logger.error(
           `Failed to delete comment ${commentId}`,
@@ -423,6 +453,8 @@ export class CommentsService {
 
         throw new BadRequestException('Failed to delete comment');
       });
+
+    return post;
   }
 
   async voteComment(

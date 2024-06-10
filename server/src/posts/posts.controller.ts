@@ -211,8 +211,11 @@ export class PostsController {
 
   @Delete(':postId/comments/:commentId')
   @UseGuards(JwtAuthGuard, PostActiveGuard, CommentMutateGuard)
-  async deleteComment(@Param('commentId') commentId: string): Promise<void> {
-    await this.commentsService.deleteComment(+commentId);
+  async deleteComment(
+    @Param('postId') postId: string,
+    @Param('commentId') commentId: string,
+  ): Promise<PostEntity> {
+    return await this.commentsService.deleteComment(+postId, +commentId);
   }
 
   @Put(':postId/comments/:commentId/vote')
