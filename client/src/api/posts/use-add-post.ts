@@ -5,6 +5,7 @@ import { createMutation } from 'react-query-kit';
 
 import { usePostKeys } from '@/core/posts';
 import { useUser } from '@/core/user';
+import type { GooglePlaceLocation } from '@/utils/geolocation-utils';
 
 import { client, queryClient } from '../common';
 import type { Post, User } from '../types';
@@ -18,6 +19,7 @@ type Variables = {
   images: ImagePicker.ImagePickerAsset[];
   votingLength?: number;
   options?: string[];
+  location: GooglePlaceLocation | null;
 };
 type Response = Post;
 type Context = {
@@ -59,6 +61,22 @@ export const useAddPost = createMutation<
         formData.append('poll[options][]', option);
       }
       formData.append('poll[votingLength]', variables.votingLength.toString());
+    }
+
+    if (variables.location !== null) {
+      formData.append('location[name]', variables.location.name);
+      formData.append(
+        'location[formattedAddress]',
+        variables.location.formattedAddress
+      );
+      formData.append(
+        'location[latitude]',
+        variables.location.latitude.toString()
+      );
+      formData.append(
+        'location[longitude]',
+        variables.location.longitude.toString()
+      );
     }
 
     const response = await client({
@@ -120,6 +138,7 @@ export const useAddPost = createMutation<
     );
   },
   onSuccess: (data, _variables, context) => {
+    console.log('🚀 ~ data:', data);
     const postsQueryKey = ['posts', usePostKeys.getState().postsQueryKey];
     const optimisticPostId = context?.optimisticPostId;
 

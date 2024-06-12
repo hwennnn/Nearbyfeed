@@ -1,6 +1,6 @@
-/* eslint-disable react/no-unstable-nested-components */
 import 'reflect-metadata';
 
+import type { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { classValidatorResolver } from '@hookform/resolvers/class-validator';
 import { useNavigation } from '@react-navigation/native';
 import { Transform, Type } from 'class-transformer';
@@ -28,10 +28,11 @@ import {
   DEFAULT_VOTING_LENGTH_OPTION,
   PollVotingLengthItem,
 } from '@/screens/feed/poll-voting-length-item';
+import { SearchPlacesBottomSheet } from '@/screens/feed/search-places-bottom-sheet';
 import {
   ActivityIndicator,
   ControlledInput,
-  HeaderButton,
+  Header,
   Image,
   Pressable,
   ScrollView,
@@ -46,7 +47,11 @@ import { ScrollLayout } from '@/ui/core/scroll-layout';
 import { FontAwesome5, Ionicons } from '@/ui/icons/vector-icons';
 import { ImageViewer } from '@/ui/image-viewer';
 import { promptSignIn } from '@/utils/auth-utils';
-import { retrieveCurrentPosition } from '@/utils/geolocation-utils';
+import type { GooglePlaceLocation } from '@/utils/geolocation-utils';
+import {
+  calculateDistance,
+  retrieveCurrentPosition,
+} from '@/utils/geolocation-utils';
 import { checkFileSize } from '@/utils/image-utils';
 import {
   requestCameraPermission,
@@ -107,6 +112,8 @@ export const AddFeed = () => {
   const [isPollEnabled, setIsPollEnabled] = React.useState(false);
   const [selectedVotingLength, setSelectedVotingLength] =
     React.useState<VotingLengthOption>(DEFAULT_VOTING_LENGTH_OPTION);
+  const [selectedLocation, setSelectedLocation] =
+    React.useState<GooglePlaceLocation | null>(null);
 
   const { control, handleSubmit, register, unregister, setFocus } =
     useForm<CreatePostDto>({
@@ -166,6 +173,16 @@ export const AddFeed = () => {
         return;
       }
 
+      if (selectedLocation !== null) {
+        const distance = calculateDistance(location, selectedLocation);
+        if (distance > 2) {
+          showErrorMessage(
+            'Please re-select a location near you. The location seems too far away.'
+          );
+          return;
+        }
+      }
+
       const dto = {
         title: data.title.trim(),
         content: data.content?.trim(),
@@ -175,6 +192,7 @@ export const AddFeed = () => {
           ? data.options.map((option) => option.value.trim())
           : undefined,
         votingLength: isPollEnabled ? selectedVotingLength.value : undefined,
+        location: selectedLocation,
       };
 
       Keyboard.dismiss();
@@ -204,6 +222,7 @@ export const AddFeed = () => {
       isPollEnabled,
       navigateRoot,
       navigation,
+      selectedLocation,
       selectedVotingLength.value,
     ]
   );
@@ -270,31 +289,40 @@ export const AddFeed = () => {
     }
   };
 
-  React.useLayoutEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        <HeaderButton iconName="close-outline" disabled={isLoading} />
-      ),
-      headerRight: () => (
-        <TouchableOpacity onPress={handleSubmit(onSubmit)} disabled={isLoading}>
-          {isLoading ? (
-            <ActivityIndicator size="small" />
-          ) : (
-            <Text variant="md" className="font-semibold text-primary-400">
-              Post
-            </Text>
-          )}
-        </TouchableOpacity>
-      ),
-    });
-  }, [handleSubmit, isLoading, navigation, onSubmit]);
+  const renderHeaderRight = React.useCallback(() => {
+    return (
+      <HeaderRight
+        isLoading={isLoading}
+        onPressSubmit={handleSubmit(onSubmit)}
+      />
+    );
+  }, [handleSubmit, isLoading, onSubmit]);
+
+  const placesRef = React.useRef<BottomSheetModal>(null);
+
+  const openPlacesSheet = React.useCallback(
+    () => placesRef.current?.present(),
+    []
+  );
+
+  const closePlacesSheet = React.useCallback(
+    () => placesRef.current?.dismiss(),
+    []
+  );
+
+  const handleLocationCallback = (location: GooglePlaceLocation | null) => {
+    closePlacesSheet();
+    setSelectedLocation(location);
+  };
 
   return (
-    <Layout
-      className="flex-1"
-      hasHorizontalPadding={false}
-      verticalPadding={80}
-    >
+    <Layout className="flex-1" hasHorizontalPadding={false} verticalPadding={0}>
+      <Header
+        headerTitle="Create a Feed"
+        isDisabledBack={isLoading}
+        headerRight={renderHeaderRight()}
+      />
+
       <ScrollLayout
         className="flex-1"
         showsVerticalScrollIndicator={false}
@@ -314,63 +342,59 @@ export const AddFeed = () => {
             onSubmitEditing={() => setFocus('content')}
           />
 
-          {images.length > 0 && (
-            <View className="my-4 flex-1 flex-row">
-              <ScrollView
-                showsHorizontalScrollIndicator={false}
-                className="flex-1 flex-row space-x-3"
-                horizontal={true}
-              >
-                {images.map((image, index) => (
-                  <TouchableOpacity
-                    className="h-[150px] w-[150px]"
-                    key={index}
-                    onPress={() => setImageModalIndex(index)}
+          <View className="my-4 flex-1 flex-row">
+            <ScrollView
+              showsHorizontalScrollIndicator={false}
+              className="flex-1 flex-row space-x-3"
+              horizontal={true}
+            >
+              {images.map((image, index) => (
+                <TouchableOpacity
+                  className="h-[150px] w-[150px]"
+                  key={index}
+                  onPress={() => setImageModalIndex(index)}
+                >
+                  <Image
+                    source={{ uri: image.uri }}
+                    className="h-full w-full"
+                  />
+
+                  <Pressable
+                    className="absolute right-2 top-2 rounded-full border bg-black"
+                    onPress={() =>
+                      setImages((currImages) =>
+                        currImages.filter((_, currIndex) => currIndex !== index)
+                      )
+                    }
                   >
-                    <Image
-                      source={{ uri: image.uri }}
-                      className="h-full w-full"
-                    />
+                    <Ionicons name="close" color="white" size={16} />
+                  </Pressable>
+                </TouchableOpacity>
+              ))}
 
-                    <Pressable
-                      className="absolute right-2 top-2 rounded-full border bg-black"
-                      onPress={() =>
-                        setImages((currImages) =>
-                          currImages.filter(
-                            (_, currIndex) => currIndex !== index
-                          )
-                        )
-                      }
-                    >
-                      <Ionicons name="close" color="white" size={16} />
-                    </Pressable>
-                  </TouchableOpacity>
-                ))}
+              {images.length !== 5 && (
+                <TouchableOpacity
+                  onPress={pickImage}
+                  className="h-[150px] w-[150px] items-center justify-center border border-dashed border-charcoal-700 dark:border-white"
+                >
+                  <Ionicons
+                    name="add"
+                    className="text-charcoal-400"
+                    size={48}
+                  />
+                </TouchableOpacity>
+              )}
+            </ScrollView>
 
-                {images.length !== 5 && (
-                  <TouchableOpacity
-                    onPress={pickImage}
-                    className="h-[150px] w-[150px] items-center justify-center border border-dotted border-charcoal-700 dark:border-white"
-                  >
-                    <Ionicons
-                      name="add"
-                      className="text-primary-400"
-                      size={48}
-                    />
-                  </TouchableOpacity>
-                )}
-              </ScrollView>
-
-              <ImageViewer
-                images={images.map((image) => ({
-                  uri: image.uri,
-                }))}
-                visible={imageModalIndex !== undefined}
-                onClose={() => setImageModalIndex(undefined)}
-                imageIndex={imageModalIndex}
-              />
-            </View>
-          )}
+            <ImageViewer
+              images={images.map((image) => ({
+                uri: image.uri,
+              }))}
+              visible={imageModalIndex !== undefined}
+              onClose={() => setImageModalIndex(undefined)}
+              imageIndex={imageModalIndex}
+            />
+          </View>
 
           <ControlledInput
             name="content"
@@ -393,8 +417,43 @@ export const AddFeed = () => {
             }}
           />
 
+          <TouchableOpacity
+            className="mt-4 flex-1 flex-row items-center justify-between"
+            onPress={openPlacesSheet}
+          >
+            <View className="flex-row space-x-3">
+              <Ionicons
+                name="location-sharp"
+                size={24}
+                className="text-black dark:text-charcoal-100"
+              />
+              <Text
+                className={`font-medium ${
+                  selectedLocation === null
+                    ? 'dark:text-charcoal-100'
+                    : 'text-primary-400 dark:text-primary-500'
+                }`}
+                variant="md"
+              >
+                {selectedLocation !== null
+                  ? selectedLocation.name
+                  : 'Add a specific location'}
+              </Text>
+            </View>
+            <Ionicons
+              name="chevron-forward"
+              size={24}
+              className="text-black dark:text-charcoal-100"
+            />
+          </TouchableOpacity>
+
+          <SearchPlacesBottomSheet
+            ref={placesRef}
+            onLocationSelect={handleLocationCallback}
+          />
+
           {isPollEnabled && (
-            <View className="flex-1 flex-col space-y-1">
+            <View className="mt-2 flex-1 flex-col space-y-1">
               <View className="mt-4 flex-1 space-y-2 rounded-lg border-[0.5px] border-neutral-300 bg-neutral-100 p-4 dark:border-charcoal-850 dark:bg-charcoal-850">
                 <View className="flex-1 flex-row">
                   <View className="flex-1 flex-row items-center space-x-2">
@@ -405,7 +464,7 @@ export const AddFeed = () => {
                     />
 
                     <Text
-                      className="font-semibold text-gray-600 dark:text-gray-300"
+                      className="font-semibold text-neutral-600 dark:text-gray-300"
                       variant="sm"
                     >
                       Poll ends in
@@ -419,16 +478,16 @@ export const AddFeed = () => {
                     />
                   </View>
 
-                  <Pressable
+                  <TouchableOpacity
                     className="items-end"
                     onPress={() => setIsPollEnabled(false)}
                   >
                     <Ionicons
                       size={30}
                       name="close"
-                      className="text-neutral-500 dark:text-neutral-400"
+                      className="text-neutral-600 dark:text-neutral-300"
                     />
-                  </Pressable>
+                  </TouchableOpacity>
                 </View>
 
                 <View className="flex-1 space-y-2">
@@ -460,13 +519,13 @@ export const AddFeed = () => {
                           index <= 1 ? (
                             <View />
                           ) : (
-                            <Pressable onPress={() => remove(index)}>
+                            <TouchableOpacity onPress={() => remove(index)}>
                               <Ionicons
                                 size={20}
                                 name="close"
                                 className={`items-end text-neutral-500 dark:text-neutral-400`}
                               />
-                            </Pressable>
+                            </TouchableOpacity>
                           )
                         }
                       />
@@ -527,5 +586,25 @@ export const AddFeed = () => {
         </View>
       </View>
     </Layout>
+  );
+};
+
+const HeaderRight = ({
+  isLoading,
+  onPressSubmit,
+}: {
+  isLoading: boolean;
+  onPressSubmit: () => void;
+}) => {
+  return (
+    <TouchableOpacity onPress={onPressSubmit} disabled={isLoading}>
+      {isLoading ? (
+        <ActivityIndicator size="small" />
+      ) : (
+        <Text variant="md" className="font-semibold text-primary-400">
+          Post
+        </Text>
+      )}
+    </TouchableOpacity>
   );
 };

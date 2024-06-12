@@ -75,11 +75,22 @@ model Post {
   updatedAt        DateTime     @updatedAt
   author           User         @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId         Int
+  location         Location?
   commentsCount    Int          @default(0)
   comments         Comment[]
   likes            PostLike[]
   poll             Poll?
   reports          PostReport[]
+}
+
+model Location {
+  id               Int    @id @default(autoincrement())
+  latitude         Float
+  longitude        Float
+  name             String
+  formattedAddress String
+  post             Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId           Int    @unique
 }
 
 model Comment {

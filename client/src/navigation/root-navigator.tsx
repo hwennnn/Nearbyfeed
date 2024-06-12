@@ -83,7 +83,7 @@ export const Root = () => {
             name="AddFeed"
             component={AddFeed}
             options={{
-              headerTitle: 'Create a Feed',
+              headerShown: false,
             }}
           />
           <Stack.Screen

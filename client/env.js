@@ -75,6 +75,7 @@ const client = z.object({
   API_URL: z.string(),
   NOMINATIM_OPENSTREETMAP_ENDPOINT: z.string(),
   GOOGLE_AUTH_IOS_CLIENT_ID: z.string(),
+  GOOGLE_PLACES_API_KEY: z.string(),
 });
 
 const buildTime = z.object({
@@ -97,6 +98,7 @@ const _clientEnv = {
   NOMINATIM_OPENSTREETMAP_ENDPOINT:
     process.env.NOMINATIM_OPENSTREETMAP_ENDPOINT,
   GOOGLE_AUTH_IOS_CLIENT_ID: process.env.GOOGLE_AUTH_IOS_CLIENT_ID,
+  GOOGLE_PLACES_API_KEY: process.env.GOOGLE_PLACES_API_KEY,
 };
 
 /**

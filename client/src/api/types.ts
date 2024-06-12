@@ -30,6 +30,15 @@ export type Post = {
   commentsCount: number;
 
   poll?: PollWithOptions | null;
+  location?: PostLocation | null;
+};
+
+export type PostLocation = {
+  id: number;
+  latitude: number;
+  longitude: number;
+  name: string;
+  formattedAddress: string;
 };
 
 export type Comment = {
@@ -37,7 +46,6 @@ export type Comment = {
   content: string;
   createdAt: Date;
   updatedAt: Date;
-  isDeleted: boolean;
   postId: number;
   points: number;
   authorId?: number;
@@ -54,7 +62,6 @@ export type CommentWithPost = {
   content: string;
   createdAt: Date;
   updatedAt: Date;
-  isDeleted: boolean;
   postId: number;
   points: number;
   authorId?: number;

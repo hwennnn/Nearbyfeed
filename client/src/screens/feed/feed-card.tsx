@@ -4,6 +4,7 @@ import React from 'react';
 import type { Post } from '@/api';
 import { useVotePost } from '@/api/posts/use-vote-post';
 import type { RootNavigatorProp } from '@/navigation';
+import { LocationCard } from '@/screens/feed/location-card';
 import {
   ActivityIndicator,
   Image,
@@ -36,6 +37,7 @@ export const FeedCard = ({
   createdAt,
   commentsCount,
   poll,
+  location,
 }: Props) => {
   const { navigate } = useNavigation<RootNavigatorProp>();
 
@@ -134,6 +136,10 @@ export const FeedCard = ({
         )}
 
         {poll !== null && poll !== undefined && <PollCard poll={poll} />}
+
+        {location !== null && location !== undefined && (
+          <LocationCard location={location} />
+        )}
 
         <View className="flex-row justify-between px-10 pt-2">
           <Pressable onPress={() => handleVote(isLiked ? 0 : 1)}>

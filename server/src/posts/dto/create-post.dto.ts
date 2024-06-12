@@ -9,6 +9,7 @@ import {
   MinLength,
   ValidateNested,
 } from 'class-validator';
+import { CreateLocationDto } from './create-location.dto';
 import { CreatePollDto } from './create-poll.dto';
 
 export class CreatePostDto {
@@ -34,4 +35,9 @@ export class CreatePostDto {
   @ValidateNested()
   @Type(() => CreatePollDto)
   poll: CreatePollDto;
+
+  @IsOptional()
+  @IsObject()
+  @Type(() => CreateLocationDto)
+  location: CreateLocationDto;
 }

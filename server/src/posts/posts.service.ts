@@ -35,6 +35,9 @@ export class PostsService {
     const hasPollData =
       createPostDto.poll !== undefined && createPostDto.poll !== null;
 
+    const hasLocationData =
+      createPostDto.location !== undefined && createPostDto.location !== null;
+
     const data = {
       authorId,
       images,
@@ -59,6 +62,16 @@ export class PostsService {
                   })),
                 },
               },
+            },
+          }
+        : undefined,
+      location: hasLocationData
+        ? {
+            create: {
+              latitude: +createPostDto.location.latitude,
+              longitude: +createPostDto.location.longitude,
+              name: createPostDto.location.name,
+              formattedAddress: createPostDto.location.formattedAddress,
             },
           }
         : undefined,
@@ -177,6 +190,7 @@ export class PostsService {
               participantsCount: true,
             },
           },
+          location: true,
         },
         orderBy: {
           createdAt: 'desc',
@@ -271,6 +285,7 @@ export class PostsService {
           likes: selectLikes,
           author: true,
           commentsCount: true,
+          location: true,
           poll: {
             select: {
               options: {
