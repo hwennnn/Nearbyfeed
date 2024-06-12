@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 
+import { useActionSheet } from '@expo/react-native-action-sheet';
 import type { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { classValidatorResolver } from '@hookform/resolvers/class-validator';
 import { useNavigation } from '@react-navigation/native';
@@ -21,6 +22,7 @@ import { Keyboard } from 'react-native';
 import { showMessage } from 'react-native-flash-message';
 
 import { useAddPost } from '@/api';
+import { useTheme } from '@/core';
 import { setAppLoading } from '@/core/loading';
 import type { RootNavigatorProp } from '@/navigation';
 import type { VotingLengthOption } from '@/screens/feed/poll-voting-length-item';
@@ -41,10 +43,9 @@ import {
   TouchableOpacity,
   View,
 } from '@/ui';
-import Divider from '@/ui/core/divider';
 import { Layout } from '@/ui/core/layout';
 import { ScrollLayout } from '@/ui/core/scroll-layout';
-import { FontAwesome5, Ionicons } from '@/ui/icons/vector-icons';
+import { Ionicons, MaterialIcons } from '@/ui/icons/vector-icons';
 import { ImageViewer } from '@/ui/image-viewer';
 import { promptSignIn } from '@/utils/auth-utils';
 import type { GooglePlaceLocation } from '@/utils/geolocation-utils';
@@ -227,6 +228,37 @@ export const AddFeed = () => {
     ]
   );
 
+  const { showActionSheetWithOptions } = useActionSheet();
+
+  const onPressAddImageActionSheet = () => {
+    const options = ['Take a Photo', 'Choose from Gallery', 'Cancel'];
+    const cancelButtonIndex = 2;
+
+    showActionSheetWithOptions(
+      {
+        userInterfaceStyle: useTheme.getState().colorScheme,
+        options,
+        cancelButtonIndex,
+        title: 'Add Images',
+      },
+      (selectedIndex: number | undefined) => {
+        switch (selectedIndex) {
+          case 0:
+            takePhoto();
+            break;
+
+          case 1:
+            pickImage();
+            break;
+
+          case cancelButtonIndex:
+          default:
+            break;
+        }
+      }
+    );
+  };
+
   const takePhoto = async () => {
     const hasCameraPermission = await requestCameraPermission();
     if (!hasCameraPermission) return;
@@ -374,7 +406,7 @@ export const AddFeed = () => {
 
               {images.length !== 5 && (
                 <TouchableOpacity
-                  onPress={pickImage}
+                  onPress={onPressAddImageActionSheet}
                   className="h-[150px] w-[150px] items-center justify-center border border-dashed border-charcoal-700 dark:border-white"
                 >
                   <Ionicons
@@ -452,17 +484,35 @@ export const AddFeed = () => {
             onLocationSelect={handleLocationCallback}
           />
 
+          <TouchableOpacity
+            className="mt-6 flex-1 flex-row items-center justify-between"
+            onPress={() => setIsPollEnabled((prevState) => !prevState)}
+          >
+            <View className="flex-row space-x-3">
+              <MaterialIcons
+                name="poll"
+                size={24}
+                className="rotate-90 text-black dark:text-charcoal-100"
+              />
+              <Text
+                className={`font-medium dark:text-charcoal-100`}
+                variant="md"
+              >
+                Start a Poll
+              </Text>
+            </View>
+            <Ionicons
+              name={isPollEnabled ? 'chevron-up' : 'chevron-down'}
+              size={24}
+              className="text-neutral-600 dark:text-neutral-300"
+            />
+          </TouchableOpacity>
+
           {isPollEnabled && (
             <View className="mt-2 flex-1 flex-col space-y-1">
               <View className="mt-4 flex-1 space-y-2 rounded-lg border-[0.5px] border-neutral-300 bg-neutral-100 p-4 dark:border-charcoal-850 dark:bg-charcoal-850">
                 <View className="flex-1 flex-row">
                   <View className="flex-1 flex-row items-center space-x-2">
-                    <FontAwesome5
-                      name="poll-h"
-                      size={20}
-                      className="text-neutral-500 dark:text-neutral-400"
-                    />
-
                     <Text
                       className="font-semibold text-neutral-600 dark:text-gray-300"
                       variant="sm"
@@ -477,17 +527,6 @@ export const AddFeed = () => {
                       }
                     />
                   </View>
-
-                  <TouchableOpacity
-                    className="items-end"
-                    onPress={() => setIsPollEnabled(false)}
-                  >
-                    <Ionicons
-                      size={30}
-                      name="close"
-                      className="text-neutral-600 dark:text-neutral-300"
-                    />
-                  </TouchableOpacity>
                 </View>
 
                 <View className="flex-1 space-y-2">
@@ -554,37 +593,6 @@ export const AddFeed = () => {
           )}
         </View>
       </ScrollLayout>
-
-      <View className="absolute bottom-0 z-50 h-fit w-full bg-white px-4 dark:bg-charcoal-950">
-        <Divider />
-        <View className="mx-4 mb-6 mt-2 flex-row space-x-6">
-          <Pressable onPress={takePhoto}>
-            <FontAwesome5
-              name="camera"
-              size={24}
-              className="text-neutral-500 dark:text-neutral-400"
-            />
-          </Pressable>
-
-          <Pressable onPress={pickImage}>
-            <FontAwesome5
-              name="images"
-              size={24}
-              className="text-neutral-500 dark:text-neutral-400"
-            />
-          </Pressable>
-
-          <Pressable onPress={() => setIsPollEnabled((value) => !value)}>
-            <FontAwesome5
-              name="poll-h"
-              size={24}
-              className={`text-neutral-500 dark:text-neutral-400 ${
-                isPollEnabled ? 'opacity-50' : ''
-              }`}
-            />
-          </Pressable>
-        </View>
-      </View>
     </Layout>
   );
 };

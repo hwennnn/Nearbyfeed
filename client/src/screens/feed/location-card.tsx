@@ -51,7 +51,7 @@ export const LocationCard = ({ location }: Props) => {
       </View>
 
       <TouchableOpacity
-        className="flex-1 flex-row items-center space-x-2 rounded-lg bg-charcoal-800 p-2"
+        className="flex-1 flex-row items-center space-x-2 rounded-lg border-[0.5px] border-neutral-300 bg-neutral-100 p-2 dark:border-charcoal-850 dark:bg-charcoal-850"
         onPress={openLocationInMap}
       >
         <Ionicons
