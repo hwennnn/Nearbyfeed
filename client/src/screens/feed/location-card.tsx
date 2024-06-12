@@ -1,5 +1,6 @@
 import React from 'react';
 import { Marker } from 'react-native-maps';
+import openMap from 'react-native-open-maps';
 
 import type { PostLocation } from '@/api';
 import { SMapView, Text, TouchableOpacity, View } from '@/ui';
@@ -12,7 +13,13 @@ type Props = {
 export const LocationCard = ({ location }: Props) => {
   const { latitude, longitude, name, formattedAddress } = location;
 
-  const openLocationInMap = () => {};
+  const openLocationInMap = () => {
+    openMap({
+      latitude: 1.44191,
+      longitude: 103.77436,
+      query: formattedAddress,
+    });
+  };
 
   return (
     <View className="mt-4 flex-1 space-y-2">
@@ -24,9 +31,6 @@ export const LocationCard = ({ location }: Props) => {
             longitude,
             latitudeDelta: 0.00177,
             longitudeDelta: 0.00177,
-          }}
-          onRegionChange={(region) => {
-            console.log(region);
           }}
           showsMyLocationButton={false}
           showsUserLocation={false}
@@ -41,12 +45,15 @@ export const LocationCard = ({ location }: Props) => {
               latitude,
               longitude,
             }}
-            title={formattedAddress}
+            title={name}
           />
         </SMapView>
       </View>
 
-      <TouchableOpacity className="flex-1 flex-row items-center space-x-2 rounded-lg bg-charcoal-800 p-2">
+      <TouchableOpacity
+        className="flex-1 flex-row items-center space-x-2 rounded-lg bg-charcoal-800 p-2"
+        onPress={openLocationInMap}
+      >
         <Ionicons
           name="location-sharp"
           size={28}

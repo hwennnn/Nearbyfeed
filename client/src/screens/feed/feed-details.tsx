@@ -19,6 +19,7 @@ import type { RootNavigatorProp } from '@/navigation';
 import { type RootStackParamList } from '@/navigation';
 import { CommentComposer } from '@/screens/feed/comment-composer';
 import { CommentList } from '@/screens/feed/comment-list';
+import { LocationCard } from '@/screens/feed/location-card';
 import { PollCard } from '@/screens/feed/poll-card';
 import { ReportPostBottomSheet } from '@/screens/feed/report-post-bottom-sheet';
 import {
@@ -321,6 +322,7 @@ export const FeedDetails = () => {
     createdAt,
     commentsCount,
     poll,
+    location,
   } = post;
 
   const isLiked = like !== undefined && like.value === 1;
@@ -431,6 +433,12 @@ export const FeedDetails = () => {
           {poll !== null && poll !== undefined && (
             <View className="mx-4 flex-1">
               <PollCard poll={poll} showAllText={true} />
+            </View>
+          )}
+
+          {location !== null && location !== undefined && (
+            <View className="mx-4 flex-1">
+              <LocationCard location={location} />
             </View>
           )}
 
