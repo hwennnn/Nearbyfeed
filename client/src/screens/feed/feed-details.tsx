@@ -438,7 +438,7 @@ export const FeedDetails = () => {
 
           {location !== null && location !== undefined && (
             <View className="mx-4 flex-1">
-              <LocationCard location={location} />
+              <LocationCard location={location} isFullView={true} />
             </View>
           )}
 

@@ -120,22 +120,26 @@ export const FeedCard = ({
         </Text>
 
         {content !== null && content !== undefined && content.length > 0 && (
-          <Text variant="sm" numberOfLines={4}>
+          <Text variant="sm" numberOfLines={3}>
             {content}
           </Text>
         )}
 
         {images !== null && images !== undefined && images.length > 0 && (
-          <ImageCarousel
-            images={images}
-            imageCarouselIndex={imageCarouselIndex}
-            imageModalIndex={imageModalIndex}
-            setImageCarouselIndex={setImageCarouselIndex}
-            setImageModalIndex={setImageModalIndex}
-          />
+          <View className="flex-1">
+            <ImageCarousel
+              images={images}
+              imageCarouselIndex={imageCarouselIndex}
+              imageModalIndex={imageModalIndex}
+              setImageCarouselIndex={setImageCarouselIndex}
+              setImageModalIndex={setImageModalIndex}
+            />
+          </View>
         )}
 
-        {poll !== null && poll !== undefined && <PollCard poll={poll} />}
+        {poll !== null && poll !== undefined && (
+          <PollCard poll={poll} isPreview={true} />
+        )}
 
         {location !== null && location !== undefined && (
           <LocationCard location={location} />
