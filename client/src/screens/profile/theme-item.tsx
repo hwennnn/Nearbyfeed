@@ -2,7 +2,7 @@ import type { BottomSheetModal } from '@gorhom/bottom-sheet';
 import React from 'react';
 
 import type { ColorSchemeTheme } from '@/core';
-import { setTheme, translate, useTheme } from '@/core';
+import { setTheme, useTheme } from '@/core';
 import type { Option } from '@/ui';
 import { Options } from '@/ui';
 
@@ -10,7 +10,6 @@ import { BottomSheetItem } from '../../ui/core/bottom-sheet/bottom-sheet-item';
 
 export const ThemeItem = () => {
   const selectedTheme = useTheme.use.colorSchemeTheme();
-  const currentSystemTheme = useTheme.use.systemColorScheme();
 
   const optionsRef = React.useRef<BottomSheetModal>(null);
   const open = React.useCallback(() => optionsRef.current?.present(), []);
@@ -21,18 +20,14 @@ export const ThemeItem = () => {
 
   const themes = React.useMemo(
     () => [
-      { label: `${translate('settings.theme.dark')} 🌙`, value: 'dark' },
-      { label: `${translate('settings.theme.light')} 🌞`, value: 'light' },
+      { label: `Dark 🌙`, value: 'dark' },
+      { label: `Light 🌞`, value: 'light' },
       {
-        label: `${translate('settings.theme.system')} (${
-          currentSystemTheme === 'dark'
-            ? translate('settings.theme.dark')
-            : translate('settings.theme.light')
-        }) ⚙️`,
+        label: `System ⚙️`,
         value: 'system',
       },
     ],
-    [currentSystemTheme]
+    []
   );
 
   const theme = React.useMemo(
@@ -42,11 +37,7 @@ export const ThemeItem = () => {
 
   return (
     <>
-      <BottomSheetItem
-        text="settings.theme.title"
-        value={theme?.label}
-        onPress={open}
-      />
+      <BottomSheetItem text="Theme" value={theme?.label} onPress={open} />
       <Options
         ref={optionsRef}
         options={themes}

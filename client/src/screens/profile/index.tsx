@@ -1,4 +1,3 @@
-import { Env } from '@env';
 import { useNavigation } from '@react-navigation/native';
 import * as React from 'react';
 import { Alert } from 'react-native';
@@ -7,7 +6,6 @@ import { useSelf } from '@/api/users';
 import { signOut, useAuth, useTheme } from '@/core';
 import type { RootNavigatorProp } from '@/navigation';
 import type { ProfileNavigatorProp } from '@/navigation/profile-navigator';
-import { LanguageItem } from '@/screens/profile/language-item';
 import {
   Image,
   LayoutWithoutKeyboard,
@@ -18,9 +16,7 @@ import {
   TouchableOpacity,
   View,
 } from '@/ui';
-import { Github, Website } from '@/ui/icons';
 import { Ionicons, MaterialIcons } from '@/ui/icons/vector-icons';
-import colors from '@/ui/theme/colors';
 import { getInitials } from '@/utils/get-initials';
 
 import { BottomSheetItem } from '../../ui/core/bottom-sheet/bottom-sheet-item';
@@ -29,9 +25,6 @@ import { ThemeItem } from './theme-item';
 
 export const Profile = () => {
   const isLoggedIn = useAuth().status === 'signIn';
-
-  const isDark = useTheme.use.colorScheme() === 'dark';
-  const iconColor = isDark ? colors.neutral[400] : colors.neutral[500];
 
   const { isLoading, data: user } = useSelf({
     variables: {},
@@ -99,7 +92,7 @@ export const Profile = () => {
         },
       ],
       {
-        userInterfaceStyle: isDark ? 'dark' : 'light',
+        userInterfaceStyle: useTheme.getState().colorScheme,
       }
     );
   };
@@ -137,10 +130,14 @@ export const Profile = () => {
               <View className="items-center justify-center pt-2">
                 <TouchableOpacity
                   onPress={navToEditProfile}
-                  className="dark:bg- flex-row items-center justify-center space-x-2 rounded-full bg-black px-4 py-2 dark:bg-primary-600"
+                  className="flex-row items-center justify-center space-x-2 rounded-full bg-black px-4 py-2 dark:bg-primary-600"
                 >
                   <Text className="text-white">Edit Profile</Text>
-                  <Ionicons name="chevron-forward" color={'white'} size={16} />
+                  <Ionicons
+                    name="chevron-forward"
+                    className="text-white"
+                    size={16}
+                  />
                 </TouchableOpacity>
               </View>
             </View>
@@ -153,36 +150,37 @@ export const Profile = () => {
                 className="dark:bg- flex-row items-center justify-center space-x-2 rounded-full bg-black px-4 py-2 dark:bg-primary-600"
               >
                 <Text className="text-white">Log In / Register</Text>
-                <Ionicons name="chevron-forward" color={'white'} size={16} />
+                <Ionicons
+                  name="chevron-forward"
+                  className="text-white"
+                  size={16}
+                />
               </TouchableOpacity>
             </View>
           )}
 
           {isLoggedIn && (
-            <ItemsContainer title="settings.my_activity">
-              <BottomSheetItem
-                text="settings.my_posts"
-                onPress={navToMyPosts}
-              />
-              <BottomSheetItem
-                text="settings.my_comments"
-                onPress={navToMyComments}
-              />
-              <BottomSheetItem
-                text="settings.blocked_accounts"
-                onPress={navToBlockedAccounts}
-              />
-            </ItemsContainer>
+            <>
+              <ItemsContainer title="My Activities">
+                <BottomSheetItem text="My Posts" onPress={navToMyPosts} />
+                <BottomSheetItem text="My Comments" onPress={navToMyComments} />
+              </ItemsContainer>
+
+              <ItemsContainer title="My Accounts">
+                <BottomSheetItem text="Manage Account Linking" />
+                <BottomSheetItem
+                  text="Manage Blocked Accounts"
+                  onPress={navToBlockedAccounts}
+                />
+                <BottomSheetItem text="Update Password" />
+              </ItemsContainer>
+            </>
           )}
 
-          <ItemsContainer title="settings.generale">
-            <LanguageItem />
+          <ItemsContainer title="General">
             <ThemeItem />
-          </ItemsContainer>
-
-          <ItemsContainer title="settings.about">
-            <BottomSheetItem text="settings.app_name" value={Env.NAME} />
-            <BottomSheetItem text="settings.version" value={Env.VERSION} />
+            <BottomSheetItem text="Privacy Policy" onPress={() => {}} />
+            <BottomSheetItem text="Terms of service" onPress={() => {}} />
           </ItemsContainer>
 
           {/* <ItemsContainer title="settings.support_us">
@@ -203,26 +201,11 @@ export const Profile = () => {
           />
         </ItemsContainer> */}
 
-          <ItemsContainer title="settings.links">
-            <BottomSheetItem text="settings.privacy" onPress={() => {}} />
-            <BottomSheetItem text="settings.terms" onPress={() => {}} />
-            <BottomSheetItem
-              text="settings.github"
-              icon={<Github color={iconColor} />}
-              onPress={() => {}}
-            />
-            <BottomSheetItem
-              text="settings.website"
-              icon={<Website color={iconColor} />}
-              onPress={() => {}}
-            />
-          </ItemsContainer>
-
           {isLoggedIn && (
             <View className="my-8 flex-1">
               <ItemsContainer>
                 <BottomSheetItem
-                  text="settings.logout"
+                  text="Sign out"
                   onPress={signOutUser}
                   textProps="text-danger-500 font-semibold"
                   icon={

@@ -391,6 +391,7 @@ export class UsersService {
           likes: selectLikes,
           author: true,
           commentsCount: true,
+          location: true,
           poll: {
             select: {
               options: {

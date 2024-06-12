@@ -4,15 +4,11 @@ import React from 'react';
 import type { TextProps } from 'react-native';
 import { StyleSheet, Text as NNText } from 'react-native';
 
-import type { TxKeyPath } from '@/core';
-import { isRTL, translate } from '@/core';
-
 const SText = styled(NNText);
 
 export interface ITextProps extends TextProps {
   variant?: keyof typeof textVariants;
   className?: string;
-  tx?: TxKeyPath;
 }
 
 export const textVariants = {
@@ -32,11 +28,9 @@ export const Text = ({
   variant = 'md',
   className = '',
   style,
-  tx,
   children,
   ...props
 }: ITextProps) => {
-  const content = tx ? translate(tx) : children;
   return (
     <SText
       className={`
@@ -44,13 +38,10 @@ export const Text = ({
       ${textVariants[variant]}
       ${className}
     `}
-      style={StyleSheet.flatten([
-        { writingDirection: isRTL ? 'rtl' : 'ltr' },
-        style,
-      ])}
+      style={StyleSheet.flatten([{ writingDirection: 'ltr' }, style])}
       {...props}
     >
-      {content}
+      {children}
     </SText>
   );
 };
