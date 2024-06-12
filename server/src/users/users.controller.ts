@@ -21,7 +21,7 @@ import JwtAuthGuard from 'src/auth/guards/jwt-auth.guard';
 import { imageUploadOptions } from 'src/images/constants';
 import { ImagesService } from 'src/images/images.service';
 import { type PostWithLike } from 'src/posts/entities';
-import { PaginationDto, UpdateUserDto } from 'src/users/dto';
+import { PaginationDto, UpdatePasswordDto, UpdateUserDto } from 'src/users/dto';
 import { type UserWithoutPassword } from 'src/users/entities/userWithoutPassword';
 import UserActiveGuard from 'src/users/guards/user-active.guard';
 import UserMutateGuard from 'src/users/guards/user-mutate.guard';
@@ -52,10 +52,6 @@ export class UsersController {
     @GetUser('userId') userId: string,
     @UploadedFile() file: Express.Multer.File,
   ): Promise<UserWithoutPassword> {
-    if (id !== userId) {
-      throw new ForbiddenException('Invalid credentials');
-    }
-
     let image: string | undefined;
 
     if (file !== undefined) {
@@ -63,6 +59,15 @@ export class UsersController {
     }
 
     return await this.usersService.update(+id, updateUserDto, image);
+  }
+
+  @Patch(':id/update-password')
+  @UseGuards(UserMutateGuard)
+  async updatePassword(
+    @Param('id') id: string,
+    @Body() updatePasswordDto: UpdatePasswordDto,
+  ): Promise<void> {
+    await this.usersService.updatePasswordHelper(+id, updatePasswordDto);
   }
 
   @Get(':id/posts')

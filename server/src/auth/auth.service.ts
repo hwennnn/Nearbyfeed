@@ -351,7 +351,7 @@ export class AuthService {
 
     await this.usersService.updatePassword(
       user.id,
-      await hashData(resetPasswordDto.newPassword),
+      resetPasswordDto.newPassword,
     );
 
     await this.redisService.delete(key);

@@ -59,6 +59,12 @@ export const Profile = () => {
     }
   };
 
+  const navToUpdatePassword = () => {
+    if (user !== null && user !== undefined) {
+      navigate('UpdatePassword');
+    }
+  };
+
   const navToAuth = () => {
     if (!isLoggedIn) {
       navigateRoot('Auth', {
@@ -172,7 +178,10 @@ export const Profile = () => {
                   text="Manage Blocked Accounts"
                   onPress={navToBlockedAccounts}
                 />
-                <BottomSheetItem text="Update Password" />
+                <BottomSheetItem
+                  text="Update Password"
+                  onPress={navToUpdatePassword}
+                />
               </ItemsContainer>
             </>
           )}

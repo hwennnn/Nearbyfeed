@@ -1,10 +1,16 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { type Comment, type PendingUser, type User } from '@prisma/client';
 import { type PostWithLike } from 'src/posts/entities';
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
   type CreateUserDto,
   type PaginationDto,
+  type UpdatePasswordDto,
   type UpdateUserDto,
   type UpsertUserDto,
 } from 'src/users/dto';
@@ -14,7 +20,7 @@ import {
   type UserWithBlockedAccounts,
   type UserWithoutPassword,
 } from 'src/users/entities';
-import { dayInMs, exclude } from 'src/utils';
+import { compareHash, dayInMs, exclude, hashData } from 'src/utils';
 
 @Injectable()
 export class UsersService {
@@ -272,6 +278,26 @@ export class UsersService {
     return user !== null ? user : null;
   }
 
+  async findOneById(id: number): Promise<User | null> {
+    const user = await this.prismaService.user
+      .findUnique({
+        where: {
+          id,
+        },
+      })
+      .catch((e) => {
+        this.logger.error(
+          `Failed to find user with id ${id}`,
+          e instanceof Error ? e.stack : undefined,
+          UsersService.name,
+        );
+
+        throw new BadRequestException('Failed to find user by this id');
+      });
+
+    return user !== null ? user : null;
+  }
+
   async isUserExistByEmail(email: string): Promise<boolean> {
     return (
       (await this.prismaService.user.findUnique({
@@ -315,16 +341,41 @@ export class UsersService {
     );
   }
 
+  async updatePasswordHelper(
+    id: number,
+    dto: UpdatePasswordDto,
+  ): Promise<void> {
+    const user = await this.findOneById(id);
+
+    if (user === null || user?.password === null) {
+      throw new ForbiddenException('User not found or password is invalid');
+    }
+
+    if (!(await compareHash(dto.originalPassword, user.password))) {
+      throw new BadRequestException('The current password is incorrect');
+    }
+
+    if (await compareHash(dto.newPassword, user.password)) {
+      throw new BadRequestException(
+        'The new password must be different from the current password',
+      );
+    }
+
+    await this.updatePassword(id, dto.newPassword);
+  }
+
   async updatePassword(
     id: number,
     password: string,
   ): Promise<UserWithoutPassword> {
+    const hashedPassword = await hashData(password);
+
     return this.excludePasswordFromUser(
       await this.prismaService.user
         .update({
           where: { id },
           data: {
-            password,
+            password: hashedPassword,
           },
         })
         .catch((e) => {
