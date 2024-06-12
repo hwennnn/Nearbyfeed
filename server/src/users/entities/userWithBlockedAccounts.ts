@@ -1,7 +1,8 @@
 import { type UserWithoutPassword } from './userWithoutPassword';
 
-export type UserWithBlockedAccounts = UserWithoutPassword & {
+export type UserResult = UserWithoutPassword & {
   blockedUsers: BlockedUser[];
+  hasPassword: boolean;
 };
 
 export interface BlockedUser {

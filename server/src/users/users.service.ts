@@ -17,7 +17,7 @@ import {
 
 import {
   type PendingUserWithoutPassword,
-  type UserWithBlockedAccounts,
+  type UserResult,
   type UserWithoutPassword,
 } from 'src/users/entities';
 import { compareHash, dayInMs, exclude, hashData } from 'src/utils';
@@ -217,7 +217,7 @@ export class UsersService {
       });
   }
 
-  async findOne(id: number): Promise<UserWithBlockedAccounts> {
+  async findOne(id: number): Promise<UserResult> {
     const user = await this.prismaService.user
       .findUniqueOrThrow({
         where: {
@@ -249,10 +249,12 @@ export class UsersService {
       });
 
     const blockedUsers = user.blockedUsers.map((b) => b.blocked);
+    const hasPassword = user.password !== null;
 
-    const result: UserWithBlockedAccounts = {
+    const result: UserResult = {
       ...user,
       blockedUsers,
+      hasPassword,
     };
 
     return result;

@@ -79,6 +79,7 @@ export type User = {
   image: string | null;
   createdAt: Date;
   updatedAt: Date;
+  hasPassword: boolean;
   blockedUsers: BlockedUser[];
 };
 

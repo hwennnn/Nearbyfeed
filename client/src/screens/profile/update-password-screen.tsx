@@ -1,5 +1,5 @@
 import { classValidatorResolver } from '@hookform/resolvers/class-validator';
-import { IsString, Length, Matches } from 'class-validator';
+import { IsNotEmpty, IsString, Length, Matches } from 'class-validator';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -19,6 +19,9 @@ import { DoesNotMatchProperty, MatchesProperty } from '@/utils/decorators';
 
 export class UpdatePasswordDto {
   @IsString()
+  @IsNotEmpty({
+    message: 'The original password must not be empty',
+  })
   originalPassword: string;
 
   @Matches(/^(?=.*[a-z])/, {
@@ -33,7 +36,7 @@ export class UpdatePasswordDto {
   })
   @Length(8, undefined, { message: 'Password must be at least 8 characters' })
   @DoesNotMatchProperty('originalPassword', {
-    message: 'The new password must be different ',
+    message: 'The new password must be different from original password',
   })
   password: string;
 

@@ -103,6 +103,8 @@ export const Profile = () => {
     );
   };
 
+  const hasPassword = user !== null && user !== undefined && user.hasPassword;
+
   return (
     <LayoutWithoutKeyboard className="flex-1">
       <ScrollView className="flex-1 px-4 pt-2">
@@ -178,10 +180,12 @@ export const Profile = () => {
                   text="Manage Blocked Accounts"
                   onPress={navToBlockedAccounts}
                 />
-                <BottomSheetItem
-                  text="Update Password"
-                  onPress={navToUpdatePassword}
-                />
+                {hasPassword && (
+                  <BottomSheetItem
+                    text="Update Password"
+                    onPress={navToUpdatePassword}
+                  />
+                )}
               </ItemsContainer>
             </>
           )}

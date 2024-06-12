@@ -22,6 +22,7 @@ import { imageUploadOptions } from 'src/images/constants';
 import { ImagesService } from 'src/images/images.service';
 import { type PostWithLike } from 'src/posts/entities';
 import { PaginationDto, UpdatePasswordDto, UpdateUserDto } from 'src/users/dto';
+import { type UserResult } from 'src/users/entities';
 import { type UserWithoutPassword } from 'src/users/entities/userWithoutPassword';
 import UserActiveGuard from 'src/users/guards/user-active.guard';
 import UserMutateGuard from 'src/users/guards/user-mutate.guard';
@@ -37,9 +38,7 @@ export class UsersController {
 
   @Get('self')
   @UseGuards(UserActiveGuard)
-  async getSelf(
-    @GetUser('userId') userId: string,
-  ): Promise<UserWithoutPassword> {
+  async getSelf(@GetUser('userId') userId: string): Promise<UserResult> {
     return await this.usersService.findOne(+userId);
   }
 
