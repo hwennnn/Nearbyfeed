@@ -6,9 +6,13 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { ProviderType } from '@prisma/client';
+
 import {
   type AuthDto,
+  type CreatePasswordDto,
   type ResetPasswordDto,
+  type UpdatePasswordDto,
   type VerifyEmailDto,
 } from 'src/auth/dto';
 import {
@@ -121,7 +125,7 @@ export class AuthService {
         email: data.email,
         name: data.name ?? data.given_name,
         image: data.picture,
-        providerName: 'google',
+        providerName: ProviderType.GOOGLE,
       });
 
       const tokens = await this.getTokens(user.id.toString(), user.email);
@@ -385,5 +389,35 @@ export class AuthService {
       sessionId,
       otpCode,
     };
+  }
+
+  async updatePassword(id: number, dto: UpdatePasswordDto): Promise<void> {
+    const user = await this.usersService.findOneById(id);
+
+    if (user === null || user?.password === null) {
+      throw new ForbiddenException('User not found or password is invalid');
+    }
+
+    if (!(await compareHash(dto.originalPassword, user.password))) {
+      throw new BadRequestException('The current password is incorrect');
+    }
+
+    if (await compareHash(dto.newPassword, user.password)) {
+      throw new BadRequestException(
+        'The new password must be different from the current password',
+      );
+    }
+
+    await this.usersService.updatePassword(id, dto.newPassword);
+  }
+
+  async createPassword(id: number, dto: CreatePasswordDto): Promise<void> {
+    const user = await this.usersService.findOneById(id);
+
+    if (user === null || user?.password !== null) {
+      throw new ForbiddenException('User not found or password already exists');
+    }
+
+    await this.usersService.updatePassword(id, dto.password);
   }
 }

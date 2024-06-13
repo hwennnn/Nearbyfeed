@@ -21,12 +21,7 @@ import JwtAuthGuard from 'src/auth/guards/jwt-auth.guard';
 import { imageUploadOptions } from 'src/images/constants';
 import { ImagesService } from 'src/images/images.service';
 import { type PostWithLike } from 'src/posts/entities';
-import {
-  CreatePasswordDto,
-  PaginationDto,
-  UpdatePasswordDto,
-  UpdateUserDto,
-} from 'src/users/dto';
+import { PaginationDto, UpdateUserDto } from 'src/users/dto';
 import { type UserResult } from 'src/users/entities';
 import { type UserWithoutPassword } from 'src/users/entities/userWithoutPassword';
 import UserActiveGuard from 'src/users/guards/user-active.guard';
@@ -65,22 +60,10 @@ export class UsersController {
     return await this.usersService.update(+id, updateUserDto, image);
   }
 
-  @Patch(':id/update-password')
+  @Patch(':id/providers/:providerId/disconnect')
   @UseGuards(UserMutateGuard)
-  async updatePassword(
-    @Param('id') id: string,
-    @Body() updatePasswordDto: UpdatePasswordDto,
-  ): Promise<void> {
-    await this.usersService.updatePasswordHelper(+id, updatePasswordDto);
-  }
-
-  @Patch(':id/create-password')
-  @UseGuards(UserMutateGuard)
-  async createPassword(
-    @Param('id') id: string,
-    @Body() createPasswordDto: CreatePasswordDto,
-  ): Promise<void> {
-    await this.usersService.createPasswordHelper(+id, createPasswordDto);
+  async disconnectProvider(@Param('id') id: string): Promise<void> {
+    // await this.usersService.createPasswordHelper(+id, createPasswordDto);
   }
 
   @Get(':id/posts')

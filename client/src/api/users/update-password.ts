@@ -1,12 +1,11 @@
 import type { AxiosError } from 'axios';
 import { createMutation } from 'react-query-kit';
 
-import { client } from '../common';
+import { client, queryClient } from '../common';
 
 type Variables = {
   originalPassword: string;
   newPassword: string;
-  userId: number;
 };
 type Response = {};
 
@@ -17,8 +16,11 @@ export const useUpdatePassword = createMutation<
 >({
   mutationFn: async (variables) =>
     client({
-      url: `users/${variables.userId}/update-password`,
-      method: 'PATCH',
+      url: `auth/password`,
+      method: 'PUT',
       data: variables,
     }).then((response) => response.data),
+  onSuccess: (_) => {
+    queryClient.invalidateQueries(['self']);
+  },
 });

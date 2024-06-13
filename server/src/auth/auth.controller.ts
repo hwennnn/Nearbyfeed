@@ -14,14 +14,18 @@ import { Response } from 'express';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import {
   AuthDto,
+  CreatePasswordDto,
   ForgotPasswordDto,
   ResetPasswordDto,
+  UpdatePasswordDto,
   VerifyEmailDto,
 } from 'src/auth/dto';
 import { TokenPayload, type LoginResult } from 'src/auth/entities';
+import JwtAuthGuard from 'src/auth/guards/jwt-auth.guard';
 import JwtRefreshGuard from 'src/auth/guards/jwt-refresh.guard';
 import { CreateUserDto } from 'src/users/dto';
 import { type PendingUserWithoutPassword } from 'src/users/entities';
+import UserActiveGuard from 'src/users/guards/user-active.guard';
 import { AuthService } from './auth.service';
 
 @Controller('auth')
@@ -77,6 +81,24 @@ export class AuthController {
     @GetUser('payload') payload: TokenPayload,
   ): Promise<{ accessToken: string }> {
     return await this.authService.refreshTokens(refreshToken, payload);
+  }
+
+  @Post('password')
+  @UseGuards(JwtAuthGuard, UserActiveGuard)
+  async createPassword(
+    @GetUser('userId') userId: string,
+    @Body() createPasswordDto: CreatePasswordDto,
+  ): Promise<void> {
+    await this.authService.createPassword(+userId, createPasswordDto);
+  }
+
+  @Put('password')
+  @UseGuards(JwtAuthGuard, UserActiveGuard)
+  async updatePassword(
+    @GetUser('userId') userId: string,
+    @Body() updatePasswordDto: UpdatePasswordDto,
+  ): Promise<void> {
+    await this.authService.updatePassword(+userId, updatePasswordDto);
   }
 
   @Post('password/forgot')

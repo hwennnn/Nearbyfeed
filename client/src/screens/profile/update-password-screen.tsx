@@ -4,7 +4,6 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 
 import { useUpdatePassword } from '@/api/users/update-password';
-import { useUser } from '@/core/user';
 import {
   Button,
   ControlledInput,
@@ -54,25 +53,23 @@ export const UpdatePasswordScreen = () => {
 
   const isFormValid = formState.isValid;
 
-  const { isLoading, error, mutateAsync } = useUpdatePassword({
-    onSuccess: () => {
-      showSuccessMessage('You have successfully updated your password');
-    },
-    onError: () => {
-      showErrorMessage('There is an error. Please try again');
-    },
-  });
+  const { isLoading, error, mutateAsync } = useUpdatePassword();
 
   const onSubmit = async (data: UpdatePasswordDto): Promise<void> => {
-    const userId = useUser.getState().user?.id;
-
-    if (userId === undefined) return;
-
-    await mutateAsync({
-      originalPassword: data.originalPassword,
-      newPassword: data.password,
-      userId,
-    });
+    await mutateAsync(
+      {
+        originalPassword: data.originalPassword,
+        newPassword: data.password,
+      },
+      {
+        onSuccess: () => {
+          showSuccessMessage('You have successfully updated your password');
+        },
+        onError: () => {
+          showErrorMessage('There is an error. Please try again');
+        },
+      }
+    );
   };
 
   return (

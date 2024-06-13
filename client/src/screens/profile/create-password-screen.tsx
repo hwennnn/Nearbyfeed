@@ -6,7 +6,6 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 
 import { useCreatePassword } from '@/api/users/create-password';
-import { useUser } from '@/core/user';
 import type { ProfileNavigatorProp } from '@/navigation/profile-navigator';
 import { type ProfileStackParamList } from '@/navigation/profile-navigator';
 import {
@@ -56,27 +55,25 @@ export const CreatePasswordScreen = () => {
 
   const { navigate } = useNavigation<ProfileNavigatorProp>();
 
-  const { isLoading, error, mutateAsync } = useCreatePassword({
-    onSuccess: () => {
-      showSuccessMessage(
-        'You have successfully created a password for your account.'
-      );
-      navigate('Profile');
-    },
-    onError: () => {
-      showErrorMessage('There is an error. Please try again');
-    },
-  });
+  const { isLoading, error, mutateAsync } = useCreatePassword();
 
   const onSubmit = async (data: CreatePasswordDto): Promise<void> => {
-    const userId = useUser.getState().user?.id;
-
-    if (userId === undefined) return;
-
-    await mutateAsync({
-      password: data.password,
-      userId,
-    });
+    await mutateAsync(
+      {
+        password: data.password,
+      },
+      {
+        onSuccess: () => {
+          showSuccessMessage(
+            'You have successfully created a password for your account.'
+          );
+          navigate('Profile');
+        },
+        onError: () => {
+          showErrorMessage('There is an error. Please try again');
+        },
+      }
+    );
   };
 
   return (
