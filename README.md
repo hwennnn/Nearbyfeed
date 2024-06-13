@@ -18,29 +18,26 @@ The inspiration behind NearbyFeed stems from the need to address the problem of 
 
 ## Screenshots
 
-**Home (Dark Mode)**            | **Home (Light Mode)**
-:-------------------------:|:-------------------------:
-![Home 1](docs/Home%201.png)  |  ![Home 3](docs/Home%203.png)
 
-**Home**            | **Onboarding**
-:-------------------------:|:-------------------------:
-![Home 2](docs/Home%202.png)  | ![Onboarding](docs/Onboarding.png)
+**Home (Dark Mode)**            | **Home (Light Mode)**            | **Home**
+:-------------------------:|:-------------------------:|:-------------------------:
+![Home 1](docs/Home%201.png)  |  ![Home 3](docs/Home%203.png)  | ![Home 2](docs/Home%202.png)
 
-**Feed Details**            | **Add Feed**
-:-------------------------:|:-------------------------:
-![Feed Details](docs/Feed%20Details.png)  |  ![Add Feed](docs/Create%20Feed.png)
+**Onboarding**            | **Feed Details**            | **Add Feed**
+:-------------------------:|:-------------------------:|:-------------------------:
+![Onboarding](docs/Onboarding.png)  | ![Feed Details](docs/Feed%20Details.png)  | ![Add Feed](docs/Create%20Feed.png)
 
-**Comments**            | **Comments**
-:-------------------------:|:-------------------------:
-![Comment 1](docs/Comments%201.png)  |  ![Comment 2](docs/Comments%202.png)
+**Comments**            | **Comments**            | **My Posts**
+:-------------------------:|:-------------------------:|:-------------------------:
+![Comment 1](docs/Comments%201.png)  |  ![Comment 2](docs/Comments%202.png)  | ![My Posts](docs/My%20Posts.png)
 
-**My Posts**            | **My Comments**
-:-------------------------:|:-------------------------:
-![My Posts](docs/My%20Posts.png)  |  ![My Comments](docs/My%20Comments.png)
+**My Comments**            | **Manage Account Linking**            | **Manage Blocked Accounts**
+:-------------------------:|:-------------------------:|:-------------------------:
+![My Comments](docs/My%20Comments.png)  | ![Manage Account Linking](docs/Manage%20Account%20Linking.png)  | ![Manage Blocked Accounts](docs/Manage%20Blocked%20Accounts.png)
 
-**Manage Account Linking**            | **Manage Blocked Accounts**
-:-------------------------:|:-------------------------:
-![Manage Account Linking](docs/Manage%20Account%20Linking.png)  |  ![My Comments](docs/Manage%20Blocked%20Accounts.png)
+---
+
+This section now displays the images in a three-column format.
 
 ## Built With
 
