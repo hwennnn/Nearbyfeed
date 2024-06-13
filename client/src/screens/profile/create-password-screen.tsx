@@ -1,13 +1,11 @@
 import { classValidatorResolver } from '@hookform/resolvers/class-validator';
-import type { RouteProp } from '@react-navigation/native';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { Length, Matches } from 'class-validator';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 
-import { useCreatePassword } from '@/api/users/create-password';
+import { useCreatePassword } from '@/api/auth';
 import type { ProfileNavigatorProp } from '@/navigation/profile-navigator';
-import { type ProfileStackParamList } from '@/navigation/profile-navigator';
 import {
   Button,
   ControlledInput,
@@ -40,12 +38,7 @@ export class CreatePasswordDto {
 
 const resolver = classValidatorResolver(CreatePasswordDto);
 
-type Props = RouteProp<ProfileStackParamList, 'CreatePassword'>;
-
 export const CreatePasswordScreen = () => {
-  const { params } = useRoute<Props>();
-  const { hasPassword } = params;
-
   const { handleSubmit, control, formState, setFocus } =
     useForm<CreatePasswordDto>({
       resolver,
@@ -81,11 +74,9 @@ export const CreatePasswordScreen = () => {
       <Header isDisabledBack={isLoading} headerTitle="Create Password" />
 
       <View className="mt-4 flex-1 space-y-4 px-4">
-        {!hasPassword && (
-          <Text variant="xl" className="pb-4 font-bold">
-            Please enter a new password.
-          </Text>
-        )}
+        <Text variant="xl" className="pb-4 font-bold">
+          Please enter a new password.
+        </Text>
 
         {typeof error === 'string' && (
           <Text testID="form-title" className="pb-4 text-red-600">

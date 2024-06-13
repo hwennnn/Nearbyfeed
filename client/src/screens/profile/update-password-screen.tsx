@@ -3,7 +3,7 @@ import { IsNotEmpty, IsString, Length, Matches } from 'class-validator';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 
-import { useUpdatePassword } from '@/api/users/update-password';
+import { useUpdatePassword } from '@/api/auth';
 import {
   Button,
   ControlledInput,

@@ -60,12 +60,6 @@ export class UsersController {
     return await this.usersService.update(+id, updateUserDto, image);
   }
 
-  @Patch(':id/providers/:providerId/disconnect')
-  @UseGuards(UserMutateGuard)
-  async disconnectProvider(@Param('id') id: string): Promise<void> {
-    // await this.usersService.createPasswordHelper(+id, createPasswordDto);
-  }
-
   @Get(':id/posts')
   @UseGuards(UserActiveGuard)
   async findOwnPosts(

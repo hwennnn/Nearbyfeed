@@ -50,11 +50,17 @@ model BlockedUser {
   @@unique([blockerId, blockedId])
 }
 
+enum ProviderType {
+  EMAIL
+  GOOGLE
+  APPLE
+}
+
 model Provider {
-  providerName String
+  providerName ProviderType
   isActive     Boolean
   userId       Int
-  user         User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([providerName, userId])
 }

@@ -420,4 +420,82 @@ export class AuthService {
 
     await this.usersService.updatePassword(id, dto.password);
   }
+
+  async disconnectProvider(
+    id: number,
+    providerName: ProviderType,
+  ): Promise<void> {
+    const user = await this.usersService.findOne(id);
+
+    if (user === null) {
+      throw new ForbiddenException('User not found');
+    }
+
+    const activeProviders = user.providers.filter(
+      (provider) => provider.isActive,
+    );
+    const providerCount = activeProviders.length;
+
+    if (providerCount < 2) {
+      throw new BadRequestException(
+        'Cannot disconnect the provider. At least one active provider must remain linked to the account.',
+      );
+    }
+
+    const isProviderActive = activeProviders.some(
+      (provider) => provider.providerName === providerName,
+    );
+
+    if (!isProviderActive) {
+      throw new BadRequestException(
+        `The provider ${providerName} is already inactive.`,
+      );
+    }
+
+    if (providerName === 'EMAIL') {
+      await Promise.all([
+        this.usersService.disconnectProvider(id, providerName),
+        this.usersService.deletePassword(id),
+      ]);
+    } else {
+      await this.usersService.disconnectProvider(id, providerName);
+    }
+  }
+
+  async linkGoogleProvider(userId: number, token: string): Promise<void> {
+    try {
+      const response = await fetch(GOOGLE_API_USER_INFO_URL, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!response.ok) {
+        throw new BadRequestException(
+          'Failed to fetch Google user information',
+        );
+      }
+
+      const data: GoogleUserProfile = await response.json();
+
+      const user = await this.usersService.findOne(userId);
+
+      if (user === null) {
+        throw new BadRequestException('User not found');
+      }
+
+      if (user.email !== data.email) {
+        throw new BadRequestException(
+          'The Google email does not match the email associated with the current user account',
+        );
+      }
+
+      await this.usersService.connectProvider(userId, 'GOOGLE');
+    } catch (err) {
+      if (err instanceof BadRequestException) {
+        throw err;
+      }
+      throw new BadRequestException(
+        'An error occurred while linking Google provider',
+      );
+    }
+  }
 }

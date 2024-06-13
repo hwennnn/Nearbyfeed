@@ -81,6 +81,13 @@ export type User = {
   updatedAt: Date;
   hasPassword: boolean;
   blockedUsers: BlockedUser[];
+  providers: AuthProvider[];
+};
+
+export type AuthProvider = {
+  providerName: 'EMAIL' | 'GOOGLE' | 'APPLE';
+  isActive: boolean;
+  userId: number;
 };
 
 export type BlockedUser = {

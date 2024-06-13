@@ -1,17 +1,15 @@
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import {
-  BadRequestException,
-  ForbiddenException,
-  Injectable,
-  Logger,
-} from '@nestjs/common';
-import { type Comment, type PendingUser, type User } from '@prisma/client';
+  ProviderType,
+  type Comment,
+  type PendingUser,
+  type User,
+} from '@prisma/client';
 import { type PostWithLike } from 'src/posts/entities';
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
-  type CreatePasswordDto,
   type CreateUserDto,
   type PaginationDto,
-  type UpdatePasswordDto,
   type UpdateUserDto,
   type UpsertUserDto,
 } from 'src/users/dto';
@@ -21,7 +19,7 @@ import {
   type UserResult,
   type UserWithoutPassword,
 } from 'src/users/entities';
-import { compareHash, dayInMs, exclude, hashData } from 'src/utils';
+import { dayInMs, exclude, hashData } from 'src/utils';
 
 @Injectable()
 export class UsersService {
@@ -70,7 +68,7 @@ export class UsersService {
             ...createUserDto,
             providers: {
               create: {
-                providerName: 'email',
+                providerName: 'EMAIL',
                 isActive: true,
               },
             },
@@ -237,6 +235,7 @@ export class UsersService {
               },
             },
           },
+          providers: true,
         },
       })
       .catch((e) => {
@@ -344,76 +343,6 @@ export class UsersService {
     );
   }
 
-  async updatePasswordHelper(
-    id: number,
-    dto: UpdatePasswordDto,
-  ): Promise<void> {
-    const user = await this.findOneById(id);
-
-    if (user === null || user?.password === null) {
-      throw new ForbiddenException('User not found or password is invalid');
-    }
-
-    if (!(await compareHash(dto.originalPassword, user.password))) {
-      throw new BadRequestException('The current password is incorrect');
-    }
-
-    if (await compareHash(dto.newPassword, user.password)) {
-      throw new BadRequestException(
-        'The new password must be different from the current password',
-      );
-    }
-
-    await this.updatePassword(id, dto.newPassword);
-  }
-
-  async createPasswordHelper(
-    id: number,
-    dto: CreatePasswordDto,
-  ): Promise<void> {
-    const user = await this.findOneById(id);
-
-    if (user === null || user?.password !== null) {
-      throw new ForbiddenException(
-        'User not found or user already has a password',
-      );
-    }
-
-    await this.createPassword(id, dto.password);
-  }
-
-  async createPassword(
-    id: number,
-    password: string,
-  ): Promise<UserWithoutPassword> {
-    const hashedPassword = await hashData(password);
-
-    return this.excludePasswordFromUser(
-      await this.prismaService.user
-        .update({
-          where: { id },
-          data: {
-            password: hashedPassword,
-            providers: {
-              create: {
-                providerName: 'email',
-                isActive: true,
-              },
-            },
-          },
-        })
-        .catch((e) => {
-          this.logger.error(
-            `Failed to update password for user ${id}`,
-            e instanceof Error ? e.stack : undefined,
-            UsersService.name,
-          );
-
-          throw new BadRequestException('Failed to update user');
-        }),
-    );
-  }
-
   async updatePassword(
     id: number,
     password: string,
@@ -426,6 +355,23 @@ export class UsersService {
           where: { id },
           data: {
             password: hashedPassword,
+            providers: {
+              upsert: {
+                where: {
+                  providerName_userId: {
+                    providerName: ProviderType.EMAIL,
+                    userId: id,
+                  },
+                },
+                update: {
+                  isActive: true,
+                },
+                create: {
+                  providerName: ProviderType.EMAIL,
+                  isActive: true,
+                },
+              },
+            },
           },
         })
         .catch((e) => {
@@ -694,5 +640,79 @@ export class UsersService {
     ).map((result) => result.blockedId);
 
     return result;
+  }
+
+  async connectProvider(id: number, providerName: ProviderType): Promise<void> {
+    await this.prismaService.provider
+      .upsert({
+        where: {
+          providerName_userId: {
+            providerName,
+            userId: id,
+          },
+        },
+        create: {
+          providerName,
+          isActive: true,
+          userId: id,
+        },
+        update: {
+          isActive: true,
+        },
+      })
+      .catch((e) => {
+        this.logger.error(
+          `Failed to add provider for user ${id}`,
+          e instanceof Error ? e.stack : undefined,
+          UsersService.name,
+        );
+
+        throw new BadRequestException('Failed to add provider');
+      });
+  }
+
+  async disconnectProvider(
+    id: number,
+    providerName: ProviderType,
+  ): Promise<void> {
+    await this.prismaService.provider
+      .delete({
+        where: {
+          providerName_userId: {
+            providerName,
+            userId: id,
+          },
+        },
+      })
+      .catch((e) => {
+        this.logger.error(
+          `Failed to delete provider for user ${id}`,
+          e instanceof Error ? e.stack : undefined,
+          UsersService.name,
+        );
+
+        throw new BadRequestException('Failed to delete provider');
+      });
+  }
+
+  async deletePassword(id: number): Promise<void> {
+    await this.prismaService.user
+      .update({
+        where: {
+          id,
+        },
+        data: {
+          password: null,
+        },
+      })
+      .catch((e) => {
+        this.logger.error(
+          `Failed to delete password for user ${id}`,
+          e instanceof Error ? e.stack : undefined,
+          UsersService.name,
+        );
+
+        throw new BadRequestException('Failed to delete password');
+      });
   }
 }

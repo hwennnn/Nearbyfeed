@@ -14,7 +14,7 @@ export default class UserActiveGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const userIdFromToken = +request.user.userId;
 
-    const user = await this.usersService.findOne(userIdFromToken);
+    const user = await this.usersService.findOneById(userIdFromToken);
 
     if (user === null || user.isDeleted) {
       throw new NotFoundException('User not found');

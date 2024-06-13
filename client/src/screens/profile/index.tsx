@@ -104,10 +104,14 @@ export const Profile = () => {
       if (hasPassword) {
         navigate('UpdatePassword');
       } else {
-        navigate('CreatePassword', {
-          hasPassword,
-        });
+        navigate('CreatePassword');
       }
+    }
+  };
+
+  const navToManageAccountLinking = () => {
+    if (user !== null && user !== undefined) {
+      navigate('ManageAccountLinking');
     }
   };
 
@@ -181,7 +185,10 @@ export const Profile = () => {
               </ItemsContainer>
 
               <ItemsContainer title="Account Settings">
-                <BottomSheetItem text="Manage Account Linking" />
+                <BottomSheetItem
+                  text="Manage Account Linking"
+                  onPress={navToManageAccountLinking}
+                />
                 <BottomSheetItem
                   text="Manage Blocked Accounts"
                   onPress={navToBlockedAccounts}

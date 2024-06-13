@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -10,8 +11,10 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { ProviderType } from '@prisma/client';
 import { Response } from 'express';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
+import { ProviderIdValidationPipe } from 'src/auth/decorators/provider-id-validation-pipe';
 import {
   AuthDto,
   CreatePasswordDto,
@@ -128,5 +131,23 @@ export class AuthController {
     @Body() resetPasswordDto: ResetPasswordDto,
   ): Promise<void> {
     await this.authService.resetPassword(resetPasswordDto);
+  }
+
+  @Post('providers/google')
+  @UseGuards(JwtAuthGuard, UserActiveGuard)
+  async connectProvider(
+    @GetUser('userId') userId: string,
+    @Query('token') token: string,
+  ): Promise<void> {
+    await this.authService.linkGoogleProvider(+userId, token);
+  }
+
+  @Delete('providers/:providerId')
+  @UseGuards(JwtAuthGuard, UserActiveGuard)
+  async disconnectProvider(
+    @GetUser('userId') userId: string,
+    @Param('providerId', ProviderIdValidationPipe) providerId: ProviderType,
+  ): Promise<void> {
+    await this.authService.disconnectProvider(+userId, providerId);
   }
 }

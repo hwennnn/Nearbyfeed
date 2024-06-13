@@ -30,6 +30,7 @@ import {
 } from '@/ui';
 import { Layout } from '@/ui/core/layout';
 import { getInitials } from '@/utils/get-initials';
+import { requestMediaLibraryPermission } from '@/utils/permission-utils';
 
 export class UpdateProfileDto {
   @IsOptional()
@@ -54,7 +55,9 @@ const EditImageButton = ({
   const { showActionSheetWithOptions } = useActionSheet();
 
   const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
+    const hasMediaLibraryPermission = await requestMediaLibraryPermission();
+    if (!hasMediaLibraryPermission) return;
+
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,

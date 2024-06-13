@@ -6,6 +6,7 @@ import { Profile } from '@/screens';
 import { BlockedAccountScreen } from '@/screens/profile/blocked-accounts';
 import { CreatePasswordScreen } from '@/screens/profile/create-password-screen';
 import { EditProfile } from '@/screens/profile/edit-profile';
+import { ManageAccountLinkingScreen } from '@/screens/profile/manage-account-linking';
 import { UpdatePasswordScreen } from '@/screens/profile/update-password-screen';
 
 export type ProfileStackParamList = {
@@ -13,9 +14,8 @@ export type ProfileStackParamList = {
   EditProfile: undefined;
   BlockedAccounts: undefined;
   UpdatePassword: undefined;
-  CreatePassword: {
-    hasPassword: boolean;
-  };
+  CreatePassword: undefined;
+  ManageAccountLinking: undefined;
 };
 
 const Stack = createNativeStackNavigator<ProfileStackParamList>();
@@ -39,6 +39,11 @@ export const ProfileNavigator = () => {
       <Stack.Screen name="CreatePassword" component={CreatePasswordScreen} />
 
       <Stack.Screen name="BlockedAccounts" component={BlockedAccountScreen} />
+
+      <Stack.Screen
+        name="ManageAccountLinking"
+        component={ManageAccountLinkingScreen}
+      />
     </Stack.Navigator>
   );
 };

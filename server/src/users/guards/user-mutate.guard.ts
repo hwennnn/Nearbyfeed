@@ -16,7 +16,7 @@ export default class UserMutateGuard implements CanActivate {
     const userIdFromParams = +request.params.id;
     const userIdFromToken = +request.user.userId;
 
-    const user = await this.usersService.findOne(userIdFromToken);
+    const user = await this.usersService.findOneById(userIdFromToken);
 
     if (user === null || user.isDeleted) {
       throw new NotFoundException('User not found');
