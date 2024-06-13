@@ -10,7 +10,7 @@ Clone the repo to your machine and install deps:
 pnpm install
 ```
 
-To run the app on ios
+To run the app on iOS
 
 ```sh
 pnpm ios

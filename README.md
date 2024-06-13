@@ -1,17 +1,16 @@
 <div align="center">
- <img src="Stuff/icon-readme.png" width="200" height="200">
+ <img src="docs/icon-readme.png" width="200" height="200" alt='icon-readme'>
  <h1>NearbyFeed</h1>
  <p>
   <b>Discover and connect with your local community</b>
  </p>
  <br>
  <br>
- <br>
 </div>
 
-NearbyFeed is an innovative app designed to reconnect communities by providing users with real-time updates and insights about their surroundings. By utilizing their current location, users can easily stay informed about local events, activities, and news. They can also create their own posts, share updates, and engage in conversations with other users through comments.
+![Illustration](docs/illustration.png)
 
-[Demo Video](https://youtu.be/zzvwYY75NJU)
+NearbyFeed is an innovative app designed to reconnect communities by providing users with real-time updates and insights about their surroundings. By utilizing their current location, users can easily stay informed about local events, activities, and news. They can also create their own posts, share updates, and engage in conversations with other users through comments.
 
 ## Inspiration
 
@@ -19,8 +18,29 @@ The inspiration behind NearbyFeed stems from the need to address the problem of 
 
 ## Screenshots
 
-<img src="Stuff/screenshot1.jpeg" width="325" height="700">
-<img src="Stuff/screenshot2.jpeg" width="325" height="700">
+**Home (Dark Mode)**            | **Home (Light Mode)**
+:-------------------------:|:-------------------------:
+![Home 1](docs/Home%201.png)  |  ![Home 3](docs/Home%203.png)
+
+**Home**            | **Onboarding**
+:-------------------------:|:-------------------------:
+![Home 2](docs/Home%202.png)  | ![Onboarding](docs/Onboarding.png)
+
+**Feed Details**            | **Add Feed**
+:-------------------------:|:-------------------------:
+![Feed Details](docs/Feed%20Details.png)  |  ![Add Feed](docs/Create%20Feed.png)
+
+**Comments**            | **Comments**
+:-------------------------:|:-------------------------:
+![Comment 1](docs/Comments%201.png)  |  ![Comment 2](docs/Comments%202.png)
+
+**My Posts**            | **My Comments**
+:-------------------------:|:-------------------------:
+![My Posts](docs/My%20Posts.png)  |  ![My Comments](docs/My%20Comments.png)
+
+**Manage Account Linking**            | **Manage Blocked Accounts**
+:-------------------------:|:-------------------------:
+![Manage Account Linking](docs/Manage%20Account%20Linking.png)  |  ![My Comments](docs/Manage%20Blocked%20Accounts.png)
 
 ## Built With
 

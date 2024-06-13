@@ -28,10 +28,10 @@ To set up the database, run the following commands:
 
 ```bash
 # Map your data model to the database schema
-$ yarn prisma:dev:migrate
+$ yarn db:push
 
 # Generate prisma client
-$ yarn prisma:generate
+$ yarn db:generate
 ```
 
 ## Running the app
