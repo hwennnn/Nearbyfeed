@@ -1,3 +1,4 @@
+export * from './create-password.dto';
 export * from './create-user.dto';
 export * from './pagination.dto';
 export * from './update-password.dto';

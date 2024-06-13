@@ -4,6 +4,7 @@ import * as React from 'react';
 
 import { Profile } from '@/screens';
 import { BlockedAccountScreen } from '@/screens/profile/blocked-accounts';
+import { CreatePasswordScreen } from '@/screens/profile/create-password-screen';
 import { EditProfile } from '@/screens/profile/edit-profile';
 import { UpdatePasswordScreen } from '@/screens/profile/update-password-screen';
 
@@ -12,6 +13,9 @@ export type ProfileStackParamList = {
   EditProfile: undefined;
   BlockedAccounts: undefined;
   UpdatePassword: undefined;
+  CreatePassword: {
+    hasPassword: boolean;
+  };
 };
 
 const Stack = createNativeStackNavigator<ProfileStackParamList>();
@@ -24,7 +28,6 @@ export const ProfileNavigator = () => {
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
-        gestureEnabled: false,
       }}
     >
       <Stack.Screen name="Profile" component={Profile} />
@@ -32,6 +35,8 @@ export const ProfileNavigator = () => {
       <Stack.Screen name="EditProfile" component={EditProfile} />
 
       <Stack.Screen name="UpdatePassword" component={UpdatePasswordScreen} />
+
+      <Stack.Screen name="CreatePassword" component={CreatePasswordScreen} />
 
       <Stack.Screen name="BlockedAccounts" component={BlockedAccountScreen} />
     </Stack.Navigator>

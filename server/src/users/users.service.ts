@@ -8,6 +8,7 @@ import { type Comment, type PendingUser, type User } from '@prisma/client';
 import { type PostWithLike } from 'src/posts/entities';
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
+  type CreatePasswordDto,
   type CreateUserDto,
   type PaginationDto,
   type UpdatePasswordDto,
@@ -364,6 +365,53 @@ export class UsersService {
     }
 
     await this.updatePassword(id, dto.newPassword);
+  }
+
+  async createPasswordHelper(
+    id: number,
+    dto: CreatePasswordDto,
+  ): Promise<void> {
+    const user = await this.findOneById(id);
+
+    if (user === null || user?.password !== null) {
+      throw new ForbiddenException(
+        'User not found or user already has a password',
+      );
+    }
+
+    await this.createPassword(id, dto.password);
+  }
+
+  async createPassword(
+    id: number,
+    password: string,
+  ): Promise<UserWithoutPassword> {
+    const hashedPassword = await hashData(password);
+
+    return this.excludePasswordFromUser(
+      await this.prismaService.user
+        .update({
+          where: { id },
+          data: {
+            password: hashedPassword,
+            providers: {
+              create: {
+                providerName: 'email',
+                isActive: true,
+              },
+            },
+          },
+        })
+        .catch((e) => {
+          this.logger.error(
+            `Failed to update password for user ${id}`,
+            e instanceof Error ? e.stack : undefined,
+            UsersService.name,
+          );
+
+          throw new BadRequestException('Failed to update user');
+        }),
+    );
   }
 
   async updatePassword(

@@ -59,12 +59,6 @@ export const Profile = () => {
     }
   };
 
-  const navToUpdatePassword = () => {
-    if (user !== null && user !== undefined) {
-      navigate('UpdatePassword');
-    }
-  };
-
   const navToAuth = () => {
     if (!isLoggedIn) {
       navigateRoot('Auth', {
@@ -104,6 +98,18 @@ export const Profile = () => {
   };
 
   const hasPassword = user !== null && user !== undefined && user.hasPassword;
+
+  const navToUpdatePassword = () => {
+    if (user !== null && user !== undefined) {
+      if (hasPassword) {
+        navigate('UpdatePassword');
+      } else {
+        navigate('CreatePassword', {
+          hasPassword,
+        });
+      }
+    }
+  };
 
   return (
     <LayoutWithoutKeyboard className="flex-1">
@@ -174,26 +180,27 @@ export const Profile = () => {
                 <BottomSheetItem text="My Comments" onPress={navToMyComments} />
               </ItemsContainer>
 
-              <ItemsContainer title="My Accounts">
+              <ItemsContainer title="Account Settings">
                 <BottomSheetItem text="Manage Account Linking" />
                 <BottomSheetItem
                   text="Manage Blocked Accounts"
                   onPress={navToBlockedAccounts}
                 />
-                {hasPassword && (
-                  <BottomSheetItem
-                    text="Update Password"
-                    onPress={navToUpdatePassword}
-                  />
-                )}
+                <BottomSheetItem
+                  text={hasPassword ? 'Update Password' : 'Create Password'}
+                  onPress={navToUpdatePassword}
+                />
               </ItemsContainer>
             </>
           )}
 
           <ItemsContainer title="General">
             <ThemeItem />
+          </ItemsContainer>
+
+          <ItemsContainer title="Terms & Conditions">
             <BottomSheetItem text="Privacy Policy" onPress={() => {}} />
-            <BottomSheetItem text="Terms of service" onPress={() => {}} />
+            <BottomSheetItem text="Terms of Use" onPress={() => {}} />
           </ItemsContainer>
 
           {/* <ItemsContainer title="settings.support_us">
