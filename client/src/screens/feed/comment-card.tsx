@@ -412,7 +412,7 @@ export const CommentCard = ({
                   'more reply',
                   'more replies',
                   'more reply',
-                  repliesCount - replies.length
+                  replies.length - 3
                 )}`}</Text>
 
                 <Ionicons

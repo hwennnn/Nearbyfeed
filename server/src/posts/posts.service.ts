@@ -89,6 +89,7 @@ export class PostsService {
                 },
               }
             : false,
+          location: hasLocationData,
         },
       })
       .catch((e) => {
