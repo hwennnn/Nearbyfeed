@@ -18,26 +18,25 @@ The inspiration behind NearbyFeed stems from the need to address the problem of 
 
 ## Screenshots
 
-
-**Home (Dark Mode)**            | **Home (Light Mode)**            | **Home**
+**JoinUs**            |  **Home (Dark Mode)**            | **Home (Light Mode)**
 :-------------------------:|:-------------------------:|:-------------------------:
-![Home 1](docs/Home%201.png)  |  ![Home 3](docs/Home%203.png)  | ![Home 2](docs/Home%202.png)
+![Onboarding](docs/Onboarding.png) |  ![Home 1](docs/Home%201.png)  |  ![Home 3](docs/Home%203.png)
 
-**Onboarding**            | **Feed Details**            | **Add Feed**
+**Home**            | **Feed Details**            | **Feed Details**
 :-------------------------:|:-------------------------:|:-------------------------:
-![Onboarding](docs/Onboarding.png)  | ![Feed Details](docs/Feed%20Details.png)  | ![Add Feed](docs/Create%20Feed.png)
+![Home 2](docs/Home%202.png)  | ![Feed Details 1](docs/Feed%20Details.png)  | ![Feed Details 2](docs/Feed%20Details%202.png)
 
-**Comments**            | **Comments**            | **My Posts**
+**CreateFeed**            | **Comments**            | **Comments**
 :-------------------------:|:-------------------------:|:-------------------------:
-![Comment 1](docs/Comments%201.png)  |  ![Comment 2](docs/Comments%202.png)  | ![My Posts](docs/My%20Posts.png)
+![Add Feed](docs/Create%20Feed.png)  |  ![Comment 1](docs/Comments%201.png)  |  ![Comment 2](docs/Comments%202.png)
+
+**My Profile**            | **Edit Profile**            | **My Posts**
+:-------------------------:|:-------------------------:|:-------------------------:
+![My Profile](docs/My%20Profile.png)  | ![Edit Profile](docs/Edit%20Profile.png)  | ![My Posts](docs/My%20Posts.png)
 
 **My Comments**            | **Manage Account Linking**            | **Manage Blocked Accounts**
 :-------------------------:|:-------------------------:|:-------------------------:
 ![My Comments](docs/My%20Comments.png)  | ![Manage Account Linking](docs/Manage%20Account%20Linking.png)  | ![Manage Blocked Accounts](docs/Manage%20Blocked%20Accounts.png)
-
----
-
-This section now displays the images in a three-column format.
 
 ## Built With
 
