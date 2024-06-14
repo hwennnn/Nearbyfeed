@@ -16,16 +16,15 @@ import {
 
 import { FileInterceptor } from '@nestjs/platform-express';
 import { type Comment } from '@prisma/client';
-import { GetUser } from 'src/auth/decorators/get-user.decorator';
-import JwtAuthGuard from 'src/auth/guards/jwt-auth.guard';
+
+import { GetUser } from 'src/auth/decorators';
+import { JwtAuthGuard } from 'src/auth/guards';
 import { imageUploadOptions } from 'src/images/constants';
 import { ImagesService } from 'src/images/images.service';
 import { type PostWithLike } from 'src/posts/entities';
 import { PaginationDto, UpdateUserDto } from 'src/users/dto';
-import { type UserResult } from 'src/users/entities';
-import { type UserWithoutPassword } from 'src/users/entities/userWithoutPassword';
-import UserActiveGuard from 'src/users/guards/user-active.guard';
-import UserMutateGuard from 'src/users/guards/user-mutate.guard';
+import { type UserResult, type UserWithoutPassword } from 'src/users/entities';
+import { UserActiveGuard, UserMutateGuard } from 'src/users/guards';
 import { UsersService } from './users.service';
 
 @Controller('users')

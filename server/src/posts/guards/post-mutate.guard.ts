@@ -8,7 +8,7 @@ import {
 import { PostsService } from 'src/posts/posts.service';
 
 @Injectable()
-export default class PostMutateGuard implements CanActivate {
+export class PostMutateGuard implements CanActivate {
   constructor(private readonly postsService: PostsService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -17,7 +17,7 @@ export default class PostMutateGuard implements CanActivate {
 
     const post = await this.postsService.findPost(+postId);
 
-    if (post === null || post.isActive !== true) {
+    if (post === null || !post.isActive) {
       throw new NotFoundException('Post not found');
     }
 

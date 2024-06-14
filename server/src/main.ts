@@ -2,7 +2,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import helmet from 'helmet';
 
-import { PasswordSanitizerInterceptor } from 'src/interceptors/password-sanitizer.interceptor';
+import { PasswordSanitizerInterceptor } from 'src/common/interceptors';
 import { AllExceptionsFilter } from 'src/utils';
 import { AppModule } from './app.module';
 

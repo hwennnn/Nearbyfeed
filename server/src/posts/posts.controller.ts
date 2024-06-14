@@ -19,33 +19,34 @@ import {
   type Post as PostEntity,
   type PostLike,
 } from '@prisma/client';
-import { GetUser } from 'src/auth/decorators/get-user.decorator';
+import { GetUser } from 'src/auth/decorators';
 import { type TokenUser } from 'src/auth/entities';
-import JwtAuthGuard from 'src/auth/guards/jwt-auth.guard';
-import { OptionalJwtAuthGuard } from 'src/auth/guards/optional-jwt-auth.guard';
+import { JwtAuthGuard, OptionalJwtAuthGuard } from 'src/auth/guards';
 import { imageUploadOptions } from 'src/images/constants';
 import { ImagesService } from 'src/images/images.service';
+import {
+  CommentActiveGuard,
+  CommentMutateGuard,
+  PostActiveGuard,
+  PostMutateGuard,
+} from 'src/posts/guards';
 import { CommentsService } from './comments.service';
 import {
   CreateCommentDto,
+  CreatePostDto,
   GetChildCommentDto,
   GetCommentDto,
   GetPostsDto,
+  LikeDto,
   UpdatePostDto,
   VotePollDto,
 } from './dto';
-import { CreatePostDto } from './dto/create-post.dto';
-import { LikeDto } from './dto/like.dto';
 import {
   type CommentWithLike,
   type PollWithOptions,
   type PostWithLike,
   type VotePollResult,
 } from './entities';
-import CommentActiveGuard from './guards/comment-active.guard';
-import CommentMutateGuard from './guards/comment-mutate.guard';
-import PostActiveGuard from './guards/post-active.guard';
-import PostMutateGuard from './guards/post-mutate.guard';
 import { PollService } from './poll.service';
 import { PostsService } from './posts.service';
 

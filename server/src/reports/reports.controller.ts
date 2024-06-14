@@ -1,7 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { CreateCommentReportDto } from 'src/reports/dto/create-comment-report.dto';
+import { CreateCommentReportDto, CreatePostReportDto } from 'src/reports/dto';
+
 import { ReportsService } from 'src/reports/reports.service';
-import { CreatePostReportDto } from './dto/create-post-report.dto';
 
 @Controller('reports')
 export class ReportsController {

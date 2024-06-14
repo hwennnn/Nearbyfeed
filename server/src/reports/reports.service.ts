@@ -1,7 +1,9 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { type CreateCommentReportDto } from 'src/reports/dto/create-comment-report.dto';
-import { type CreatePostReportDto } from 'src/reports/dto/create-post-report.dto';
+import {
+  type CreateCommentReportDto,
+  type CreatePostReportDto,
+} from 'src/reports/dto';
 
 @Injectable()
 export class ReportsService {

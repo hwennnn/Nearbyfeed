@@ -13,8 +13,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { ProviderType } from '@prisma/client';
 import { Response } from 'express';
-import { GetUser } from 'src/auth/decorators/get-user.decorator';
-import { ProviderIdValidationPipe } from 'src/auth/decorators/provider-id-validation-pipe';
+import { GetUser, ProviderIdValidationPipe } from 'src/auth/decorators';
 import {
   AuthDto,
   CreatePasswordDto,
@@ -24,11 +23,11 @@ import {
   VerifyEmailDto,
 } from 'src/auth/dto';
 import { TokenPayload, type LoginResult } from 'src/auth/entities';
-import JwtAuthGuard from 'src/auth/guards/jwt-auth.guard';
-import JwtRefreshGuard from 'src/auth/guards/jwt-refresh.guard';
+
+import { JwtAuthGuard, JwtRefreshGuard } from 'src/auth/guards';
 import { CreateUserDto } from 'src/users/dto';
 import { type PendingUserWithoutPassword } from 'src/users/entities';
-import UserActiveGuard from 'src/users/guards/user-active.guard';
+import { UserActiveGuard } from 'src/users/guards';
 import { AuthService } from './auth.service';
 
 @Controller('auth')
@@ -120,7 +119,7 @@ export class AuthController {
   ): Promise<void> {
     await this.authService.checkResetPasswordToken(token);
 
-    const deepLink = (await this.configService.get('APP_DEEP_LINK')) as string;
+    const deepLink = this.configService.get<string>('APP_DEEP_LINK') as string;
     const resetEmailLink = deepLink + 'reset-password/' + token;
 
     res.redirect(resetEmailLink);

@@ -8,7 +8,7 @@ import {
 import { CommentsService } from 'src/posts/comments.service';
 
 @Injectable()
-export default class CommentMutateGuard implements CanActivate {
+export class CommentMutateGuard implements CanActivate {
   constructor(private readonly commentsService: CommentsService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -18,7 +18,7 @@ export default class CommentMutateGuard implements CanActivate {
 
     const comment = await this.commentsService.findComment(+postId, +commentId);
 
-    if (comment === null || comment.isActive !== true) {
+    if (comment === null || !comment.isActive) {
       throw new NotFoundException('Comment not found');
     }
 

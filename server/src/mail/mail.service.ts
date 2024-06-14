@@ -1,10 +1,12 @@
 import { MailerService } from '@nestjs-modules/mailer';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class MailService {
   constructor(
     private readonly mailerService: MailerService,
+    private readonly configService: ConfigService,
     private readonly logger: Logger,
   ) {}
 
@@ -37,8 +39,9 @@ export class MailService {
     username: string,
     resetId: string,
   ): Promise<void> {
-    const resetEmailLink =
-      'http://localhost:3000/auth/password/reset/' + resetId;
+    const apiURL = this.configService.get<string>('API_URL') as string;
+
+    const resetEmailLink = `${apiURL}/auth/password/reset/` + resetId;
 
     await this.mailerService
       .sendMail({

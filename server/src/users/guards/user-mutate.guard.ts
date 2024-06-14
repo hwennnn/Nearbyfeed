@@ -8,7 +8,7 @@ import {
 import { UsersService } from 'src/users/users.service';
 
 @Injectable()
-export default class UserMutateGuard implements CanActivate {
+export class UserMutateGuard implements CanActivate {
   constructor(private readonly usersService: UsersService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
