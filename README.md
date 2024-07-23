@@ -1,20 +1,24 @@
+<!-- markdownlint-disable MD033 MD041 -->
+
 <div align="center">
  <img src="docs/icon-readme.png" width="200" height="200" alt='icon-readme'>
  <h1>NearbyFeed</h1>
  <p>
   <b>Discover and connect with your local community</b>
  </p>
- <br>
- <br>
 </div>
 
-![Illustration](docs/illustration.png)
+## Overview
 
 NearbyFeed is an innovative app designed to reconnect communities by providing users with real-time updates and insights about their surroundings. By utilizing their current location, users can easily stay informed about local events, activities, and news. They can also create their own posts, share updates, and engage in conversations with other users through comments.
 
 ## Inspiration
 
 The inspiration behind NearbyFeed stems from the need to address the problem of disconnected communities and decreased engagement in Singapore, particularly after the impact of Covid-19. This is a solution that would bring people together, foster community interaction, and revive neighborhood activity.
+
+## Demo Video
+
+[![NearbyFeed Demo](docs/illustration.png)](https://youtu.be/avnXtx58izs)
 
 ## Screenshots
 
