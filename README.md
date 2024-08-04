@@ -10,7 +10,7 @@
 
 ## Overview
 
-NearbyFeed is an innovative app designed to reconnect communities by providing users with real-time updates and insights about their surroundings. By utilizing their current location, users can easily stay informed about local events, activities, and news. They can also create their own posts, share updates, and engage in conversations with other users through comments.
+NearbyFeed is a location-based social platform that revitalizes community connections through hyperlocal content sharing. Users leverage geolocation to access and contribute real-time updates on local events, activities, and news. The app fosters community engagement by enabling users to create posts, share insights, and participate in discussions within their immediate vicinity.
 
 ## Inspiration
 
