@@ -1,3 +1,4 @@
+import { type DistanceMeters } from '@nearbyfeed/shared';
 import type { AxiosError } from 'axios';
 import { createInfiniteQuery } from 'react-query-kit';
 
@@ -11,7 +12,7 @@ type Response = {
 type Variables = {
   latitude: number | null;
   longitude: number | null;
-  distance: number;
+  distance: DistanceMeters;
 };
 
 export const usePosts = createInfiniteQuery<Response, Variables, AxiosError>({

@@ -35,6 +35,7 @@
     "test:badges": "pnpm test:ci  && jest-coverage-badges --input coverage/coverage-summary.json --output __badges__"
   },
   "dependencies": {
+    "@nearbyfeed/shared": "file:../packages/shared",
     "@bacons/link-assets": "^1.1.0",
     "@expo/react-native-action-sheet": "^4.0.1",
     "@gorhom/bottom-sheet": "^4",

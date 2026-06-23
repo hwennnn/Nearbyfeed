@@ -1,3 +1,4 @@
+import { type DistanceMeters } from '@nearbyfeed/shared';
 import { create } from 'zustand';
 
 import { createSelectors } from '../utils';
@@ -5,7 +6,7 @@ import { createSelectors } from '../utils';
 interface PostsQueryKey {
   latitude: number;
   longitude: number;
-  distance: number;
+  distance: DistanceMeters;
 }
 
 interface PostsKeyState {

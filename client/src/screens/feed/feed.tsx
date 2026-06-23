@@ -1,3 +1,4 @@
+import { type DistanceMeters } from '@nearbyfeed/shared';
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { Linking } from 'react-native';
@@ -17,10 +18,13 @@ import {
 import { Layout } from '@/ui/core/layout';
 import { retrieveCurrentPosition } from '@/utils/geolocation-utils';
 
+import { DEFAULT_FEED_DISTANCE } from './feed-distance';
+
 export const Feed = () => {
   const [longitude, setLongitude] = useState<number | null>(null);
   const [latitude, setLatitude] = useState<number | null>(null);
-  const [distance, setDistance] = useState(200);
+  const [distance, setDistance] =
+    useState<DistanceMeters>(DEFAULT_FEED_DISTANCE);
   const [isLoading, setLoading] = useState(true);
 
   const { navigate } = useNavigation<RootNavigatorProp>();

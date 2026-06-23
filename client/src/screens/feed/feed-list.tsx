@@ -1,4 +1,5 @@
 import { useActionSheet } from '@expo/react-native-action-sheet';
+import { type DistanceMeters } from '@nearbyfeed/shared';
 import { useNavigation } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import React, { useState } from 'react';
@@ -22,20 +23,26 @@ import {
 import Divider from '@/ui/core/divider';
 
 import { FeedCard } from './feed-card';
+import {
+  FEED_DISTANCE_OPTIONS,
+  formatFeedDistance,
+  getFeedDistanceActionLabels,
+  getFeedDistanceValueAtIndex,
+} from './feed-distance';
 
 type Props = {
   longitude: number;
   latitude: number;
-  distance: number;
+  distance: DistanceMeters;
   refreshCallback: () => Promise<void>;
   location: GeolocationName | null | undefined;
-  setDistanceCallback: (distance: number) => void;
+  setDistanceCallback: (distance: DistanceMeters) => void;
 };
 
 type LocationHeaderProps = {
   location: GeolocationName | null | undefined;
-  distance: number;
-  setDistanceCallback: (distance: number) => void;
+  distance: DistanceMeters;
+  setDistanceCallback: (distance: DistanceMeters) => void;
 };
 
 const LocationHeader = ({
@@ -48,15 +55,8 @@ const LocationHeader = ({
   const { showActionSheetWithOptions } = useActionSheet();
 
   const onPressActionSheet = () => {
-    const options = [
-      'Within 200 meters',
-      'Within 500 meters',
-      'Within 1 kilometer',
-      'Cancel',
-    ];
-    const values = [200, 500, 1000];
-
-    const cancelButtonIndex = 3;
+    const options = getFeedDistanceActionLabels();
+    const cancelButtonIndex = FEED_DISTANCE_OPTIONS.length;
 
     showActionSheetWithOptions(
       {
@@ -64,36 +64,17 @@ const LocationHeader = ({
         options,
         cancelButtonIndex,
         title: 'Select Distance Range',
-        destructiveButtonIndex: values.findIndex((value) => value === distance),
+        destructiveButtonIndex: FEED_DISTANCE_OPTIONS.findIndex(
+          (option) => option.value === distance
+        ),
       },
       (selectedIndex: number | undefined) => {
-        switch (selectedIndex) {
-          case undefined:
-          case cancelButtonIndex:
-            break;
+        const selectedDistance = getFeedDistanceValueAtIndex(selectedIndex);
+        if (selectedDistance === undefined) return;
 
-          default:
-            setDistanceCallback(values[selectedIndex]);
-            break;
-        }
+        setDistanceCallback(selectedDistance);
       }
     );
-  };
-
-  const formatDistanceName = (dist: number): string => {
-    switch (dist) {
-      case 200:
-        return '200m';
-
-      case 500:
-        return '500m';
-
-      case 1000:
-        return '1km';
-
-      default:
-        return '200m';
-    }
   };
 
   const locationName =
@@ -118,7 +99,7 @@ const LocationHeader = ({
           className="mx-4 flex-1 text-neutral-600 dark:text-white"
           variant="sm"
         >
-          {`Displaying feeds within ${formatDistanceName(
+          {`Displaying feeds within ${formatFeedDistance(
             distance
           )} from ${locationName}`}
         </Text>
