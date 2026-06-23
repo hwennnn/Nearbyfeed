@@ -152,6 +152,43 @@ describe('ObservabilityService', () => {
     expect(properties.clientTimestampSkewMs).toBe(172800000);
   });
 
+  it('preserves server timestamp audit properties when client properties hit the storage budget', async () => {
+    jest
+      .useFakeTimers()
+      .setSystemTime(new Date('2026-06-23T08:00:00.000Z'));
+    const fetchSpy = jest
+      .spyOn(globalThis, 'fetch')
+      .mockResolvedValue({ ok: true } as Response);
+    const service = new ObservabilityService(
+      {
+        get: jest.fn((key: string) => {
+          const values: Record<string, string> = {
+            CLICKHOUSE_URL: 'http://localhost:8123',
+            OBSERVABILITY_ENABLED: 'true',
+          };
+          return values[key];
+        }),
+      } as any,
+      { error: jest.fn(), warn: jest.fn() } as any,
+    );
+
+    await service.captureEvent({
+      name: 'web.map_viewed',
+      clientTimestamp: '2026-06-25T08:00:00.000Z',
+      properties: Object.fromEntries(
+        Array.from({ length: 24 }, (_, index) => [`client_${index}`, index]),
+      ),
+    });
+
+    const body = fetchSpy.mock.calls[0][1]?.body as string;
+    const row = JSON.parse(body.trim()) as { properties: string };
+    const properties = JSON.parse(row.properties) as Record<string, unknown>;
+
+    expect(Object.keys(properties)).toHaveLength(24);
+    expect(properties.clientTimestampRejected).toBe(true);
+    expect(properties.clientTimestampSkewMs).toBe(172800000);
+  });
+
   it('bounds and normalizes client-provided event properties before insert', async () => {
     const fetchSpy = jest
       .spyOn(globalThis, 'fetch')

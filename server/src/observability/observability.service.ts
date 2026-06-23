@@ -43,10 +43,7 @@ export class ObservabilityService {
       user_id: dto.userId ?? null,
       route: this.sanitizeRoute(dto.route),
       properties: JSON.stringify(
-        this.sanitizeProperties({
-          ...dto.properties,
-          ...eventTimeProperties,
-        }),
+        this.sanitizeProperties(dto.properties, eventTimeProperties),
       ),
     };
 
@@ -198,26 +195,32 @@ export class ObservabilityService {
 
   private sanitizeProperties(
     properties?: Record<string, unknown>,
+    priorityProperties: Record<string, unknown> = {},
   ): Record<string, unknown> {
-    if (properties === undefined) return {};
-
-    return Object.entries(properties).reduce<Record<string, unknown>>(
-      (result, [key, value]) => {
+    const result: Record<string, unknown> = {};
+    const appendProperties = (entries: Array<[string, unknown]>): void => {
+      for (const [key, value] of entries) {
         if (Object.keys(result).length >= MAX_PROPERTY_COUNT) {
-          return result;
+          return;
         }
 
-        const safeKey = this.sanitizePropertyKey(key);
-        if (safeKey.length === 0) return result;
+        const safeKey = this
+          .sanitizePropertyKey(key)
+          .slice(0, MAX_PROPERTY_KEY_LENGTH);
+        if (safeKey.length === 0) continue;
+        if (Object.prototype.hasOwnProperty.call(result, safeKey)) continue;
 
         const safeValue = this.sanitizePropertyValue(safeKey, value);
-        if (safeValue === undefined) return result;
+        if (safeValue === undefined) continue;
 
-        result[safeKey.slice(0, MAX_PROPERTY_KEY_LENGTH)] = safeValue;
-        return result;
-      },
-      {},
-    );
+        result[safeKey] = safeValue;
+      }
+    };
+
+    appendProperties(Object.entries(priorityProperties));
+    appendProperties(Object.entries(properties ?? {}));
+
+    return result;
   }
 
   private sanitizePropertyKey(key: string): string {
