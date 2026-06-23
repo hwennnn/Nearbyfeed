@@ -273,4 +273,26 @@ describe('PostsService', () => {
 
     expect(prismaService.post.findFirst).not.toHaveBeenCalled();
   });
+
+  it('soft deletes posts so reports and engagement history stay available', async () => {
+    const prismaService = {
+      post: {
+        delete: jest.fn(),
+        update: jest.fn().mockResolvedValue(createPost(10, 0, 0)),
+      },
+    };
+    const service = createService(prismaService);
+
+    await service.deletePost(10);
+
+    expect(prismaService.post.update).toHaveBeenCalledWith({
+      data: {
+        isActive: false,
+      },
+      where: {
+        id: 10,
+      },
+    });
+    expect(prismaService.post.delete).not.toHaveBeenCalled();
+  });
 });

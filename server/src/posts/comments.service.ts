@@ -463,8 +463,21 @@ export class CommentsService {
     const count = 1 + comment.repliesCount;
 
     const transactionItems: any = [
-      this.prismaService.comment.delete({
-        where: { id: commentId },
+      this.prismaService.comment.updateMany({
+        where: {
+          isActive: true,
+          OR: [
+            {
+              id: commentId,
+            },
+            {
+              parentCommentId: commentId,
+            },
+          ],
+        },
+        data: {
+          isActive: false,
+        },
       }),
       this.prismaService.post.update({
         where: { id: postId },

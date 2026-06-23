@@ -267,4 +267,53 @@ describe('CommentsService', () => {
     ).rejects.toThrow('userId must be a positive integer');
     expect(prismaService.comment.findMany).not.toHaveBeenCalled();
   });
+
+  it('soft deletes a comment and active replies while preserving audit history', async () => {
+    const parent = createComment(7, {
+      repliesCount: 2,
+    });
+    const post = { id: 10, commentsCount: 8 };
+    const prismaService = {
+      comment: {
+        delete: jest.fn(),
+        findFirst: jest.fn().mockResolvedValue(parent),
+        updateMany: jest.fn().mockResolvedValue({ count: 3 }),
+      },
+      post: {
+        update: jest.fn().mockResolvedValue(post),
+      },
+      $transaction: jest.fn().mockResolvedValue([{ count: 3 }, post]),
+    };
+    const service = createService(prismaService);
+
+    await expect(service.deleteComment(10, 7)).resolves.toBe(post);
+
+    expect(prismaService.comment.updateMany).toHaveBeenCalledWith({
+      data: {
+        isActive: false,
+      },
+      where: {
+        isActive: true,
+        OR: [
+          {
+            id: 7,
+          },
+          {
+            parentCommentId: 7,
+          },
+        ],
+      },
+    });
+    expect(prismaService.comment.delete).not.toHaveBeenCalled();
+    expect(prismaService.post.update).toHaveBeenCalledWith({
+      data: {
+        commentsCount: {
+          increment: -3,
+        },
+      },
+      where: {
+        id: 10,
+      },
+    });
+  });
 });

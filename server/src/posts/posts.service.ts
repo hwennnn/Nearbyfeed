@@ -487,8 +487,13 @@ export class PostsService {
 
   async deletePost(id: number): Promise<void> {
     await this.prismaService.post
-      .delete({
-        where: { id },
+      .update({
+        data: {
+          isActive: false,
+        },
+        where: {
+          id,
+        },
       })
       .catch((e) => {
         this.logger.error(
