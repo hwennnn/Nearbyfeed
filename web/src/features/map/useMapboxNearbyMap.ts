@@ -1,7 +1,10 @@
 import { type DistanceMeters } from '@nearbyfeed/shared';
 import mapboxgl from 'mapbox-gl';
 import { useEffect, useRef, useState } from 'react';
-import { MAPBOX_ACCESS_TOKEN } from '../../lib/constants';
+import {
+  HAS_MAPBOX_ACCESS_TOKEN,
+  MAPBOX_ACCESS_TOKEN,
+} from '../../lib/constants';
 import {
   createRadiusFieldGeoJson,
   getNearbyMapBounds,
@@ -46,7 +49,7 @@ export const useMapboxNearbyMap = ({
 
   useEffect(() => {
     if (containerRef.current === null || mapRef.current !== null) return;
-    if (MAPBOX_ACCESS_TOKEN.length === 0) return;
+    if (!HAS_MAPBOX_ACCESS_TOKEN) return;
 
     mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
     const map = new mapboxgl.Map({

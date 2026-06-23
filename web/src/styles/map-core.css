@@ -17,6 +17,80 @@
   height: 100%;
   place-items: center;
   color: #101113;
+  padding: 18px;
+}
+
+.map-token-empty-card {
+  display: grid;
+  width: min(360px, 100%);
+  gap: 12px;
+  border: 1px solid rgba(16, 17, 19, 0.1);
+  border-radius: 18px;
+  background:
+    linear-gradient(135deg, rgba(255, 137, 51, 0.16), transparent 46%),
+    rgba(255, 255, 255, 0.88);
+  padding: 18px;
+  box-shadow: 0 28px 80px rgba(16, 17, 19, 0.16);
+  backdrop-filter: blur(18px);
+}
+
+.map-token-empty-icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 999px;
+  background: #101113;
+  color: #ffffff;
+}
+
+.map-token-empty-icon svg,
+.map-token-empty-chip svg {
+  width: 18px;
+  height: 18px;
+}
+
+.map-token-empty-card strong {
+  color: #101113;
+  font-size: 24px;
+  line-height: 1;
+}
+
+.map-token-empty-card p {
+  margin: 5px 0 0;
+  color: #4d5663;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.map-token-empty-chip {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: 7px;
+  border-radius: 999px;
+  background: rgba(16, 17, 19, 0.08);
+  color: #101113;
+  padding: 7px 10px;
+  font-size: 12px;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+@media (max-width: 720px) {
+  .map-token-empty {
+    place-items: start center;
+    padding: 170px 18px 240px;
+  }
+
+  .map-token-empty-card {
+    gap: 10px;
+    padding: 16px;
+  }
+
+  .map-token-empty-card strong {
+    font-size: 22px;
+  }
 }
 
 .map-top-left {

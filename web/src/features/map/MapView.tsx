@@ -1,9 +1,10 @@
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { type DistanceMeters, type TimeWindow } from '@nearbyfeed/shared';
-import { MAPBOX_ACCESS_TOKEN } from '../../lib/constants';
+import { HAS_MAPBOX_ACCESS_TOKEN } from '../../lib/constants';
 import { type Coordinates, type LiveUpdate, type Post } from '../../types';
 import { MapLivePanel } from './MapLivePanel';
 import { MapControls, MapTitlePill } from './MapOverlays';
+import { MapTokenEmptyState } from './MapTokenEmptyState';
 import { getFeaturedMapPost, getMapPulseMetrics } from './map-presentation';
 import { useMapboxNearbyMap } from './useMapboxNearbyMap';
 
@@ -58,9 +59,7 @@ export const MapView = ({
   return (
     <section className="map-screen">
       <div className="map-canvas" ref={containerRef}>
-        {MAPBOX_ACCESS_TOKEN.length === 0 && (
-          <div className="map-token-empty">Mapbox token missing</div>
-        )}
+        {!HAS_MAPBOX_ACCESS_TOKEN && <MapTokenEmptyState />}
       </div>
       <MapTitlePill postCount={posts.length} pulseLevel={pulseMetrics.level} />
       <MapControls
