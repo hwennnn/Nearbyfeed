@@ -130,6 +130,20 @@ describe('observability API', () => {
     vi.setSystemTime(new Date('2026-06-23T07:58:00.123Z'));
     const fetch = vi.fn(async () => new Response(null, { status: 204 }));
     vi.stubGlobal('fetch', fetch);
+    localStorage.setItem(
+      'nearbyfeed.session',
+      JSON.stringify({
+        tokens: {
+          accessToken: 'access-token',
+          refreshToken: 'refresh-token',
+        },
+        user: {
+          id: 42,
+          username: 'houman',
+          email: 'houman@example.com',
+        },
+      }),
+    );
 
     await captureEvent('web.map_viewed', { distance: 200 }, 'map');
 
@@ -139,6 +153,7 @@ describe('observability API', () => {
       name?: string;
       properties?: Record<string, unknown>;
       route?: string;
+      userId?: number;
     };
 
     expect(fetch).toHaveBeenCalledWith(
@@ -157,6 +172,7 @@ describe('observability API', () => {
         },
       }),
     );
+    expect(body).not.toHaveProperty('userId');
   });
 });
 

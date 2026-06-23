@@ -311,7 +311,6 @@ export const captureEvent = async (
       clientTimestamp: new Date().toISOString(),
       route,
       sessionId: getClientId(),
-      userId: readSession()?.user.id,
       properties,
     }),
   }).catch(() => undefined);

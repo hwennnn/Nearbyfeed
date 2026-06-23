@@ -10,6 +10,8 @@ export class ObservabilityController {
   async captureEvent(
     @Body() dto: CreateObservabilityEventDto,
   ): Promise<void> {
-    await this.observabilityService.captureEvent(dto);
+    const { userId: _clientSuppliedUserId, ...clientEvent } = dto;
+
+    await this.observabilityService.captureEvent(clientEvent);
   }
 }
