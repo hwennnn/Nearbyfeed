@@ -13,6 +13,7 @@ const DEFAULT_CLICKHOUSE_DATABASE = 'nearbyfeed_observability';
 const DEFAULT_CLICKHOUSE_TIMEOUT_MS = 2000;
 const DEFAULT_MAX_CLIENT_TIMESTAMP_SKEW_MS = 24 * 60 * 60 * 1000;
 const CLICKHOUSE_IDENTIFIER_PATTERN = /^[A-Za-z_][A-Za-z0-9_]*$/;
+const CONTROL_CHARACTER_PATTERN = /[\u0000-\u001F\u007F]+/g;
 
 @Injectable()
 export class ObservabilityService {
@@ -206,14 +207,21 @@ export class ObservabilityService {
           return result;
         }
 
-        const safeValue = this.sanitizePropertyValue(key, value);
+        const safeKey = this.sanitizePropertyKey(key);
+        if (safeKey.length === 0) return result;
+
+        const safeValue = this.sanitizePropertyValue(safeKey, value);
         if (safeValue === undefined) return result;
 
-        result[key.slice(0, MAX_PROPERTY_KEY_LENGTH)] = safeValue;
+        result[safeKey.slice(0, MAX_PROPERTY_KEY_LENGTH)] = safeValue;
         return result;
       },
       {},
     );
+  }
+
+  private sanitizePropertyKey(key: string): string {
+    return key.replace(CONTROL_CHARACTER_PATTERN, '');
   }
 
   private sanitizePropertyValue(key: string, value: unknown): unknown {
@@ -222,7 +230,10 @@ export class ObservabilityService {
     if (value === null) return null;
 
     if (typeof value === 'string') {
-      return this.truncate(redactUrlForLogs(value), MAX_PROPERTY_VALUE_LENGTH);
+      return this.truncate(
+        this.sanitizeLogString(redactUrlForLogs(value)),
+        MAX_PROPERTY_VALUE_LENGTH,
+      );
     }
 
     if (typeof value === 'number') {
@@ -251,14 +262,19 @@ export class ObservabilityService {
       return Object.entries(value as Record<string, unknown>).reduce<
         Record<string, unknown>
       >((result, [key, entryValue]) => {
-        result[key] = isSensitiveQueryKey(key)
+        const safeKey = this.sanitizePropertyKey(key);
+        if (safeKey.length === 0) return result;
+
+        result[safeKey] = isSensitiveQueryKey(safeKey)
           ? '[redacted]'
           : this.redactStructuredPropertyValue(entryValue);
         return result;
       }, {});
     }
 
-    if (typeof value === 'string') return redactUrlForLogs(value);
+    if (typeof value === 'string') {
+      return this.sanitizeLogString(redactUrlForLogs(value));
+    }
     if (typeof value === 'number') return Number.isFinite(value) ? value : value.toString();
     if (typeof value === 'bigint') return value.toString();
 
@@ -268,5 +284,12 @@ export class ObservabilityService {
   private truncate(value: string, maxLength: number): string {
     if (value.length <= maxLength) return value;
     return `${value.slice(0, maxLength - 3)}...`;
+  }
+
+  private sanitizeLogString(value: string): string {
+    return value
+      .replace(CONTROL_CHARACTER_PATTERN, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
   }
 }

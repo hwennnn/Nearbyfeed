@@ -249,6 +249,43 @@ describe('ObservabilityService', () => {
     });
   });
 
+  it('removes control characters from event property keys and values before insert', async () => {
+    const fetchSpy = jest
+      .spyOn(globalThis, 'fetch')
+      .mockResolvedValue({ ok: true } as Response);
+    const service = new ObservabilityService(
+      {
+        get: jest.fn((key: string) => {
+          const values: Record<string, string> = {
+            CLICKHOUSE_URL: 'http://localhost:8123',
+            OBSERVABILITY_ENABLED: 'true',
+          };
+          return values[key];
+        }),
+      } as any,
+      { error: jest.fn() } as any,
+    );
+
+    await service.captureEvent({
+      name: 'web.feed_viewed',
+      properties: {
+        'bad\nkey': 'line one\nline two',
+        nested: {
+          'tab\tkey': 'value\twith tab',
+        },
+      },
+    });
+
+    const body = fetchSpy.mock.calls[0][1]?.body as string;
+    const row = JSON.parse(body.trim()) as { properties: string };
+    const sanitizedProperties = JSON.parse(row.properties) as Record<string, unknown>;
+
+    expect(sanitizedProperties).toHaveProperty('badkey', 'line one line two');
+    expect(JSON.parse(sanitizedProperties.nested as string)).toEqual({
+      tabkey: 'value with tab',
+    });
+  });
+
   it('uses valid custom ClickHouse database identifiers', async () => {
     const fetchSpy = jest
       .spyOn(globalThis, 'fetch')
