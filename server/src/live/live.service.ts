@@ -322,6 +322,10 @@ export class LiveService {
   }
 
   private normalizeUpdate(rawUpdate: unknown, index: number): LiveUpdate | null {
+    if (rawUpdate === null || typeof rawUpdate !== 'object') {
+      return null;
+    }
+
     const update = rawUpdate as Partial<LiveUpdate>;
     const title = this.sanitizeText(update.title, MAX_LIVE_TITLE_LENGTH);
     const summary = this.sanitizeText(update.summary, MAX_LIVE_SUMMARY_LENGTH);

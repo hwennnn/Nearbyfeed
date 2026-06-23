@@ -124,6 +124,41 @@ describe('LiveService', () => {
     ]);
   });
 
+  it('skips null TinyFish update entries without dropping valid updates', async () => {
+    jest.spyOn(globalThis, 'fetch').mockResolvedValue({
+      ok: true,
+      text: async () =>
+        'data: {"type":"COMPLETE","status":"COMPLETED","result":{"updates":[null,{"title":"Night market line","summary":"People are queueing near the corner.","url":"https://x.com/example/status/valid","source":"x","occurredAt":null,"tags":["food"]}]}}',
+    } as Response);
+    const service = new LiveService(
+      {
+        get: jest.fn((key: string) => {
+          if (key === 'TINYFISH_API_KEY') return 'tinyfish-key';
+          if (key === 'TINYFISH_TIMEOUT_MS') return '1000';
+          if (key === 'TINYFISH_CACHE_TTL_SECONDS') return '0';
+          return undefined;
+        }),
+      } as any,
+      { error: jest.fn() } as any,
+      redisService as any,
+    );
+
+    await expect(
+      service.findNearbyUpdates({
+        latitude: 37.323,
+        longitude: -122.0322,
+        locationName: 'Cupertino',
+        timeWindow: '24h',
+      }),
+    ).resolves.toEqual([
+      expect.objectContaining({
+        source: 'x',
+        title: 'Night market line',
+        url: 'https://x.com/example/status/valid',
+      }),
+    ]);
+  });
+
   it('uses the documented TinyFish Agent SSE endpoint with a typed output schema', async () => {
     const fetchSpy = jest.spyOn(globalThis, 'fetch').mockResolvedValue({
       ok: true,
