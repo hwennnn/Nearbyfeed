@@ -324,6 +324,23 @@ describe('map presentation helpers', () => {
     );
   });
 
+  it('keeps live map marker labels social even when provider tags include incident wording', () => {
+    const [signal] = getLiveMapSignals(
+      [
+        {
+          ...liveUpdate,
+          id: 'live-social-wording',
+          tags: ['incident', 'music'],
+        },
+      ],
+      { latitude: 37.323, longitude: -122.0322 },
+      500,
+    );
+
+    expect(signal.label).toBe('music');
+    expect(signal.tone).toBe('scene');
+  });
+
   it('caps live map signals to keep the map readable', () => {
     const signals = getLiveMapSignals(
       Array.from({ length: 8 }, (_, index) => ({

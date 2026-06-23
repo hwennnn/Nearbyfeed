@@ -49,7 +49,7 @@ const getLiveSignalTone = (update: LiveUpdate): LiveMapSignalTone => {
 
   if (
     tags.some((tag) =>
-      ['alert', 'heads-up', 'incident', 'traffic', 'warning'].includes(tag),
+      ['alert', 'heads-up', 'traffic', 'warning'].includes(tag),
     )
   ) {
     return 'alert';
@@ -73,7 +73,6 @@ const getLiveSignalLabel = (update: LiveUpdate): string => {
   const priorityTags = [
     'traffic',
     'alert',
-    'incident',
     'music',
     'event',
     'queue',

@@ -186,7 +186,7 @@ export class LiveService {
   private buildXSearchUrl(locationLabel: string): string {
     const query = [
       `"${locationLabel}"`,
-      '(nearby OR local OR happening OR alert OR incident OR event)',
+      '(nearby OR local OR happening OR alert OR event OR queue OR music)',
       '-filter:replies',
     ].join(' ');
 

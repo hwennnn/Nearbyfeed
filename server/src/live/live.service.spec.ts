@@ -253,9 +253,11 @@ describe('LiveService', () => {
 
     const body = JSON.parse(fetchSpy.mock.calls[0][1]?.body as string) as {
       goal: string;
+      url: string;
     };
 
     expect(body.goal).toContain('within 500m of Cupertino');
+    expect(decodeURIComponent(body.url)).not.toContain('incident');
     const cacheKey = expectLiveCacheKey(redisService.get.mock.calls[0][0], {
       distance: 500,
       timeWindow: '2h',
