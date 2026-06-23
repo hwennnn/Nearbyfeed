@@ -1,3 +1,4 @@
+import { isPollExpired } from '@nearbyfeed/shared';
 import { PollService } from './poll.service';
 
 describe('PollService', () => {
@@ -13,6 +14,23 @@ describe('PollService', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+  });
+
+  it('uses shared poll expiration semantics at the exact closing instant', () => {
+    expect(
+      isPollExpired(
+        new Date('2026-06-23T08:00:00.000Z'),
+        1,
+        new Date('2026-06-24T07:59:59.999Z'),
+      ),
+    ).toBe(false);
+    expect(
+      isPollExpired(
+        new Date('2026-06-23T08:00:00.000Z'),
+        1,
+        new Date('2026-06-24T08:00:00.000Z'),
+      ),
+    ).toBe(true);
   });
 
   it('rejects votes for options that do not belong to the route poll', async () => {

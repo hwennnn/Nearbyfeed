@@ -1,8 +1,9 @@
 import {
-  addDays,
   formatPollVoteCount,
   formatRelativeFullTime,
+  getPollExpirationDate,
   getPollOptionResults,
+  isPollExpired,
 } from '@nearbyfeed/shared';
 import { type Post } from '../../types';
 
@@ -45,7 +46,7 @@ const getPollStatus = (
     };
   }
 
-  const expiresAt = addDays(poll.createdAt, poll.votingLength);
+  const expiresAt = getPollExpirationDate(poll.createdAt, poll.votingLength);
   const expiresAtMs = expiresAt.getTime();
 
   if (!Number.isFinite(expiresAtMs)) {
@@ -56,7 +57,7 @@ const getPollStatus = (
   }
 
   const remainingMs = expiresAtMs - now.getTime();
-  if (remainingMs <= 0) {
+  if (isPollExpired(poll.createdAt, poll.votingLength, now)) {
     return {
       statusLabel: 'Closed',
       statusTone: 'closed',

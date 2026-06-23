@@ -409,6 +409,23 @@ export const addDays = (date: Date | string, days: number): Date => {
   return result;
 };
 
+export type PollLifecycleTimestamp = Date | number | string;
+
+export const getPollExpirationDate = (
+  createdAt: PollLifecycleTimestamp,
+  votingLengthDays: number,
+): Date => addDays(new Date(createdAt), votingLengthDays);
+
+export const isPollExpired = (
+  createdAt: PollLifecycleTimestamp,
+  votingLengthDays: number,
+  now: Date = new Date(Date.now()),
+): boolean => {
+  const expiresAt = getPollExpirationDate(createdAt, votingLengthDays).getTime();
+
+  return Number.isFinite(expiresAt) && now.getTime() >= expiresAt;
+};
+
 export const formatRelativeCompactTime = (
   value: Date | string,
   now: Date = new Date(),

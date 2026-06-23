@@ -1,3 +1,7 @@
+import {
+  getPollExpirationDate,
+  isPollExpired,
+} from '@nearbyfeed/shared';
 import { describe, expect, it } from 'vitest';
 import { type Post } from '../../types';
 import { getPollPreviewModel } from './poll-preview-presentation';
@@ -43,6 +47,29 @@ const makePoll = (
 });
 
 describe('poll preview presentation', () => {
+  it('uses shared poll lifecycle helpers for expiration math', () => {
+    const expiresAt = getPollExpirationDate(
+      '2026-06-23T08:00:00.000Z',
+      1,
+    );
+
+    expect(expiresAt.toISOString()).toBe('2026-06-24T08:00:00.000Z');
+    expect(
+      isPollExpired(
+        '2026-06-23T08:00:00.000Z',
+        1,
+        new Date('2026-06-24T07:59:59.999Z'),
+      ),
+    ).toBe(false);
+    expect(
+      isPollExpired(
+        '2026-06-23T08:00:00.000Z',
+        1,
+        new Date('2026-06-24T08:00:00.000Z'),
+      ),
+    ).toBe(true);
+  });
+
   it('ranks visible options by votes and keeps the hidden count', () => {
     const model = getPollPreviewModel(makePoll());
 

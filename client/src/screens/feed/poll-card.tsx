@@ -1,3 +1,7 @@
+import {
+  getPollExpirationDate,
+  isPollExpired as isSharedPollExpired,
+} from '@nearbyfeed/shared';
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 
@@ -31,7 +35,7 @@ export const PollCard = ({
   const { mutate, isLoading } = useVotePoll();
   const pollResults = getMobilePollResults(poll);
 
-  const pollExpirationDate = timeUtils.addDays(
+  const pollExpirationDate = getPollExpirationDate(
     poll.createdAt,
     poll.votingLength
   );
@@ -41,7 +45,10 @@ export const PollCard = ({
     poll.vote !== null &&
     poll.vote?.userId === useUser.getState().user?.id;
 
-  const isPollExpired = new Date().getTime() >= pollExpirationDate.getTime();
+  const isPollExpired = isSharedPollExpired(
+    poll.createdAt,
+    poll.votingLength
+  );
 
   const handleVotePoll = () => {
     if (isPollVoted || isPollExpired || selectedVoteOption === null) {

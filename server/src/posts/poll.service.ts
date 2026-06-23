@@ -1,10 +1,10 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { isPollExpired } from '@nearbyfeed/shared';
 import { FilterService } from 'src/filter/filter.service';
 import { type VotePollDto } from 'src/posts/dto';
 import { type PollWithOptions, type VotePollResult } from 'src/posts/entities';
 
 import { PrismaService } from 'src/prisma/prisma.service';
-import { isPollExpired } from 'src/utils';
 import { parseOptionalRouteId } from 'src/utils/parse-route-id.util';
 
 @Injectable()
@@ -102,7 +102,7 @@ export class PollService {
 
     if (
       poll === null ||
-      isPollExpired(poll.createdAt.getTime(), poll.votingLength)
+      isPollExpired(poll.createdAt, poll.votingLength)
     ) {
       throw new BadRequestException('Failed to vote the poll');
     }
