@@ -343,6 +343,66 @@ export const formatSingularPlural = ({
   return `${value} ${value === 1 ? singular : plural}`;
 };
 
+export type PollOptionResultInput = {
+  id: number;
+  order: number;
+  text: string;
+  voteCount: number;
+};
+
+export type PollOptionResult<
+  T extends PollOptionResultInput = PollOptionResultInput,
+> = T & {
+  isLeader: boolean;
+  percentage: number;
+};
+
+export const getPollVotePercentage = (
+  voteCount: number,
+  participantCount: number,
+): number => {
+  if (participantCount <= 0 || voteCount <= 0) return 0;
+  return Math.min(100, Math.round((voteCount / participantCount) * 100));
+};
+
+export const getPollOptionResults = <T extends PollOptionResultInput>(
+  options: T[],
+  participantCount: number,
+  {
+    limit,
+    sortByVotes = false,
+  }: {
+    limit?: number;
+    sortByVotes?: boolean;
+  } = {},
+): Array<PollOptionResult<T>> => {
+  const safeParticipantCount = Math.max(0, participantCount);
+  const orderedOptions = [...options].sort((left, right) => {
+    if (!sortByVotes) return left.order - right.order;
+
+    const voteDiff = right.voteCount - left.voteCount;
+    return voteDiff === 0 ? left.order - right.order : voteDiff;
+  });
+  const visibleOptions =
+    limit === undefined ? orderedOptions : orderedOptions.slice(0, limit);
+  const leaderVoteCount = orderedOptions[0]?.voteCount ?? 0;
+
+  return visibleOptions.map((option) => ({
+    ...option,
+    isLeader:
+      safeParticipantCount > 0 && option.voteCount === leaderVoteCount,
+    percentage: getPollVotePercentage(option.voteCount, safeParticipantCount),
+  }));
+};
+
+export const formatPollVoteCount = (participantCount: number): string =>
+  formatSingularPlural({
+    empty: '0 votes',
+    plural: 'votes',
+    singular: 'vote',
+    value: Math.max(0, participantCount),
+  });
+
 export const addDays = (date: Date | string, days: number): Date => {
   const result = new Date(date);
   result.setDate(result.getDate() + days);

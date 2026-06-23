@@ -9,6 +9,7 @@ import { FontAwesome5, Ionicons } from '@/ui/icons/vector-icons';
 import { promptSignIn } from '@/utils/auth-utils';
 import { stringUtils } from '@/utils/string-utils';
 import { timeUtils } from '@/utils/time-utils';
+import { getMobilePollResults } from './poll-results';
 
 type Props = {
   poll: PollWithOptions;
@@ -28,6 +29,7 @@ export const PollCard = ({
   >(null);
 
   const { mutate, isLoading } = useVotePoll();
+  const pollResults = getMobilePollResults(poll);
 
   const pollExpirationDate = timeUtils.addDays(
     poll.createdAt,
@@ -94,15 +96,10 @@ export const PollCard = ({
 
       {!isPreview && (
         <View className="flex-1 space-y-2 pt-2">
-          {poll.options.map((option) => {
+          {pollResults.map((option) => {
             const isSelected = isPollVoted
               ? option.id === poll.vote?.pollOptionId
               : option.id === selectedVoteOption;
-
-            const percentage =
-              poll.participantsCount === 0
-                ? 0
-                : (option.voteCount / poll.participantsCount) * 100;
 
             return isPollVoted || isPollExpired ? (
               <View className="flex-1 flex-row space-x-6" key={option.id}>
@@ -110,7 +107,7 @@ export const PollCard = ({
                   <View
                     className="absolute h-full rounded-md bg-primary-300 dark:bg-primary-400"
                     style={{
-                      width: `${percentage}%`,
+                      width: `${option.percentage}%`,
                     }}
                   />
 
@@ -135,7 +132,7 @@ export const PollCard = ({
                   className="w-[40px] self-center py-2 font-semibold text-gray-600 dark:text-white"
                   variant="sm"
                 >
-                  {`${percentage.toFixed(0)}%`}
+                  {`${option.percentage}%`}
                 </Text>
               </View>
             ) : (
