@@ -1,0 +1,266 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "nearbyfeed-clickhouse"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 18,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "showPoints": "never"
+          },
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "nearbyfeed-clickhouse"
+          },
+          "format": "time_series",
+          "rawSql": "SELECT toStartOfMinute(event_time) AS time, concat('HTTP ', toString(JSONExtractInt(properties, 'statusCode'))) AS metric, count() AS value FROM nearbyfeed_observability.nearbyfeed_events WHERE $__timeFilter(event_time) AND event_name = 'api.request' GROUP BY time, metric ORDER BY time",
+          "refId": "A"
+        }
+      ],
+      "title": "API requests by status",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "nearbyfeed-clickhouse"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "nearbyfeed-clickhouse"
+          },
+          "format": "time_series",
+          "rawSql": "SELECT toStartOfMinute(event_time) AS time, 'avg' AS metric, avg(JSONExtractFloat(properties, 'durationMs')) AS value FROM nearbyfeed_observability.nearbyfeed_events WHERE $__timeFilter(event_time) AND event_name = 'api.request' GROUP BY time UNION ALL SELECT toStartOfMinute(event_time) AS time, 'p95' AS metric, quantile(0.95)(JSONExtractFloat(properties, 'durationMs')) AS value FROM nearbyfeed_observability.nearbyfeed_events WHERE $__timeFilter(event_time) AND event_name = 'api.request' GROUP BY time ORDER BY time",
+          "refId": "A"
+        }
+      ],
+      "title": "API latency",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "nearbyfeed-clickhouse"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 8,
+        "x": 0,
+        "y": 8
+      },
+      "id": 3,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "nearbyfeed-clickhouse"
+          },
+          "format": "table",
+          "rawSql": "SELECT count() AS value FROM nearbyfeed_observability.nearbyfeed_events WHERE $__timeFilter(event_time) AND event_name = 'live.enrichment'",
+          "refId": "A"
+        }
+      ],
+      "title": "Live enrichment events",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "nearbyfeed-clickhouse"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 8,
+        "x": 8,
+        "y": 8
+      },
+      "id": 4,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "nearbyfeed-clickhouse"
+          },
+          "format": "table",
+          "rawSql": "SELECT countIf(JSONExtractString(properties, 'status') = 'failed') AS value FROM nearbyfeed_observability.nearbyfeed_events WHERE $__timeFilter(event_time) AND event_name = 'live.enrichment'",
+          "refId": "A"
+        }
+      ],
+      "title": "TinyFish failures",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "nearbyfeed-clickhouse"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 8,
+        "x": 16,
+        "y": 8
+      },
+      "id": 5,
+      "options": {
+        "showHeader": true
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "nearbyfeed-clickhouse"
+          },
+          "format": "table",
+          "rawSql": "SELECT event_time, event_name, route, properties FROM nearbyfeed_observability.nearbyfeed_events WHERE $__timeFilter(event_time) ORDER BY event_time DESC LIMIT 50",
+          "refId": "A"
+        }
+      ],
+      "title": "Recent product events",
+      "type": "table"
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "tags": [
+    "nearbyfeed",
+    "clickhouse",
+    "self-hosted"
+  ],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "NearbyFeed Observability",
+  "uid": "nearbyfeed-observability",
+  "version": 1,
+  "weekStart": ""
+}

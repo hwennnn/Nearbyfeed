@@ -29,7 +29,7 @@ The compose stack now includes:
 - ClickHouse HTTP on `8123` and native TCP on `9000`
 - Grafana on `3001`
 
-Grafana installs the ClickHouse datasource plugin. The local ClickHouse database defaults to `nearbyfeed_observability`.
+Grafana installs the ClickHouse datasource plugin, provisions a `NearbyFeed ClickHouse` datasource, and loads the `NearbyFeed Observability` dashboard. The local ClickHouse database defaults to `nearbyfeed_observability`.
 
 If another local project already owns those ports, override the host ports without editing the file:
 
@@ -43,6 +43,8 @@ docker compose up -d
 ```
 
 When overriding ports, point the API env at the same host ports, for example `DATABASE_URL=postgresql://postgres:mysecretpassword@localhost:55433/nearbyfeed?schema=public`, `REDIS_PORT=6381`, and `CLICKHOUSE_URL=http://localhost:8124`.
+
+After the stack is up, open Grafana at `http://localhost:3001` and sign in with `admin` plus `GRAFANA_ADMIN_PASSWORD` (default `nearbyfeed`). The dashboard appears under the `NearbyFeed` folder once Grafana finishes installing the ClickHouse plugin.
 
 ## Database setup
 

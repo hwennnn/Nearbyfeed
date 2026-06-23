@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   postgres:
     image: postgres:13
@@ -42,10 +40,16 @@ services:
     environment:
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-nearbyfeed}
       GF_INSTALL_PLUGINS: grafana-clickhouse-datasource
+      CLICKHOUSE_DATABASE: nearbyfeed_observability
+      CLICKHOUSE_USER: ${CLICKHOUSE_USER:-nearbyfeed}
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-nearbyfeed}
     ports:
       - '${GRAFANA_HOST_PORT:-3001}:3000'
     volumes:
       - grafana-data:/var/lib/grafana
+      - ./observability/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./observability/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./observability/grafana/dashboards:/var/lib/grafana/dashboards/nearbyfeed:ro
     depends_on:
       - clickhouse
 
