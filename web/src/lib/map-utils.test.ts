@@ -123,4 +123,13 @@ describe('map utils', () => {
       top: 118,
     });
   });
+
+  it('reduces mobile bottom-sheet padding on short viewports so the map can still frame nearby activity', () => {
+    expect(getNearbyMapFitPadding({ height: 620, width: 390 })).toEqual({
+      bottom: 236,
+      left: 42,
+      right: 42,
+      top: 104,
+    });
+  });
 });

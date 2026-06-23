@@ -119,17 +119,21 @@ export const getNearbyMapBounds = ({
 };
 
 export const getNearbyMapFitPadding = ({
+  height,
   width,
 }: {
   height: number;
   width: number;
 }): NearbyMapFitPadding => {
   if (width <= 720) {
+    const bottom = height >= 740 ? 340 : Math.max(190, Math.round(height * 0.38));
+    const top = height < 700 ? 104 : 118;
+
     return {
-      bottom: 340,
+      bottom,
       left: 42,
       right: 42,
-      top: 118,
+      top,
     };
   }
 
