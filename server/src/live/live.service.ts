@@ -287,11 +287,12 @@ export class LiveService {
   }
 
   private normalizeUpdates(resultJson: unknown): LiveUpdate[] {
+    const parsedResult = this.parseJsonResult(resultJson);
     const rawUpdates =
-      Array.isArray(resultJson)
-        ? resultJson
-        : Array.isArray((resultJson as { updates?: unknown }).updates)
-        ? (resultJson as { updates: unknown[] }).updates
+      Array.isArray(parsedResult)
+        ? parsedResult
+        : Array.isArray((parsedResult as { updates?: unknown }).updates)
+        ? (parsedResult as { updates: unknown[] }).updates
         : [];
 
     const seenUrls = new Set<string>();
@@ -308,6 +309,16 @@ export class LiveService {
     }
 
     return updates;
+  }
+
+  private parseJsonResult(resultJson: unknown): unknown {
+    if (typeof resultJson !== 'string') return resultJson;
+
+    try {
+      return JSON.parse(resultJson);
+    } catch {
+      return resultJson;
+    }
   }
 
   private normalizeUpdate(rawUpdate: unknown, index: number): LiveUpdate | null {
@@ -391,8 +402,10 @@ export class LiveService {
 
   private async readCachedUpdates(cacheKey: string): Promise<LiveUpdate[] | null> {
     try {
-      const cachedUpdates = await this.redisService.get<LiveUpdate[]>(cacheKey);
-      return Array.isArray(cachedUpdates) ? cachedUpdates : null;
+      const cachedUpdates = await this.redisService.get<unknown>(cacheKey);
+      return Array.isArray(cachedUpdates)
+        ? this.normalizeUpdates(cachedUpdates)
+        : null;
     } catch (e) {
       this.logger.warn(
         'Failed to read live updates cache',

@@ -553,6 +553,62 @@ describe('LiveService', () => {
     ).not.toHaveProperty('locationName');
   });
 
+  it('sanitizes cached live updates before returning them', async () => {
+    redisService.get.mockResolvedValueOnce([
+      {
+        id: 'unsafe-cached-update',
+        title: '  Cafe line\u0000moving '.repeat(8),
+        summary: 'A nearby cafe has a shorter line now.',
+        url: 'https://x.com/example/status/safe-cached',
+        source: 'x',
+        occurredAt: null,
+        tags: ['food', 'food', 'night'],
+      },
+      {
+        id: 'bad-cached-update',
+        title: 'Unsafe URL',
+        summary: 'This should never leave the API.',
+        url: 'https://example.com/not-x',
+        source: 'x',
+        occurredAt: null,
+        tags: [],
+      },
+    ]);
+    const fetchSpy = jest.spyOn(globalThis, 'fetch');
+    const service = new LiveService(
+      {
+        get: jest.fn((key: string) => {
+          if (key === 'TINYFISH_API_KEY') return 'tinyfish-key';
+          return undefined;
+        }),
+      } as any,
+      { error: jest.fn(), warn: jest.fn() } as any,
+      redisService as any,
+      observabilityService as any,
+    );
+
+    const updates = await service.findNearbyUpdates({
+      latitude: 37.323,
+      longitude: -122.0322,
+      locationName: 'Cupertino',
+      timeWindow: '24h',
+    });
+
+    expect(updates).toEqual([
+      expect.objectContaining({
+        source: 'x',
+        summary: 'A nearby cafe has a shorter line now.',
+        tags: ['food', 'night'],
+        url: 'https://x.com/example/status/safe-cached',
+      }),
+    ]);
+    const [update] = updates;
+
+    expect(update.title).not.toContain('\u0000');
+    expect(update.title.length).toBeLessThanOrEqual(90);
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
   it('still accepts legacy Mino resultJson SSE frames', async () => {
     jest.spyOn(globalThis, 'fetch').mockResolvedValue({
       ok: true,
@@ -581,6 +637,40 @@ describe('LiveService', () => {
       }),
     ).resolves.toEqual([
       expect.objectContaining({ title: 'Legacy nearby alert' }),
+    ]);
+  });
+
+  it('accepts TinyFish resultJson frames that contain encoded JSON', async () => {
+    jest.spyOn(globalThis, 'fetch').mockResolvedValue({
+      ok: true,
+      text: async () =>
+        'data: {"type":"COMPLETE","status":"COMPLETED","resultJson":"{\\"updates\\":[{\\"title\\":\\"Cafe line is moving\\",\\"summary\\":\\"People say the late-night cafe line cleared up.\\",\\"url\\":\\"https://x.com/example/status/string-json\\",\\"source\\":\\"x\\",\\"occurredAt\\":null,\\"tags\\":[\\"food\\"]}]}"}',
+    } as Response);
+    const service = new LiveService(
+      {
+        get: jest.fn((key: string) => {
+          if (key === 'TINYFISH_API_KEY') return 'tinyfish-key';
+          if (key === 'TINYFISH_TIMEOUT_MS') return '1000';
+          if (key === 'TINYFISH_CACHE_TTL_SECONDS') return '0';
+          return undefined;
+        }),
+      } as any,
+      { error: jest.fn(), warn: jest.fn() } as any,
+      redisService as any,
+    );
+
+    await expect(
+      service.findNearbyUpdates({
+        latitude: 37.323,
+        longitude: -122.0322,
+        locationName: 'Cupertino',
+        timeWindow: '24h',
+      }),
+    ).resolves.toEqual([
+      expect.objectContaining({
+        title: 'Cafe line is moving',
+        url: 'https://x.com/example/status/string-json',
+      }),
     ]);
   });
 
