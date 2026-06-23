@@ -1,5 +1,6 @@
 import { render, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { type Post } from '../../types';
 import { useMapboxNearbyMap } from './useMapboxNearbyMap';
 
 const addControlMock = vi.hoisted(() => vi.fn());
@@ -50,6 +51,7 @@ const mapInstance = {
 let resizeCallback: ResizeObserverCallback | undefined;
 let observedElement: Element | undefined;
 let disconnectMock = vi.fn();
+let getBoundingClientRectSpy: ReturnType<typeof vi.spyOn> | undefined;
 
 class FakeResizeObserver {
   constructor(callback: ResizeObserverCallback) {
@@ -63,13 +65,28 @@ class FakeResizeObserver {
   }
 }
 
-const NearbyMapProbe = () => {
+const selectedPost: Post = {
+  commentsCount: 3,
+  id: 77,
+  latitude: 37.325,
+  longitude: -122.029,
+  points: 12,
+  title: 'Food truck line is moving',
+};
+
+const NearbyMapProbe = ({
+  posts = [],
+  selectedPostId = null,
+}: {
+  posts?: Post[];
+  selectedPostId?: number | null;
+}) => {
   const { containerRef } = useMapboxNearbyMap({
     coordinates: { latitude: 37.323, longitude: -122.0322 },
     distance: 500,
     liveUpdates: [],
-    posts: [],
-    selectedPostId: null,
+    posts,
+    selectedPostId,
     setSelectedPostId: vi.fn(),
   });
 
@@ -94,6 +111,8 @@ describe('useMapboxNearbyMap', () => {
     mapResizeMock.mockReset();
     markerConstructorMock.mockReset();
     navigationControlMock.mockReset();
+    getBoundingClientRectSpy?.mockRestore();
+    getBoundingClientRectSpy = undefined;
     observedElement = undefined;
     resizeCallback = undefined;
   });
@@ -130,5 +149,49 @@ describe('useMapboxNearbyMap', () => {
     unmount();
 
     expect(disconnectMock).toHaveBeenCalled();
+  });
+
+  it('keeps selected post fly-to framing clear of the desktop live panel', async () => {
+    getBoundingClientRectSpy = vi
+      .spyOn(HTMLElement.prototype, 'getBoundingClientRect')
+      .mockReturnValue({
+        bottom: 900,
+        height: 900,
+        left: 0,
+        right: 1280,
+        toJSON: vi.fn(),
+        top: 0,
+        width: 1280,
+        x: 0,
+        y: 0,
+      });
+    isStyleLoadedMock.mockReturnValue(true);
+    mapConstructorMock.mockReturnValue(mapInstance);
+    mapOnMock.mockImplementation((event: string, handler: () => void) => {
+      if (event === 'load') handler();
+    });
+    markerConstructorMock.mockImplementation(() => ({
+      addTo: vi.fn().mockReturnThis(),
+      remove: vi.fn(),
+      setLngLat: vi.fn().mockReturnThis(),
+    }));
+
+    render(
+      <NearbyMapProbe posts={[selectedPost]} selectedPostId={selectedPost.id} />,
+    );
+
+    await waitFor(() => {
+      expect(flyToMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          center: [selectedPost.longitude, selectedPost.latitude],
+          padding: {
+            bottom: 110,
+            left: 72,
+            right: 440,
+            top: 134,
+          },
+        }),
+      );
+    });
   });
 });

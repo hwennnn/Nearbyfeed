@@ -235,9 +235,15 @@ export const useMapboxNearbyMap = ({
     const selectedPost = posts.find((post) => post.id === selectedPostId);
     if (selectedPost === undefined) return;
 
+    const rect = containerRef.current?.getBoundingClientRect();
+
     map.flyTo({
       center: [selectedPost.longitude, selectedPost.latitude],
       essential: true,
+      padding: getNearbyMapFitPadding({
+        height: rect?.height ?? 900,
+        width: rect?.width ?? 1280,
+      }),
       zoom: Math.max(15, getNearbyRadiusZoom(coordinates, distance)),
     });
   }, [coordinates, distance, mapReady, posts, selectedPostId]);

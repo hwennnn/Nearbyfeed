@@ -758,32 +758,39 @@
 
 .poll-card,
 .location-card {
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   background:
-    linear-gradient(135deg, rgba(255, 137, 51, 0.12), transparent 44%),
-    #2e2e2e;
+    linear-gradient(180deg, rgba(255, 255, 255, 0.055), transparent 56%),
+    #232426;
   color: #f8fafc;
 }
 
 .poll-card {
   display: grid;
-  gap: 10px;
-  padding: 14px;
+  gap: 9px;
+  padding: 12px;
 }
 
 .poll-heading {
   margin: 0;
+  gap: 10px;
   justify-content: flex-start;
 }
 
 .poll-icon-shell {
   display: grid;
-  width: 34px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
   place-items: center;
-  border-radius: 999px;
-  background: #ff8933;
-  color: #151515;
+  border-radius: 8px;
+  background: rgba(255, 137, 51, 0.16);
+  color: #ffb26e;
+}
+
+.poll-heading-copy {
+  display: grid;
+  min-width: 0;
+  gap: 1px;
 }
 
 .poll-heading svg,
@@ -797,12 +804,11 @@
   font-size: 15px;
 }
 
-.poll-heading > span:not(.poll-icon-shell) {
+.poll-heading-copy em {
   color: #d4d7dc;
-}
-
-.poll-heading .poll-icon-shell {
-  color: #151515;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 850;
 }
 
 .poll-leader-line {
@@ -823,7 +829,7 @@
 }
 
 .poll-leader-line span {
-  color: #ffcf9e;
+  color: #ffb26e;
 }
 
 .poll-leader-line em {
@@ -843,8 +849,8 @@
   gap: 10px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.055);
-  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.045);
+  padding: 7px 9px;
 }
 
 .poll-status-strip span,
@@ -884,24 +890,25 @@
 }
 
 .poll-option {
-  min-height: 46px;
+  min-height: 42px;
+  overflow: hidden;
   border-radius: 8px;
-  background: #252526;
+  background: #1b1c1f;
   color: #f8fafc;
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset;
 }
 
 .poll-option span {
-  background: linear-gradient(90deg, rgba(255, 137, 51, 0.95), rgba(255, 207, 158, 0.8));
+  background: linear-gradient(90deg, rgba(255, 137, 51, 0.62), rgba(255, 178, 110, 0.3));
   opacity: 1;
 }
 
 .poll-option.is-leading {
-  outline: 1px solid rgba(255, 137, 51, 0.44);
+  outline: 1px solid rgba(255, 137, 51, 0.32);
 }
 
 .poll-option.is-leading span {
-  background: linear-gradient(90deg, #ff8933, #00c781);
+  background: linear-gradient(90deg, rgba(255, 137, 51, 0.82), rgba(0, 199, 129, 0.42));
 }
 
 .poll-option strong {
@@ -919,10 +926,10 @@
 
 .location-card {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  gap: 12px;
+  grid-template-columns: auto 50px minmax(0, 1fr) auto;
+  gap: 10px;
   align-items: center;
-  padding: 14px;
+  padding: 10px;
   text-decoration: none;
   transition:
     background 160ms ease,
@@ -933,20 +940,47 @@
 .location-card:focus-visible {
   border-color: rgba(159, 255, 224, 0.34);
   background:
-    linear-gradient(135deg, rgba(0, 199, 129, 0.12), transparent 45%),
-    #363636;
+    linear-gradient(180deg, rgba(159, 255, 224, 0.08), transparent 58%),
+    #282a2d;
   outline: 0;
   transform: translateY(-1px);
 }
 
 .location-card-icon {
   display: grid;
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   place-items: center;
+  border-radius: 8px;
+  background: rgba(159, 255, 224, 0.13);
+  color: #9fffe0;
+}
+
+.location-card-map-strip {
+  position: relative;
+  display: block;
+  width: 50px;
+  height: 44px;
+  overflow: hidden;
+  border: 1px solid rgba(159, 255, 224, 0.14);
+  border-radius: 8px;
+  background:
+    linear-gradient(rgba(159, 255, 224, 0.16) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(159, 255, 224, 0.16) 1px, transparent 1px),
+    #151719;
+  background-size: 14px 14px;
+}
+
+.location-card-map-strip span {
+  position: absolute;
+  top: 17px;
+  left: 20px;
+  width: 10px;
+  height: 10px;
+  border: 2px solid #151719;
   border-radius: 999px;
-  background: #9fffe0;
-  color: #151515;
+  background: #ff8933;
+  box-shadow: 0 0 0 6px rgba(255, 137, 51, 0.15);
 }
 
 .location-card-copy {
@@ -965,7 +999,7 @@
 .location-card-kicker {
   width: fit-content;
   border-radius: 999px;
-  background: rgba(159, 255, 224, 0.1);
+  background: transparent;
   color: #9fffe0;
 }
 
@@ -987,13 +1021,14 @@
 
 .location-card-action {
   display: inline-flex;
-  min-height: 34px;
+  min-height: 32px;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  border-radius: 999px;
-  background: #ffffff;
-  color: #151515;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #f8fafc;
   padding: 0 10px;
 }
 

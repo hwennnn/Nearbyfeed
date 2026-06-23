@@ -121,7 +121,7 @@ describe('PollPreview', () => {
       />,
     );
 
-    expect(screen.getByText('Live poll')).toBeInTheDocument();
+    expect(screen.getByText('Poll')).toBeInTheDocument();
     expect(screen.getByText('top pick')).toBeInTheDocument();
     expect(screen.getByText('+1 more')).toBeInTheDocument();
     expect(screen.getByText('63%')).toBeInTheDocument();

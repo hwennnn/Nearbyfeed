@@ -11,9 +11,9 @@ export const PollPreview = ({ poll }: { poll: NonNullable<Post['poll']> }) => {
         <span className="poll-icon-shell">
           <Vote />
         </span>
-        <strong>Live poll</strong>
-        <span>
-          {preview.voteLabel}
+        <span className="poll-heading-copy">
+          <strong>Poll</strong>
+          <em>{preview.voteLabel}</em>
         </span>
       </div>
       <div className="poll-leader-line">

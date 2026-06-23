@@ -24,6 +24,6 @@ describe('FeedLocationCard', () => {
     expect(screen.getByText('Pinned place')).toBeInTheDocument();
     expect(screen.getByText('5100 N Francisco Ave, Chicago, IL')).toBeInTheDocument();
     expect(screen.getByText('41.9742, -87.7019')).toBeInTheDocument();
-    expect(screen.getByText('Open')).toBeInTheDocument();
+    expect(screen.getByText('Maps')).toBeInTheDocument();
   });
 });

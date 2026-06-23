@@ -20,6 +20,9 @@ export const FeedLocationCard = ({
       <span className="location-card-icon">
         <MapPin />
       </span>
+      <span className="location-card-map-strip" aria-hidden="true">
+        <span />
+      </span>
       <span className="location-card-copy">
         <span className="location-card-kicker">{model.microLabel}</span>
         <strong>{location.name}</strong>
@@ -28,7 +31,7 @@ export const FeedLocationCard = ({
       </span>
       <span className="location-card-action">
         <Navigation className="location-card-arrow" />
-        <span>Open</span>
+        <span>Maps</span>
       </span>
     </a>
   );
