@@ -58,6 +58,34 @@ The inspiration behind NearbyFeed stems from the need to address the problem of 
 
 Please refer to the [client](/client/README.md) folder and [server](/server/README.md) folder for the respective installation.
 
+## Web app
+
+The TypeScript web app lives in [`web`](web) and shares domain constants with the backend through [`packages/shared`](packages/shared).
+
+```bash
+npm install
+npm run dev:web
+```
+
+The web app expects:
+
+- `VITE_API_URL` for the backend API, defaulting to `http://localhost:3000`
+- `VITE_MAPBOX_ACCESS_TOKEN` for Mapbox. Keep the public token in local env instead of committing it, because GitHub push protection treats Mapbox tokens as secrets.
+
+## Full local stack
+
+```bash
+npm run dev:api
+npm run dev:web
+```
+
+Backend tests/builds and web tests/builds can be run from the repo root:
+
+```bash
+npm test
+npm run build
+```
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE)

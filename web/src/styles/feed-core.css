@@ -1,0 +1,393 @@
+.feed-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 760px) minmax(260px, 360px);
+  gap: 18px;
+  justify-content: center;
+}
+
+.feed-column {
+  min-width: 0;
+}
+
+.feed-filter-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  border: 1px solid #33363a;
+  border-radius: 8px;
+  background: #1a1b1f;
+  padding: 16px;
+}
+
+.feed-filter-bar p,
+.map-panel-head p {
+  margin: 0 0 4px;
+  color: #aaa6a0;
+  font-size: 13px;
+}
+
+.feed-filter-bar h1,
+.map-panel-head h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.feed-mobile-controls {
+  display: none;
+  gap: 8px;
+  margin-bottom: 12px;
+  overflow: auto;
+}
+
+.loading-strip,
+.form-error,
+.compose-hint,
+.success-note {
+  margin-bottom: 12px;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.loading-strip {
+  background: #202834;
+  color: #8fd8ff;
+}
+
+.form-error {
+  background: #321b20;
+  color: #ff9bab;
+}
+
+.compose-hint {
+  background: #251f16;
+  color: #ffcb8c;
+}
+
+.success-note {
+  background: #13251f;
+  color: #5ff2ae;
+}
+
+.post-stack {
+  display: grid;
+  gap: 12px;
+}
+
+.feed-pagination-control {
+  display: grid;
+  justify-items: center;
+  padding: 4px 0 12px;
+}
+
+.feed-pagination-control button {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid rgba(17, 19, 24, 0.12);
+  border-radius: 999px;
+  background:
+    linear-gradient(135deg, rgba(255, 137, 51, 0.12), rgba(0, 199, 129, 0.1)),
+    #ffffff;
+  color: #111318;
+  padding: 0 18px;
+  font-weight: 950;
+  box-shadow: 0 18px 45px rgba(35, 44, 58, 0.12);
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.feed-pagination-control button:hover,
+.feed-pagination-control button:focus-visible {
+  border-color: rgba(17, 19, 24, 0.22);
+  box-shadow: 0 22px 60px rgba(35, 44, 58, 0.16);
+  outline: 0;
+  transform: translateY(-1px);
+}
+
+.feed-pagination-control button:disabled {
+  opacity: 0.72;
+  transform: none;
+}
+
+.feed-pagination-control svg {
+  width: 17px;
+  height: 17px;
+}
+
+.feed-pagination-control button:disabled svg {
+  animation: spin 900ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.feed-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #303236;
+  border-radius: 8px;
+  background: #18191c;
+  padding: 16px;
+}
+
+.feed-card:hover {
+  border-color: #4a4d54;
+}
+
+.card-author-row,
+.card-actions,
+.poll-heading,
+.location-card,
+.compose-row,
+.toggle-row,
+.details-toolbar,
+.comment-composer,
+.comment-row,
+.map-panel-head {
+  display: flex;
+  align-items: center;
+}
+
+.card-author-row {
+  position: relative;
+  z-index: 1;
+  gap: 10px;
+}
+
+.card-author-row span,
+.post-copy,
+.location-card,
+.card-actions button,
+.comment-row p {
+  color: #bdb8b0;
+}
+
+.card-author-row strong {
+  display: block;
+}
+
+.avatar {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background: #d7d9dd;
+  color: #35363a;
+  font-weight: 900;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.feed-card h2 {
+  position: relative;
+  z-index: 1;
+  margin: 16px 0 8px;
+  font-size: 24px;
+  line-height: 1.12;
+}
+
+.post-title-button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.post-title-button:hover,
+.post-title-button:focus-visible {
+  color: #ff6c00;
+  outline: 0;
+}
+
+.post-copy {
+  position: relative;
+  z-index: 1;
+  margin: 0 0 14px;
+  line-height: 1.5;
+}
+
+.post-image-wrap {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #26282c;
+  aspect-ratio: 16 / 10;
+}
+
+.post-image-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.image-count {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  border-radius: 999px;
+  background: #101113;
+  color: white;
+  padding: 6px 10px;
+  font-weight: 800;
+}
+
+.poll-card,
+.location-card {
+  position: relative;
+  z-index: 1;
+  margin-top: 12px;
+  border: 1px solid #34363a;
+  border-radius: 8px;
+  background: #222326;
+  padding: 12px;
+}
+
+.poll-heading {
+  gap: 9px;
+  margin-bottom: 10px;
+}
+
+.poll-heading svg,
+.location-card svg {
+  color: #ff8933;
+}
+
+.poll-heading span {
+  color: #aaa6a0;
+}
+
+.poll-option {
+  position: relative;
+  display: grid;
+  min-height: 38px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+  border-radius: 8px;
+  padding: 0 10px;
+}
+
+.poll-option span {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: #ff8933;
+  opacity: 0.9;
+}
+
+.poll-option strong,
+.poll-option em {
+  position: relative;
+  font-style: normal;
+}
+
+.location-card {
+  gap: 10px;
+}
+
+.location-card span {
+  display: grid;
+  gap: 2px;
+}
+
+.location-card strong {
+  color: #f7f4ef;
+}
+
+.card-actions {
+  position: relative;
+  z-index: 2;
+  justify-content: space-around;
+  margin-top: 16px;
+  border-top: 1px solid #2d2f34;
+  padding-top: 12px;
+}
+
+.card-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 0;
+  background: transparent;
+  font-weight: 800;
+}
+
+.card-actions svg {
+  width: 18px;
+}
+
+.filled-heart {
+  fill: #ff8933;
+  color: #ff8933;
+}
+
+.pulse-panel {
+  position: sticky;
+  top: 96px;
+  height: fit-content;
+  border: 1px solid #303236;
+  border-radius: 8px;
+  background: #18191c;
+  padding: 16px;
+}
+
+.pulse-meter {
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  gap: 8px 12px;
+  align-items: center;
+}
+
+.pulse-meter svg {
+  grid-row: span 2;
+  color: #5ff2ae;
+}
+
+.pulse-meter strong {
+  font-size: 42px;
+  line-height: 1;
+}
+
+.pulse-meter span {
+  color: #aaa6a0;
+}
+
+.mini-rule {
+  height: 1px;
+  margin: 16px 0;
+  background: #303236;
+}
+
+.pulse-stat-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #272a2f;
+  padding: 10px 0;
+}
+
+.pulse-stat-row span {
+  color: #aaa6a0;
+}
+
+.pulse-stat-row strong {
+  color: #f7f4ef;
+}

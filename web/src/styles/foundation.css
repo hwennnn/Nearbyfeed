@@ -1,0 +1,222 @@
+:root {
+  color-scheme: dark;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  background: #101113;
+  color: #f7f4ef;
+  font-synthesis: none;
+  text-rendering: geometricPrecision;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background:
+    linear-gradient(90deg, rgba(255, 137, 51, 0.08), transparent 34%),
+    linear-gradient(180deg, #101113 0%, #171717 100%);
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.app-shell {
+  display: grid;
+  min-height: 100vh;
+  grid-template-columns: 236px minmax(0, 1fr);
+}
+
+.side-nav {
+  position: sticky;
+  top: 0;
+  display: flex;
+  height: 100vh;
+  flex-direction: column;
+  gap: 10px;
+  border-right: 1px solid #2a2b2f;
+  background: rgba(18, 18, 19, 0.9);
+  padding: 18px 14px;
+  backdrop-filter: blur(16px);
+}
+
+.brand-lockup,
+.nav-button,
+.icon-button,
+.text-command,
+.primary-button,
+.danger-button {
+  border: 0;
+}
+
+.brand-lockup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 22px;
+  color: #f7f4ef;
+  background: transparent;
+  text-align: left;
+}
+
+.brand-lockup small {
+  display: block;
+  color: #9f9b94;
+  font-size: 12px;
+}
+
+.brand-mark {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 1px solid #ffb26e;
+  border-radius: 8px;
+  background: #ff8933;
+  color: #101113;
+  font-weight: 900;
+}
+
+.nav-button {
+  display: flex;
+  min-height: 46px;
+  align-items: center;
+  gap: 12px;
+  border-radius: 8px;
+  background: transparent;
+  color: #aaa6a0;
+  padding: 0 12px;
+}
+
+.nav-button svg {
+  width: 19px;
+}
+
+.nav-button.is-active {
+  background: #27221e;
+  color: #ff8933;
+}
+
+.app-main {
+  min-width: 0;
+  padding: 18px;
+}
+
+.app-main-map {
+  padding: 0;
+}
+
+.top-bar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: grid;
+  grid-template-columns: minmax(220px, 1.2fr) auto auto minmax(190px, auto);
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 18px;
+  border: 1px solid #2a2b2f;
+  border-radius: 8px;
+  background: rgba(18, 18, 19, 0.86);
+  padding: 10px;
+  backdrop-filter: blur(18px);
+}
+
+.app-main-map .top-bar {
+  position: absolute;
+  right: 18px;
+  left: 254px;
+  margin: 0;
+}
+
+.location-pill,
+.signal-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  border-radius: 999px;
+  background: #222326;
+  color: #f7f4ef;
+  padding: 9px 12px;
+}
+
+.location-pill span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.location-pill strong {
+  color: #ffb26e;
+}
+
+.segmented-control {
+  display: inline-flex;
+  min-width: 0;
+  border: 1px solid #34363a;
+  border-radius: 999px;
+  background: #18191c;
+  padding: 3px;
+}
+
+.segmented-control button {
+  min-height: 32px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #aaa6a0;
+  padding: 0 12px;
+  white-space: nowrap;
+}
+
+.segmented-control button.is-selected {
+  background: #f7f4ef;
+  color: #101113;
+  font-weight: 800;
+}
+
+.top-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.signal-chip {
+  font-size: 12px;
+}
+
+.signal-chip.is-live {
+  background: #13251f;
+  color: #5ff2ae;
+}
+
+.icon-button {
+  display: inline-grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 999px;
+  background: #242529;
+  color: #f7f4ef;
+}
+
+.icon-button svg {
+  width: 18px;
+}

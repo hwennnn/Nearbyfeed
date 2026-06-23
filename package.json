@@ -1,0 +1,15 @@
+{
+  "name": "nearbyfeed",
+  "version": "0.0.0",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "web"
+  ],
+  "scripts": {
+    "build": "npm --prefix packages/shared run build && npm --prefix server run build && npm --prefix web run build",
+    "dev:api": "npm --prefix server run start:dev",
+    "dev:web": "npm --prefix web run dev",
+    "test": "npm --prefix packages/shared run type-check && npm --prefix server test -- --runInBand && npm --prefix web test"
+  }
+}

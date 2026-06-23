@@ -1,0 +1,360 @@
+/* Premium product pass: light social surface with black signal rail. */
+body {
+  background:
+    linear-gradient(90deg, rgba(255, 108, 0, 0.1), transparent 28%),
+    repeating-linear-gradient(
+      90deg,
+      rgba(17, 19, 24, 0.035) 0,
+      rgba(17, 19, 24, 0.035) 1px,
+      transparent 1px,
+      transparent 72px
+    ),
+    #f3f5f8;
+  color: #111318;
+}
+
+.app-main:not(.app-main-map) {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(243, 245, 248, 0)),
+    #f3f5f8;
+}
+
+.side-nav {
+  border-right-color: #202126;
+  background:
+    linear-gradient(180deg, #111318 0%, #15161a 60%, #0f1013 100%);
+  box-shadow: 18px 0 70px rgba(17, 19, 24, 0.18);
+}
+
+.brand-mark {
+  border: 0;
+  background: #ff6c00;
+  box-shadow: 0 12px 30px rgba(255, 108, 0, 0.32);
+}
+
+.nav-button {
+  color: #c6c8ce;
+}
+
+.nav-button.is-active {
+  background: rgba(255, 108, 0, 0.14);
+  color: #ff8f3d;
+}
+
+.top-bar,
+.feed-filter-bar,
+.feed-card,
+.pulse-panel,
+.compose-screen,
+.profile-screen,
+.auth-card,
+.verify-card,
+.auth-required,
+.comment-row,
+.details-screen .feed-card {
+  border-color: rgba(17, 19, 24, 0.1);
+  background: rgba(255, 255, 255, 0.92);
+  color: #111318;
+  box-shadow:
+    0 20px 60px rgba(35, 44, 58, 0.1),
+    0 1px 0 rgba(255, 255, 255, 0.7) inset;
+}
+
+.top-bar {
+  backdrop-filter: blur(22px);
+}
+
+.profile-screen.auth-stage {
+  border-color: rgba(17, 19, 24, 0.1);
+  background:
+    linear-gradient(135deg, rgba(13, 18, 28, 0.96), rgba(16, 17, 19, 0.9)),
+    #111318;
+  color: #ffffff;
+  box-shadow: 0 28px 80px rgba(17, 19, 24, 0.18);
+}
+
+.verify-card p {
+  color: #626a75;
+}
+
+.verify-beacon {
+  border-color: rgba(255, 108, 0, 0.18);
+  background: #fff0e7;
+  color: #b94d00;
+}
+
+.location-pill,
+.signal-chip,
+.segmented-control {
+  border: 1px solid rgba(17, 19, 24, 0.08);
+  background: #eef2f6;
+  color: #111318;
+}
+
+.location-pill strong,
+.text-command,
+.poll-heading svg,
+.location-card svg,
+.auth-card svg,
+.verify-card svg,
+.auth-required svg {
+  color: #ff6c00;
+}
+
+.segmented-control button {
+  color: #66707c;
+}
+
+.segmented-control button.is-selected {
+  background: #111318;
+  color: #ffffff;
+  box-shadow: 0 8px 22px rgba(17, 19, 24, 0.16);
+}
+
+.signal-chip.is-live {
+  background: #ddfff1;
+  color: #007a55;
+}
+
+.icon-button {
+  background: #111318;
+  color: #ffffff;
+  box-shadow: 0 12px 28px rgba(17, 19, 24, 0.18);
+}
+
+.feed-filter-bar p,
+.map-panel-head p,
+.card-author-row span,
+.post-copy,
+.location-card,
+.card-actions button,
+.comment-row p,
+.pulse-meter span,
+.pulse-stat-row span,
+.profile-hero p {
+  color: #626a75;
+}
+
+.feed-card {
+  padding: 18px;
+}
+
+.feed-card::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #ff6c00, #00c781 54%, #0ea5e9);
+  content: "";
+}
+
+.feed-card h2,
+.location-card strong,
+.pulse-stat-row strong,
+.profile-hero h1,
+.auth-card h1,
+.verify-card h1,
+.auth-required h1 {
+  color: #111318;
+}
+
+.profile-screen .profile-hero h1 {
+  color: #ffffff;
+}
+
+.profile-screen .profile-hero p {
+  color: #ccd4df;
+}
+
+.avatar {
+  background: #e6ebf1;
+  color: #59616d;
+}
+
+.post-image-wrap {
+  background: #dfe5ec;
+  box-shadow: 0 16px 40px rgba(25, 36, 52, 0.14);
+}
+
+.poll-card,
+.location-card,
+.selected-map-post,
+.live-stack a,
+.settings-grid button {
+  border-color: rgba(17, 19, 24, 0.1);
+  background: #f7f9fb;
+  color: #111318;
+}
+
+.poll-heading span {
+  color: #626a75;
+}
+
+.poll-option {
+  background: #ffffff;
+}
+
+.poll-option span {
+  background: linear-gradient(90deg, #ff6c00, #ff9f57);
+}
+
+.card-actions {
+  border-top-color: #e3e8ee;
+}
+
+.filled-heart {
+  fill: #ff6c00;
+  color: #ff6c00;
+}
+
+.pulse-panel {
+  background:
+    linear-gradient(180deg, #111318 0%, #1a1c21 100%);
+  color: #ffffff;
+}
+
+.pulse-meter svg {
+  color: #00c781;
+}
+
+.pulse-meter span,
+.pulse-stat-row span {
+  color: #aeb4bd;
+}
+
+.pulse-stat-row {
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+.pulse-stat-row strong {
+  color: #ffffff;
+}
+
+.mini-rule {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.title-input,
+.compose-screen textarea,
+.auth-card input,
+.verify-card input,
+.poll-editor input,
+.comment-composer input {
+  border-color: #d9e0e8;
+  background: #ffffff;
+  color: #111318;
+}
+
+.file-drop,
+.toggle-row,
+.compose-row,
+.poll-editor {
+  border-color: #d9e0e8;
+  background: #f7f9fb;
+}
+
+.primary-button {
+  background: #111318;
+  color: #ffffff;
+  box-shadow: 0 14px 34px rgba(17, 19, 24, 0.18);
+}
+
+.danger-button {
+  background: #fff0f2;
+  color: #b4233c;
+}
+
+.compose-hint {
+  background: #fff6eb;
+  color: #9a4a00;
+}
+
+.comment-composer {
+  border-color: rgba(17, 19, 24, 0.1);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 18px 50px rgba(17, 19, 24, 0.14);
+}
+
+.comments-empty-state {
+  border-color: rgba(17, 19, 24, 0.12);
+  background: #f7f9fb;
+  color: #111318;
+}
+
+.comments-empty-state svg {
+  color: #ff6c00;
+}
+
+.comments-empty-state span {
+  color: #626a75;
+}
+
+.mobile-nav {
+  background: rgba(17, 19, 24, 0.92);
+}
+
+.map-panel {
+  color: #f7f4ef;
+}
+
+.map-panel .map-panel-head h2 {
+  color: #f7f4ef;
+}
+
+.map-panel .map-panel-head p {
+  color: #aeb4bd;
+}
+
+.map-panel .map-pulse-stats > div {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.map-panel .map-pulse-stats span {
+  color: #aeb4bd;
+}
+
+.map-panel .map-pulse-stats strong {
+  color: #ffffff;
+}
+
+.map-panel .selected-map-post {
+  border-color: rgba(255, 255, 255, 0.12);
+  background:
+    linear-gradient(135deg, rgba(255, 137, 51, 0.2), rgba(95, 242, 174, 0.12)),
+    #17191d;
+  color: #ffffff;
+}
+
+.map-panel .selected-map-post.is-hot {
+  background:
+    linear-gradient(135deg, rgba(255, 43, 85, 0.34), rgba(255, 108, 0, 0.16)),
+    #17191d;
+}
+
+.map-panel .selected-map-post.is-chat {
+  background:
+    linear-gradient(135deg, rgba(14, 165, 233, 0.28), rgba(95, 242, 174, 0.12)),
+    #17191d;
+}
+
+.map-panel .selected-map-post.is-poll {
+  background:
+    linear-gradient(135deg, rgba(255, 209, 102, 0.28), rgba(255, 137, 51, 0.14)),
+    #17191d;
+}
+
+.map-panel .selected-map-post span,
+.map-panel .live-stack p {
+  color: #68717d;
+}
+
+.map-panel .selected-map-post span {
+  color: #c5cad2;
+}
+
+.map-panel .spotlight-kicker {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffb26e;
+}
