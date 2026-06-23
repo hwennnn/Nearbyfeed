@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { type View } from '../app-types';
-import { getRoutedViewFromSearch, getViewRouteUrl } from '../lib/view-route';
+import { getRoutedViewFromLocation, getViewRouteUrl } from '../lib/view-route';
 
-const getCurrentView = (): View => getRoutedViewFromSearch(window.location.search);
+const getCurrentView = (): View => getRoutedViewFromLocation(window.location);
 
 export const useRoutedView = (): [View, (view: View) => void] => {
   const [view, setViewState] = useState<View>(() => getCurrentView());

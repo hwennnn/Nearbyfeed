@@ -15,13 +15,22 @@ describe('useRoutedView', () => {
     expect(result.current[0]).toBe('map');
   });
 
+  it('starts from clean view paths', () => {
+    window.history.replaceState(null, '', '/map');
+
+    const { result } = renderHook(() => useRoutedView());
+
+    expect(result.current[0]).toBe('map');
+  });
+
   it('pushes routable view changes into the URL', () => {
     const { result } = renderHook(() => useRoutedView());
 
     act(() => result.current[1]('profile'));
 
     expect(result.current[0]).toBe('profile');
-    expect(window.location.search).toBe('?view=profile');
+    expect(window.location.pathname).toBe('/profile');
+    expect(window.location.search).toBe('');
   });
 
   it('clears stale post links when returning to a routable view', () => {
@@ -47,7 +56,7 @@ describe('useRoutedView', () => {
   it('reacts to browser back and forward navigation', () => {
     const { result } = renderHook(() => useRoutedView());
 
-    window.history.pushState(null, '', '/?view=create');
+    window.history.pushState(null, '', '/create');
     act(() => window.dispatchEvent(new PopStateEvent('popstate')));
 
     expect(result.current[0]).toBe('create');
