@@ -36,6 +36,7 @@ export const useCreatePostComposer = ({
     pollOptions: options,
     title,
   });
+  const canPost = validationError === null;
   const displayLocationName = placeTag.name.trim() || locationName;
   const mutation = useMutation({
     mutationFn: async () =>
@@ -66,8 +67,15 @@ export const useCreatePostComposer = ({
       onCreated();
     },
   });
+  const submitPost = () => {
+    if (!canPost || mutation.isPending) return false;
+
+    mutation.mutate();
+    return true;
+  };
 
   return {
+    canPost,
     content,
     displayLocationName,
     files,
@@ -83,6 +91,7 @@ export const useCreatePostComposer = ({
     setPollEnabled,
     setPollVotingLengthDays,
     setTitle,
+    submitPost,
     title,
     validationError,
   };

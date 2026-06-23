@@ -35,10 +35,10 @@ export const CreateView = ({
     <section className="compose-screen">
       <div className="compose-panel">
         <CreateHeader
-          canPost={composer.validationError === null}
+          canPost={composer.canPost}
           isPosting={composer.mutation.isPending}
           onClose={() => setView('feed')}
-          onPost={() => composer.mutation.mutate()}
+          onPost={composer.submitPost}
         />
         <CreateComposerIntro locationName={locationName} />
         <CreateStatusNote
