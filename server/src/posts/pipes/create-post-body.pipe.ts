@@ -26,6 +26,9 @@ const isObjectWithFields = (value: unknown): value is Record<string, unknown> =>
   value !== null &&
   Object.keys(value as Record<string, unknown>).length > 0;
 
+const optionalNonBlankString = (value: unknown): unknown =>
+  typeof value === 'string' && value.trim().length === 0 ? undefined : value;
+
 const readMultipartPoll = (body: MultipartBody): unknown => {
   if (isObjectWithFields(body.poll)) return body.poll;
 
@@ -74,7 +77,7 @@ export const normalizeCreatePostBody = (
       : {};
 
   return {
-    content: body.content,
+    content: optionalNonBlankString(body.content),
     latitude: body.latitude,
     location: readMultipartLocation(body),
     longitude: body.longitude,

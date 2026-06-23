@@ -29,4 +29,15 @@ describe('CreatePostDto', () => {
       longitude: -122.0322,
     });
   });
+
+  it('omits blank optional content so title-only posts match shared validation', async () => {
+    const dto = await transformBody({
+      title: 'Library steps are buzzing',
+      content: '   ',
+      latitude: '37.323',
+      longitude: '-122.0322',
+    });
+
+    expect(dto.content).toBeUndefined();
+  });
 });
