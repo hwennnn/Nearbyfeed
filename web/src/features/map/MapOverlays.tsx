@@ -34,7 +34,7 @@ export const MapControls = ({
   setTimeWindow: (window: TimeWindow) => void;
   timeWindow: TimeWindow;
 }) => (
-  <div className="map-controls">
+  <div className="map-controls" aria-label="Map filters">
     <SegmentedTime value={timeWindow} onChange={setTimeWindow} />
     <SegmentedDistance value={distance} onChange={setDistance} />
   </div>

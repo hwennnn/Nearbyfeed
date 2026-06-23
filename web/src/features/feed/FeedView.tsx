@@ -1,8 +1,8 @@
 import { type DistanceMeters, type TimeWindow } from '@nearbyfeed/shared';
-import { SegmentedDistance, SegmentedTime } from '../../components/SegmentedControls';
 import { type LiveUpdate, type Post, type Session } from '../../types';
 import { FeedHero } from './FeedHero';
 import { FeedLiveLens } from './FeedLiveLens';
+import { FeedMobileFilterDock } from './FeedMobileFilterDock';
 import { FeedPostStack } from './FeedPostStack';
 import { FeedPulseRail } from './FeedPulseRail';
 import { FeedSceneBoard } from './FeedSceneBoard';
@@ -52,6 +52,12 @@ export const FeedView = ({
 }) => (
   <section className="feed-layout">
     <div className="feed-column">
+      <FeedMobileFilterDock
+        distance={distance}
+        setDistance={setDistance}
+        setTimeWindow={setTimeWindow}
+        timeWindow={timeWindow}
+      />
       <FeedHero
         distance={distance}
         locationName={locationName}
@@ -69,10 +75,6 @@ export const FeedView = ({
         posts={posts}
       />
       <FeedLiveLens onOpenPost={onOpenPost} posts={posts} />
-      <div className="feed-mobile-controls">
-        <SegmentedDistance value={distance} onChange={setDistance} />
-        <SegmentedTime value={timeWindow} onChange={setTimeWindow} />
-      </div>
       <FeedSignalTicker onOpenPost={onOpenPost} posts={posts} />
       {isLoading && <div className="loading-strip">syncing the block...</div>}
       <FeedPostStack

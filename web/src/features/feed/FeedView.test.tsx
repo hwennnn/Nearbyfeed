@@ -63,4 +63,40 @@ describe('FeedView', () => {
 
     expect(onRequireAuth).toHaveBeenCalledWith('like');
   });
+
+  it('surfaces mobile radius and time filters before the feed hero', () => {
+    render(
+      <FeedView
+        distance={200}
+        fetchMorePosts={vi.fn()}
+        hasMorePosts={false}
+        isFetchingMorePosts={false}
+        isLiveFallback={false}
+        isLiveFetching={false}
+        isLoading={false}
+        liveUpdates={[]}
+        locationName="Cupertino"
+        onOpenMap={vi.fn()}
+        onOpenPost={vi.fn()}
+        onRequireAuth={vi.fn()}
+        posts={[post]}
+        refreshLiveUpdates={vi.fn()}
+        refreshPosts={vi.fn()}
+        session={null}
+        setDistance={vi.fn()}
+        setTimeWindow={vi.fn()}
+        timeWindow="24h"
+      />,
+      { wrapper },
+    );
+
+    const filters = screen.getByLabelText('Mobile feed filters');
+    const hero = screen.getByRole('heading', { name: 'Cupertino' });
+
+    expect(filters.compareDocumentPosition(hero)).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING,
+    );
+    expect(filters).toContainElement(screen.getByLabelText('Distance'));
+    expect(filters).toContainElement(screen.getByLabelText('Time window'));
+  });
 });
