@@ -26,14 +26,36 @@ const isObjectWithFields = (value: unknown): value is Record<string, unknown> =>
   value !== null &&
   Object.keys(value as Record<string, unknown>).length > 0;
 
+const trimString = (value: unknown): unknown =>
+  typeof value === 'string' ? value.trim() : value;
+
 const optionalNonBlankString = (value: unknown): unknown =>
-  typeof value === 'string' && value.trim().length === 0 ? undefined : value;
+  typeof value === 'string' && value.trim().length === 0
+    ? undefined
+    : trimString(value);
+
+const textValues = (value: unknown): unknown[] =>
+  values(value)
+    .map(trimString)
+    .filter((item) => !(typeof item === 'string' && item.length === 0));
+
+const readPoll = (poll: Record<string, unknown>): unknown => ({
+  options: textValues(poll.options),
+  votingLength: firstValue(poll.votingLength),
+});
+
+const readLocation = (location: Record<string, unknown>): unknown => ({
+  formattedAddress: trimString(location.formattedAddress),
+  latitude: firstValue(location.latitude),
+  longitude: firstValue(location.longitude),
+  name: trimString(location.name),
+});
 
 const readMultipartPoll = (body: MultipartBody): unknown => {
-  if (isObjectWithFields(body.poll)) return body.poll;
+  if (isObjectWithFields(body.poll)) return readPoll(body.poll);
 
   const votingLength = firstValue(body['poll[votingLength]']);
-  const options = values(body['poll[options][]']);
+  const options = textValues(body['poll[options][]']);
 
   if (votingLength === undefined && options.length === 0) return undefined;
 
@@ -44,7 +66,7 @@ const readMultipartPoll = (body: MultipartBody): unknown => {
 };
 
 const readMultipartLocation = (body: MultipartBody): unknown => {
-  if (isObjectWithFields(body.location)) return body.location;
+  if (isObjectWithFields(body.location)) return readLocation(body.location);
 
   const name = firstValue(body['location[name]']);
   const formattedAddress = firstValue(body['location[formattedAddress]']);
@@ -61,10 +83,10 @@ const readMultipartLocation = (body: MultipartBody): unknown => {
   }
 
   return {
-    formattedAddress,
+    formattedAddress: trimString(formattedAddress),
     latitude,
     longitude,
-    name,
+    name: trimString(name),
   };
 };
 
@@ -82,7 +104,7 @@ export const normalizeCreatePostBody = (
     location: readMultipartLocation(body),
     longitude: body.longitude,
     poll: readMultipartPoll(body),
-    title: body.title,
+    title: trimString(body.title),
   };
 };
 
