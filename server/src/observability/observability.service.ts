@@ -9,6 +9,7 @@ import { type CreateObservabilityEventDto } from './dto/create-observability-eve
 const MAX_PROPERTY_COUNT = 24;
 const MAX_PROPERTY_KEY_LENGTH = 80;
 const MAX_PROPERTY_VALUE_LENGTH = 500;
+const MAX_ROUTE_LENGTH = 200;
 const DEFAULT_CLICKHOUSE_DATABASE = 'nearbyfeed_observability';
 const DEFAULT_CLICKHOUSE_TIMEOUT_MS = 2000;
 const DEFAULT_MAX_CLIENT_TIMESTAMP_SKEW_MS = 24 * 60 * 60 * 1000;
@@ -190,7 +191,12 @@ export class ObservabilityService {
   }
 
   private sanitizeRoute(route?: string): string | null {
-    return route === undefined ? null : redactUrlForLogs(route);
+    return route === undefined
+      ? null
+      : this.truncate(
+          this.sanitizeLogString(redactUrlForLogs(route)),
+          MAX_ROUTE_LENGTH,
+        );
   }
 
   private sanitizeProperties(

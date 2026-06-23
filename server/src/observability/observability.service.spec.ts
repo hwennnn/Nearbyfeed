@@ -85,6 +85,40 @@ describe('ObservabilityService', () => {
     );
   });
 
+  it('bounds and normalizes server-provided event routes before insert', async () => {
+    const fetchSpy = jest
+      .spyOn(globalThis, 'fetch')
+      .mockResolvedValue({ ok: true } as Response);
+    const service = new ObservabilityService(
+      {
+        get: jest.fn((key: string) => {
+          const values: Record<string, string> = {
+            CLICKHOUSE_URL: 'http://localhost:8123',
+            OBSERVABILITY_ENABLED: 'true',
+          };
+          return values[key];
+        }),
+      } as any,
+      { error: jest.fn() } as any,
+    );
+
+    await service.captureEvent({
+      name: 'api.request',
+      route: `/posts?token=raw-secret&query=${'x'.repeat(
+        500,
+      )}\nforged-log-line`,
+    });
+
+    const body = fetchSpy.mock.calls[0][1]?.body as string;
+    const row = JSON.parse(body.trim()) as { route: string };
+
+    expect(row.route).toHaveLength(200);
+    expect(row.route).toContain('token=[redacted]');
+    expect(row.route).not.toContain('raw-secret');
+    expect(row.route).not.toContain('\n');
+    expect(row.route).toMatch(/\.\.\.$/);
+  });
+
   it('uses valid client timestamps when they are close to server time', async () => {
     jest
       .useFakeTimers()
