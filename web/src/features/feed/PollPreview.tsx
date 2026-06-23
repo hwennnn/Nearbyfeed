@@ -1,38 +1,35 @@
-import { formatSingularPlural } from '@nearbyfeed/shared';
 import { Vote } from 'lucide-react';
 import { type Post } from '../../types';
+import { getPollPreviewModel } from './poll-preview-presentation';
 
 export const PollPreview = ({ poll }: { poll: NonNullable<Post['poll']> }) => {
-  const total = Math.max(1, poll.participantsCount);
+  const preview = getPollPreviewModel(poll);
 
   return (
     <div className="poll-card">
       <div className="poll-heading">
-        <Vote />
-        <strong>Poll</strong>
+        <span className="poll-icon-shell">
+          <Vote />
+        </span>
+        <strong>Live poll</strong>
         <span>
-          {formatSingularPlural({
-            empty: '0 votes',
-            plural: 'votes',
-            singular: 'vote',
-            value: poll.participantsCount,
-          })}
+          {preview.voteLabel}
         </span>
       </div>
-      {poll.options.slice(0, 3).map((option) => {
-        const percentage = Math.min(
-          100,
-          Math.round((option.voteCount / total) * 100),
-        );
-
-        return (
-          <div className="poll-option" key={option.id}>
-            <span aria-hidden="true" style={{ width: `${percentage}%` }} />
-            <strong>{option.text}</strong>
-            <em>{percentage}%</em>
-          </div>
-        );
-      })}
+      <div className="poll-leader-line">
+        <span>{preview.leaderLabel}</span>
+        {preview.hiddenOptionCount > 0 && <em>+{preview.hiddenOptionCount} more</em>}
+      </div>
+      {preview.options.map((option) => (
+        <div
+          className={`poll-option ${option.isLeader ? 'is-leading' : ''}`}
+          key={option.id}
+        >
+          <span aria-hidden="true" style={{ width: `${option.percentage}%` }} />
+          <strong>{option.text}</strong>
+          <em>{option.percentage}%</em>
+        </div>
+      ))}
     </div>
   );
 };

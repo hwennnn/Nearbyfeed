@@ -79,4 +79,49 @@ describe('PollPreview', () => {
     expect(screen.getByText('25%')).toBeInTheDocument();
     expect(screen.getByText('75%')).toBeInTheDocument();
   });
+
+  it('shows a ranked live-poll summary with hidden options', () => {
+    render(
+      <PollPreview
+        poll={{
+          ...makePoll(8),
+          options: [
+            {
+              id: 1,
+              order: 0,
+              pollId: 8,
+              text: 'go now',
+              voteCount: 1,
+            },
+            {
+              id: 2,
+              order: 1,
+              pollId: 8,
+              text: 'wait',
+              voteCount: 5,
+            },
+            {
+              id: 3,
+              order: 2,
+              pollId: 8,
+              text: 'ask the group',
+              voteCount: 2,
+            },
+            {
+              id: 4,
+              order: 3,
+              pollId: 8,
+              text: 'skip',
+              voteCount: 0,
+            },
+          ],
+        }}
+      />,
+    );
+
+    expect(screen.getByText('Live poll')).toBeInTheDocument();
+    expect(screen.getByText('top pick')).toBeInTheDocument();
+    expect(screen.getByText('+1 more')).toBeInTheDocument();
+    expect(screen.getByText('63%')).toBeInTheDocument();
+  });
 });
