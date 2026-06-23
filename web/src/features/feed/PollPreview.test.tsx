@@ -1,5 +1,5 @@
 import { cleanup, render, screen } from '@testing-library/react';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { type Post } from '../../types';
 import { PollPreview } from './PollPreview';
 
@@ -7,6 +7,7 @@ const makePoll = (
   participantsCount: number,
 ): NonNullable<Post['poll']> => ({
   id: 8,
+  createdAt: '2026-06-23T08:00:00.000Z',
   options: [
     {
       id: 1,
@@ -25,12 +26,13 @@ const makePoll = (
   ],
   participantsCount,
   postId: 91,
-  votingLength: 5,
+  votingLength: 1,
 });
 
 describe('PollPreview', () => {
   afterEach(() => {
     cleanup();
+    vi.restoreAllMocks();
   });
 
   it('uses singular vote copy for one participant', () => {
@@ -123,5 +125,16 @@ describe('PollPreview', () => {
     expect(screen.getByText('top pick')).toBeInTheDocument();
     expect(screen.getByText('+1 more')).toBeInTheDocument();
     expect(screen.getByText('63%')).toBeInTheDocument();
+  });
+
+  it('shows the poll closing status in the feed preview', () => {
+    vi.spyOn(Date, 'now').mockReturnValue(
+      new Date('2026-06-23T09:00:00.000Z').getTime(),
+    );
+
+    render(<PollPreview poll={makePoll(4)} />);
+
+    expect(screen.getByText('Closes in 23 hours')).toBeInTheDocument();
+    expect(screen.getByText('2 choices')).toBeInTheDocument();
   });
 });

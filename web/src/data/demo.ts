@@ -28,6 +28,7 @@ export const demoPosts: Post[] = [
     poll: {
       id: 3001,
       postId: 9001,
+      createdAt: new Date(now.getTime() - 12 * 60 * 1000).toISOString(),
       votingLength: 1,
       participantsCount: 23,
       options: [

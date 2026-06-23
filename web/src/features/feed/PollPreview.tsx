@@ -20,6 +20,10 @@ export const PollPreview = ({ poll }: { poll: NonNullable<Post['poll']> }) => {
         <span>{preview.leaderLabel}</span>
         {preview.hiddenOptionCount > 0 && <em>+{preview.hiddenOptionCount} more</em>}
       </div>
+      <div className={`poll-status-strip is-${preview.statusTone}`}>
+        <span>{preview.statusLabel}</span>
+        <em>{preview.totalOptionLabel}</em>
+      </div>
       {preview.options.map((option) => (
         <div
           className={`poll-option ${option.isLeader ? 'is-leading' : ''}`}

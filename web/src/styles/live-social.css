@@ -835,6 +835,54 @@
   padding: 4px 7px;
 }
 
+.poll-status-strip {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.055);
+  padding: 8px 10px;
+}
+
+.poll-status-strip span,
+.poll-status-strip em {
+  overflow: hidden;
+  font-size: 12px;
+  font-weight: 850;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.poll-status-strip span {
+  color: #f8fafc;
+}
+
+.poll-status-strip em {
+  color: #aeb5c0;
+  font-style: normal;
+}
+
+.poll-status-strip.is-closing {
+  border-color: rgba(255, 137, 51, 0.34);
+  background: rgba(255, 137, 51, 0.12);
+}
+
+.poll-status-strip.is-closed {
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.poll-status-strip.is-closed span {
+  color: #aeb5c0;
+}
+
+.poll-status-strip.is-voted {
+  border-color: rgba(0, 199, 129, 0.3);
+  background: rgba(0, 199, 129, 0.12);
+}
+
 .poll-option {
   min-height: 46px;
   border-radius: 8px;

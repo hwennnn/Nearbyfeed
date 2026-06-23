@@ -51,6 +51,8 @@ export type PollVote = {
 export type Poll = {
   id: number;
   postId: number;
+  createdAt?: string;
+  updatedAt?: string;
   votingLength: number;
   participantsCount: number;
   options: PollOption[];

@@ -58,6 +58,8 @@ describe('poll preview presentation', () => {
       isLeader: true,
       percentage: 50,
     });
+    expect(model.statusLabel).toBe('Vote from details');
+    expect(model.statusTone).toBe('live');
   });
 
   it('keeps zero-vote polls calm and avoids divide-by-zero percentages', () => {
@@ -99,5 +101,67 @@ describe('poll preview presentation', () => {
         text: 'second',
       },
     ]);
+  });
+
+  it('surfaces open poll closing time when timestamps are available', () => {
+    const model = getPollPreviewModel(
+      makePoll({
+        createdAt: '2026-06-23T08:00:00.000Z',
+        votingLength: 1,
+      }),
+      3,
+      new Date('2026-06-23T09:00:00.000Z'),
+    );
+
+    expect(model.statusLabel).toBe('Closes in 23 hours');
+    expect(model.statusTone).toBe('live');
+  });
+
+  it('marks polls as closing soon inside the final six hours', () => {
+    const model = getPollPreviewModel(
+      makePoll({
+        createdAt: '2026-06-23T08:00:00.000Z',
+        votingLength: 1,
+      }),
+      3,
+      new Date('2026-06-24T03:30:00.000Z'),
+    );
+
+    expect(model.statusLabel).toBe('Closes in 4 hours');
+    expect(model.statusTone).toBe('closing');
+  });
+
+  it('marks expired polls as closed', () => {
+    const model = getPollPreviewModel(
+      makePoll({
+        createdAt: '2026-06-23T08:00:00.000Z',
+        votingLength: 1,
+      }),
+      3,
+      new Date('2026-06-25T08:00:00.000Z'),
+    );
+
+    expect(model.statusLabel).toBe('Closed');
+    expect(model.statusTone).toBe('closed');
+  });
+
+  it('prioritizes current-user vote state over close timing', () => {
+    const model = getPollPreviewModel(
+      makePoll({
+        createdAt: '2026-06-23T08:00:00.000Z',
+        vote: {
+          id: 10,
+          pollId: 8,
+          pollOptionId: 2,
+          userId: 42,
+        },
+        votingLength: 1,
+      }),
+      3,
+      new Date('2026-06-23T09:00:00.000Z'),
+    );
+
+    expect(model.statusLabel).toBe('You voted');
+    expect(model.statusTone).toBe('voted');
   });
 });
