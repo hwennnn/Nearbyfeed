@@ -15,11 +15,11 @@ type CorsEnvLike = EnvLike & {
   WEB_ORIGIN?: string;
 };
 
+const LOCAL_VITE_PORTS = [5173, 5174, 5175, 5176] as const;
+
 const LOCAL_WEB_ORIGINS = [
-  'http://localhost:5173',
-  'http://localhost:5174',
-  'http://127.0.0.1:5173',
-  'http://127.0.0.1:5174',
+  ...LOCAL_VITE_PORTS.map((port) => `http://localhost:${port}`),
+  ...LOCAL_VITE_PORTS.map((port) => `http://127.0.0.1:${port}`),
 ];
 
 export const getEnvFilePaths = (
