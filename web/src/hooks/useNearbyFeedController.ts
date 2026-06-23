@@ -5,9 +5,10 @@ import {
   type TimeWindow,
 } from '@nearbyfeed/shared';
 import { useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { type View } from '../app-types';
 import { type Post } from '../types';
+import { shouldClearStaleMapSelection } from './map-selection';
 import { useNearbyLiveUpdates } from './useNearbyLiveUpdates';
 import { useNearbyLocation } from './useNearbyLocation';
 import { useNearbyPosts } from './useNearbyPosts';
@@ -67,6 +68,18 @@ export const useNearbyFeedController = () => {
     posts.find((post) => post.id === selectedPostId) ??
     selectedPostSnapshot ??
     undefined;
+
+  useEffect(() => {
+    if (
+      shouldClearStaleMapSelection({
+        posts,
+        selectedPostId,
+        view,
+      })
+    ) {
+      setSelectedPostId(null);
+    }
+  }, [posts, selectedPostId, view]);
 
   usePostDeepLink({
     openPost,
