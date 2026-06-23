@@ -10,9 +10,12 @@ export class ValidNumberRangeValue implements ValidatorConstraintInterface {
     if (args.constraints.length !== 2) return false;
 
     const [minNumber, maxNumber] = args.constraints;
-    const numericValue =
-      typeof value === 'number' ? value : parseInt(value, 10);
-    return numericValue >= minNumber && numericValue <= maxNumber;
+    const numericValue = typeof value === 'number' ? value : Number(value);
+    return (
+      Number.isInteger(numericValue) &&
+      numericValue >= minNumber &&
+      numericValue <= maxNumber
+    );
   }
 
   defaultMessage(args: ValidationArguments): string {

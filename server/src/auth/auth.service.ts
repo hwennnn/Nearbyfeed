@@ -28,8 +28,12 @@ import { type CreateUserDto } from 'src/users/dto';
 import { type PendingUserWithoutPassword } from 'src/users/entities';
 
 import { UsersService } from 'src/users/users.service';
-import { compareHash, dayInMs, generateOTP, hashData } from 'src/utils';
+import { getJwtSecret } from './jwt-config';
+import { compareHash, dayInSeconds, generateOTP, hashData } from 'src/utils';
 import { v4 as uuidV4 } from 'uuid';
+
+const UUID_V4_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 @Injectable()
 export class AuthService {
@@ -115,15 +119,11 @@ export class AuthService {
 
   async loginWithGoogle(token: string): Promise<LoginResult> {
     try {
-      const response = await fetch(GOOGLE_API_USER_INFO_URL, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      const data: GoogleUserProfile = await response.json();
+      const data = await this.fetchGoogleUserProfile(token);
 
       const user = await this.usersService.upsertUser({
         email: data.email,
-        name: data.name ?? data.given_name,
+        name: data.name ?? data.given_name ?? data.email.split('@')[0],
         image: data.picture,
         providerName: ProviderType.GOOGLE,
       });
@@ -167,7 +167,7 @@ export class AuthService {
 
     if (userExists) {
       throw new BadRequestException(
-        'An account has already been created with the associated email, please login instaed.',
+        'An account has already been created with the associated email, please login instead.',
       );
     }
 
@@ -213,7 +213,7 @@ export class AuthService {
 
     if (userExists) {
       throw new BadRequestException(
-        'An account has already been created with the associated email, please login instaed.',
+        'An account has already been created with the associated email, please login instead.',
       );
     }
 
@@ -248,11 +248,18 @@ export class AuthService {
       throw new ForbiddenException('Invalid refresh token');
     }
 
-    const userId = payload.sub;
-    const user = await this.usersService.findOne(parseInt(userId));
+    const userId = Number(payload.sub);
 
-    if (userId !== user.id.toString() || user.isDeleted) {
-      throw new BadRequestException('Invalid user');
+    if (!Number.isInteger(userId) || userId <= 0) {
+      await this.redisService.delete(sessionId);
+      throw new ForbiddenException('Invalid refresh token');
+    }
+
+    const user = await this.usersService.findOneById(userId);
+
+    if (user === null || user.isDeleted) {
+      await this.redisService.delete(sessionId);
+      throw new ForbiddenException('Invalid refresh token');
     }
 
     // Delete the old refresh token stored in the redis
@@ -285,7 +292,11 @@ export class AuthService {
 
     const hashedRefreshToken = await hashData(refreshToken);
 
-    await this.redisService.set(sessionId, hashedRefreshToken);
+    await this.redisService.set(
+      sessionId,
+      hashedRefreshToken,
+      this.getRefreshTokenTtlSeconds(),
+    );
 
     return {
       accessToken,
@@ -295,16 +306,28 @@ export class AuthService {
 
   private async generateAccessToken(payload: any): Promise<string> {
     return await this.jwtService.signAsync(payload, {
-      secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
-      expiresIn: '1m',
+      secret: getJwtSecret(this.configService, 'JWT_ACCESS_SECRET'),
+      expiresIn:
+        this.configService.get<string>('JWT_ACCESS_EXPIRES_IN') ?? '15m',
     });
   }
 
   private async generateRefreshToken(payload: any): Promise<string> {
     return await this.jwtService.signAsync(payload, {
-      secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
-      // the jwt refresh token will not be expired (Refresh token rotation)
+      secret: getJwtSecret(this.configService, 'JWT_REFRESH_SECRET'),
+      expiresIn:
+        this.configService.get<string>('JWT_REFRESH_EXPIRES_IN') ?? '30d',
     });
+  }
+
+  private getRefreshTokenTtlSeconds(): number {
+    const configuredValue = Number(
+      this.configService.get<string>('JWT_REFRESH_TTL_SECONDS'),
+    );
+
+    return Number.isFinite(configuredValue) && configuredValue > 0
+      ? configuredValue
+      : 30 * dayInSeconds;
   }
 
   async sendResetPasswordEmail(email: string): Promise<void> {
@@ -319,7 +342,7 @@ export class AuthService {
     await this.redisService.set(
       `reset-password/${resetPasswordId}`,
       user.email,
-      dayInMs, // valid for 1 day
+      dayInSeconds, // valid for 1 day
     );
 
     await this.mailService.sendResetPasswordEmail(
@@ -330,6 +353,8 @@ export class AuthService {
   }
 
   async resetPassword(resetPasswordDto: ResetPasswordDto): Promise<void> {
+    this.assertResetPasswordToken(resetPasswordDto.token);
+
     const key = `reset-password/${resetPasswordDto.token}`;
     const storedEmail = await this.redisService.get<string>(key);
 
@@ -362,6 +387,8 @@ export class AuthService {
   }
 
   async checkResetPasswordToken(token: string): Promise<void> {
+    this.assertResetPasswordToken(token);
+
     const key = `reset-password/${token}`;
     const storedEmail = await this.redisService.get<string>(key);
 
@@ -464,17 +491,7 @@ export class AuthService {
 
   async linkGoogleProvider(userId: number, token: string): Promise<void> {
     try {
-      const response = await fetch(GOOGLE_API_USER_INFO_URL, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      if (!response.ok) {
-        throw new BadRequestException(
-          'Failed to fetch Google user information',
-        );
-      }
-
-      const data: GoogleUserProfile = await response.json();
+      const data = await this.fetchGoogleUserProfile(token);
 
       const user = await this.usersService.findOne(userId);
 
@@ -496,6 +513,71 @@ export class AuthService {
       throw new BadRequestException(
         'An error occurred while linking Google provider',
       );
+    }
+  }
+
+  private async fetchGoogleUserProfile(
+    token: string,
+  ): Promise<GoogleUserProfile> {
+    const timeoutMs = this.getGoogleUserInfoTimeoutMs();
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
+    try {
+      const response = await fetch(GOOGLE_API_USER_INFO_URL, {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: controller.signal,
+      });
+
+      if (!response.ok) {
+        throw new BadRequestException('Invalid Google token');
+      }
+
+      const data: unknown = await response.json();
+
+      if (!this.isGoogleUserProfile(data)) {
+        throw new BadRequestException('Invalid Google profile');
+      }
+
+      return data;
+    } catch (err) {
+      if (err instanceof BadRequestException) {
+        throw err;
+      }
+
+      throw new BadRequestException('Invalid Google request');
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
+
+  private isGoogleUserProfile(data: unknown): data is GoogleUserProfile {
+    if (data === null || typeof data !== 'object') {
+      return false;
+    }
+
+    const profile = data as Partial<GoogleUserProfile>;
+
+    return (
+      typeof profile.email === 'string' &&
+      profile.email.trim().length > 0 &&
+      profile.verified_email !== false
+    );
+  }
+
+  private getGoogleUserInfoTimeoutMs(): number {
+    const configuredValue = Number(
+      this.configService.get<string>('GOOGLE_USERINFO_TIMEOUT_MS'),
+    );
+
+    return Number.isFinite(configuredValue) && configuredValue > 0
+      ? configuredValue
+      : 10000;
+  }
+
+  private assertResetPasswordToken(token: string): void {
+    if (!UUID_V4_PATTERN.test(token)) {
+      throw new BadRequestException('Invalid reset password token');
     }
   }
 }

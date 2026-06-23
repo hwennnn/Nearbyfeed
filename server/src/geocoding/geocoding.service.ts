@@ -2,6 +2,11 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ApiService } from 'src/api/api.service';
 import { type GeolocationName, type Place } from 'src/geocoding/entities';
 
+const NOMINATIM_HEADERS = {
+  'Accept-Language': 'en',
+  'User-Agent': 'NearbyFeed/1.0 (https://nearbyfeed.com)',
+};
+
 @Injectable()
 export class GeocodingService {
   constructor(
@@ -18,12 +23,15 @@ export class GeocodingService {
         lat: latitude,
         lon: longitude,
         format: 'json',
-      })
+      },
+      NOMINATIM_HEADERS)
       .catch((e) => {
-        this.logger.error(
-          'Failed to fetch location name',
-          e instanceof Error ? e.stack : undefined,
-          ApiService.name,
+        const status = this.getErrorStatus(e);
+        this.logger.warn(
+          status === undefined
+            ? 'Failed to fetch location name'
+            : `Failed to fetch location name (status ${status})`,
+          GeocodingService.name,
         );
 
         // return null if not able to fetch the location name
@@ -40,5 +48,13 @@ export class GeocodingService {
           displayName: data.display_name,
         }
       : null;
+  }
+
+  private getErrorStatus(error: unknown): number | undefined {
+    if (typeof error !== 'object' || error === null || !('response' in error)) {
+      return undefined;
+    }
+
+    return (error as { response?: { status?: number } }).response?.status;
   }
 }

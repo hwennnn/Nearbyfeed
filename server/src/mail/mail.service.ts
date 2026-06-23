@@ -15,8 +15,15 @@ export class MailService {
     username: string,
     otpCode: string,
   ): Promise<void> {
-    await this.mailerService
-      .sendMail({
+    if (this.shouldUseLocalMailFallback()) {
+      this.logger.warn(
+        `Local mail fallback: verification email for ${email} (${username}); otp=${otpCode}`,
+      );
+      return;
+    }
+
+    try {
+      await this.mailerService.sendMail({
         to: email,
         subject: 'Verify Your Email',
         template: './verify-email',
@@ -24,14 +31,11 @@ export class MailService {
           username,
           otpCode,
         },
-      })
-      .catch((error) => {
-        this.logger.error(
-          'Failed to send verification email to ' + email,
-          error,
-        );
-        throw new BadRequestException('Failed to send verification email');
       });
+    } catch (error) {
+      this.logger.error('Failed to send verification email to ' + email, error);
+      throw new BadRequestException('Failed to send verification email');
+    }
   }
 
   async sendResetPasswordEmail(
@@ -43,8 +47,15 @@ export class MailService {
 
     const resetEmailLink = `${apiURL}/auth/password/reset/` + resetId;
 
-    await this.mailerService
-      .sendMail({
+    if (this.shouldUseLocalMailFallback()) {
+      this.logger.warn(
+        `Local mail fallback: reset password email for ${email}; resetLink=${resetEmailLink}`,
+      );
+      return;
+    }
+
+    try {
+      await this.mailerService.sendMail({
         to: email, // list of receivers
         subject: 'Reset your password', // Subject line
         template: './reset-password',
@@ -52,18 +63,25 @@ export class MailService {
           username,
           resetEmailLink, // link to redirect the user to client to reset password
         },
-      })
-      .then(() => {
-        console.log('done sending reset email to ' + email);
-      })
-      .catch((e) => {
-        this.logger.error(
-          'Failed to send reset email to ' + email,
-          e instanceof Error ? e.stack : undefined,
-          MailService.name,
-        );
-
-        throw new BadRequestException('Failed to send reset password email');
       });
+    } catch (error) {
+      this.logger.error(
+        'Failed to send reset email to ' + email,
+        error instanceof Error ? error.stack : undefined,
+        MailService.name,
+      );
+
+      throw new BadRequestException('Failed to send reset password email');
+    }
+  }
+
+  private shouldUseLocalMailFallback(): boolean {
+    const emailHost = this.configService.get<string>('EMAIL_HOST')?.trim();
+    const nodeEnv =
+      this.configService.get<string>('NODE_ENV') ??
+      process.env.NODE_ENV ??
+      'development';
+
+    return (emailHost === undefined || emailHost === '') && nodeEnv !== 'production';
   }
 }

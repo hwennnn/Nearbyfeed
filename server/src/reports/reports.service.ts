@@ -4,6 +4,7 @@ import {
   type CreateCommentReportDto,
   type CreatePostReportDto,
 } from 'src/reports/dto';
+import { parseRouteId } from 'src/utils/parse-route-id.util';
 
 @Injectable()
 export class ReportsService {
@@ -13,10 +14,12 @@ export class ReportsService {
   ) {}
 
   async reportPost(dto: CreatePostReportDto): Promise<void> {
+    const postId = parseRouteId(dto.postId, 'postId');
+
     await this.prismaService.postReport
       .create({
         data: {
-          postId: +dto.postId,
+          postId,
           reason: dto.reason,
         },
       })
@@ -32,10 +35,12 @@ export class ReportsService {
   }
 
   async reportComment(dto: CreateCommentReportDto): Promise<void> {
+    const commentId = parseRouteId(dto.commentId, 'commentId');
+
     await this.prismaService.commentReport
       .create({
         data: {
-          commentId: +dto.commentId,
+          commentId,
           reason: dto.reason,
         },
       })

@@ -1,17 +1,13 @@
+import { COMMENT_SORT_VALUES, type CommentSort } from '@nearbyfeed/shared';
+import { Type } from 'class-transformer';
 import {
-  IsEnum,
-  IsNumberString,
+  IsIn,
+  IsInt,
   IsOptional,
   IsString,
   Validate,
 } from 'class-validator';
 import { ValidNumberRangeValue } from 'src/posts/decorators';
-
-export enum GetCommentsSort {
-  LATEST = 'latest',
-  OLDEST = 'oldest',
-  TOP = 'top',
-}
 
 export class GetCommentDto {
   @IsOptional()
@@ -19,14 +15,15 @@ export class GetCommentDto {
   cursor?: string;
 
   @IsOptional()
-  @IsNumberString()
+  @Type(() => Number)
+  @IsInt()
   @Validate(ValidNumberRangeValue, [15, 25])
   take?: number;
 
   @IsOptional()
   @IsString()
-  @IsEnum(GetCommentsSort)
-  sort?: string;
+  @IsIn(COMMENT_SORT_VALUES)
+  sort?: CommentSort;
 
   userId?: string;
 }
@@ -37,7 +34,8 @@ export class GetChildCommentDto {
   cursor?: string;
 
   @IsOptional()
-  @IsNumberString()
+  @Type(() => Number)
+  @IsInt()
   @Validate(ValidNumberRangeValue, [15, 25])
   take?: number;
 

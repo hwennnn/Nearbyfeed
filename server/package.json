@@ -9,6 +9,8 @@
     "seed": "ts-node prisma/seed.ts"
   },
   "scripts": {
+    "prebuild": "npm --prefix ../packages/shared run build",
+    "pretest": "npm --prefix ../packages/shared run build",
     "dc:up": "docker compose up -d",
     "dc:down": "docker compose down",
     "dc:rm": "docker-compose down --volumes --remove-orphans",
@@ -30,6 +32,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@nearbyfeed/shared": "file:../packages/shared",
     "@nestjs-modules/mailer": "^1.8.1",
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^2.3.1",
@@ -112,7 +115,10 @@
     "rootDir": "src",
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
+      "^.+\\.ts$": "ts-jest"
+    },
+    "moduleNameMapper": {
+      "^src/(.*)$": "<rootDir>/$1"
     },
     "collectCoverageFrom": [
       "**/*.(t|j)s"

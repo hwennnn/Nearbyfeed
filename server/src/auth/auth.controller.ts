@@ -6,7 +6,6 @@ import {
   Param,
   Post,
   Put,
-  Query,
   Res,
   UseGuards,
 } from '@nestjs/common';
@@ -18,6 +17,7 @@ import {
   AuthDto,
   CreatePasswordDto,
   ForgotPasswordDto,
+  GoogleTokenDto,
   ResetPasswordDto,
   UpdatePasswordDto,
   VerifyEmailDto,
@@ -28,6 +28,7 @@ import { JwtAuthGuard, JwtRefreshGuard } from 'src/auth/guards';
 import { CreateUserDto } from 'src/users/dto';
 import { type PendingUserWithoutPassword } from 'src/users/entities';
 import { UserActiveGuard } from 'src/users/guards';
+import { parseRouteId } from 'src/utils/parse-route-id.util';
 import { AuthService } from './auth.service';
 
 @Controller('auth')
@@ -38,8 +39,10 @@ export class AuthController {
   ) {}
 
   @Post('google/callback')
-  async googleAuth(@Query('token') token: string): Promise<LoginResult> {
-    return await this.authService.loginWithGoogle(token);
+  async googleAuth(
+    @Body() googleTokenDto: GoogleTokenDto,
+  ): Promise<LoginResult> {
+    return await this.authService.loginWithGoogle(googleTokenDto.token);
   }
 
   @Post('register')
@@ -91,7 +94,10 @@ export class AuthController {
     @GetUser('userId') userId: string,
     @Body() createPasswordDto: CreatePasswordDto,
   ): Promise<void> {
-    await this.authService.createPassword(+userId, createPasswordDto);
+    await this.authService.createPassword(
+      parseRouteId(userId, 'userId'),
+      createPasswordDto,
+    );
   }
 
   @Put('password')
@@ -100,7 +106,10 @@ export class AuthController {
     @GetUser('userId') userId: string,
     @Body() updatePasswordDto: UpdatePasswordDto,
   ): Promise<void> {
-    await this.authService.updatePassword(+userId, updatePasswordDto);
+    await this.authService.updatePassword(
+      parseRouteId(userId, 'userId'),
+      updatePasswordDto,
+    );
   }
 
   @Post('password/forgot')
@@ -136,9 +145,12 @@ export class AuthController {
   @UseGuards(JwtAuthGuard, UserActiveGuard)
   async connectProvider(
     @GetUser('userId') userId: string,
-    @Query('token') token: string,
+    @Body() googleTokenDto: GoogleTokenDto,
   ): Promise<void> {
-    await this.authService.linkGoogleProvider(+userId, token);
+    await this.authService.linkGoogleProvider(
+      parseRouteId(userId, 'userId'),
+      googleTokenDto.token,
+    );
   }
 
   @Delete('providers/:providerId')
@@ -147,6 +159,9 @@ export class AuthController {
     @GetUser('userId') userId: string,
     @Param('providerId', ProviderIdValidationPipe) providerId: ProviderType,
   ): Promise<void> {
-    await this.authService.disconnectProvider(+userId, providerId);
+    await this.authService.disconnectProvider(
+      parseRouteId(userId, 'userId'),
+      providerId,
+    );
   }
 }

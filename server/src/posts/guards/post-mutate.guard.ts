@@ -6,6 +6,7 @@ import {
   type ExecutionContext,
 } from '@nestjs/common';
 import { PostsService } from 'src/posts/posts.service';
+import { parseRouteId } from 'src/utils/parse-route-id.util';
 
 @Injectable()
 export class PostMutateGuard implements CanActivate {
@@ -13,9 +14,9 @@ export class PostMutateGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    const postId = request.params.postId;
+    const postId = parseRouteId(request.params.postId, 'postId');
 
-    const post = await this.postsService.findPost(+postId);
+    const post = await this.postsService.findPost(postId);
 
     if (post === null || !post.isActive) {
       throw new NotFoundException('Post not found');

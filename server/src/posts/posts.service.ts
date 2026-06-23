@@ -1,4 +1,11 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import {
+  getBoundingBox,
+  getTimeWindowStart,
+  isWithinDistanceMeters,
+  PAGE_SIZE,
+  resolveTimeWindow,
+} from '@nearbyfeed/shared';
 import { type Post, type PostLike } from '@prisma/client';
 import { FilterService } from 'src/filter/filter.service';
 import { GeocodingService } from 'src/geocoding/geocoding.service';
@@ -10,7 +17,17 @@ import {
 import { type PostWithLike } from 'src/posts/entities';
 
 import { PrismaService } from 'src/prisma/prisma.service';
+import { USER_WITHOUT_PASSWORD_SELECT } from 'src/users/entities';
 import { UsersService } from 'src/users/users.service';
+import {
+  parseOptionalRouteId,
+  parseRouteId,
+} from 'src/utils/parse-route-id.util';
+
+type NearbyPostCursor = {
+  createdAt: Date;
+  id: number;
+};
 
 @Injectable()
 export class PostsService {
@@ -81,7 +98,9 @@ export class PostsService {
       .create({
         data,
         include: {
-          author: true,
+          author: {
+            select: USER_WITHOUT_PASSWORD_SELECT,
+          },
           poll: hasPollData
             ? {
                 include: {
@@ -109,107 +128,153 @@ export class PostsService {
     posts: PostWithLike[];
     hasMore: boolean;
   }> {
-    const degreesPerMeter = 1 / 111320; // 1 degree is approximately 111320 meters
-    const degreesPerDistance = dto.distance * degreesPerMeter;
+    const center = {
+      latitude: dto.latitude,
+      longitude: dto.longitude,
+    };
+    const boundingBox = getBoundingBox(center, dto.distance);
+    let pageCursor = await this.findNearbyPostCursor(dto.cursor);
 
+    if (dto.cursor !== undefined && pageCursor === null) {
+      return {
+        hasMore: false,
+        posts: [],
+      };
+    }
+
+    const userId = parseOptionalRouteId(dto.userId, 'userId');
     const blockedIds =
-      dto.userId !== undefined
-        ? await this.usersService.findBlockedUsersIds(+dto.userId)
+      userId !== undefined
+        ? await this.usersService.findBlockedUsersIds(userId)
         : [];
 
-    const limit = dto.take ?? 15;
+    const limit = dto.take ?? PAGE_SIZE.default;
+    const createdAtFilter = {
+      gte: getTimeWindowStart(resolveTimeWindow(dto.timeWindow)),
+    };
 
     const selectLikes =
-      dto.userId !== undefined
+      userId !== undefined
         ? {
             where: {
-              userId: +dto.userId,
+              userId,
             },
           }
         : false;
 
-    let postCursor: { id: number } | undefined;
-    if (dto.cursor !== undefined) {
-      postCursor = {
-        id: +dto.cursor,
-      };
+    const posts: any[] = [];
+    const batchSize = PAGE_SIZE.max * 2;
+    let hasMoreCandidates = true;
+
+    while (posts.length <= limit && hasMoreCandidates) {
+      const cursorFilter =
+        pageCursor === null || pageCursor === undefined
+          ? undefined
+          : this.buildNearbyPostCursorFilter(pageCursor);
+
+      const candidates = await this.prismaService.post
+        .findMany({
+          take: batchSize,
+          where: {
+            latitude: {
+              lte: boundingBox.maxLatitude,
+              gte: boundingBox.minLatitude,
+            },
+            longitude: {
+              lte: boundingBox.maxLongitude,
+              gte: boundingBox.minLongitude,
+            },
+            isActive: true,
+            createdAt: createdAtFilter,
+            authorId: {
+              notIn: blockedIds,
+            },
+            ...(cursorFilter !== undefined
+              ? {
+                  AND: [cursorFilter],
+                }
+              : {}),
+          },
+          select: {
+            id: true,
+            isActive: true,
+            isEdited: true,
+            title: true,
+            content: true,
+            latitude: true,
+            longitude: true,
+            locationName: true,
+            fullLocationName: true,
+            images: true,
+            points: true,
+            createdAt: true,
+            updatedAt: true,
+            authorId: true,
+            likes: selectLikes,
+            author: {
+              select: USER_WITHOUT_PASSWORD_SELECT,
+            },
+            commentsCount: true,
+            poll: {
+              select: {
+                options: {
+                  orderBy: {
+                    order: 'asc',
+                  },
+                },
+                pollVotes: selectLikes,
+                id: true,
+                createdAt: true,
+                updatedAt: true,
+                postId: true,
+                votingLength: true,
+                participantsCount: true,
+              },
+            },
+            location: true,
+          },
+          orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+        })
+        .catch((e) => {
+          this.logger.error(
+            'Failed to find posts',
+            e instanceof Error ? e.stack : undefined,
+            PostsService.name,
+          );
+
+          throw new BadRequestException('Failed to find posts');
+        });
+
+      hasMoreCandidates = candidates.length === batchSize;
+      pageCursor =
+        candidates.length > 0
+          ? {
+              createdAt: candidates[candidates.length - 1].createdAt,
+              id: candidates[candidates.length - 1].id,
+            }
+          : undefined;
+
+      posts.push(
+        ...candidates.filter((post) =>
+          isWithinDistanceMeters(
+            center,
+            {
+              latitude: post.latitude,
+              longitude: post.longitude,
+            },
+            dto.distance,
+          ),
+        ),
+      );
+
+      if (candidates.length === 0) {
+        hasMoreCandidates = false;
+      }
     }
 
-    // in order to skip the cursor
-    const skip = postCursor !== undefined ? 1 : undefined;
-
-    const posts = await this.prismaService.post
-      .findMany({
-        take: limit + 1,
-        skip,
-        cursor: postCursor,
-        where: {
-          latitude: {
-            lte: dto.latitude + degreesPerDistance,
-            gte: dto.latitude - degreesPerDistance,
-          },
-          longitude: {
-            lte: dto.longitude + degreesPerDistance,
-            gte: dto.longitude - degreesPerDistance,
-          },
-          isActive: true,
-          authorId: {
-            notIn: blockedIds,
-          },
-        },
-        select: {
-          id: true,
-          isActive: true,
-          isEdited: true,
-          title: true,
-          content: true,
-          latitude: true,
-          longitude: true,
-          locationName: true,
-          fullLocationName: true,
-          images: true,
-          points: true,
-          createdAt: true,
-          updatedAt: true,
-          authorId: true,
-          likes: selectLikes,
-          author: true,
-          commentsCount: true,
-          poll: {
-            select: {
-              options: {
-                orderBy: {
-                  order: 'asc',
-                },
-              },
-              pollVotes: selectLikes,
-              id: true,
-              createdAt: true,
-              updatedAt: true,
-              postId: true,
-              votingLength: true,
-              participantsCount: true,
-            },
-          },
-          location: true,
-        },
-        orderBy: {
-          createdAt: 'desc',
-        },
-      })
-      .catch((e) => {
-        this.logger.error(
-          'Failed to find posts',
-          e instanceof Error ? e.stack : undefined,
-          PostsService.name,
-        );
-
-        throw new BadRequestException('Failed to find posts');
-      });
-
-    const hasMore = posts.length === limit + 1;
+    const hasMore = posts.length > limit;
     if (hasMore) {
-      posts.pop();
+      posts.length = limit;
     }
 
     // transform the likes array into single like variable -> this is to indicate whether the current user likes the post or not
@@ -249,15 +314,57 @@ export class PostsService {
     };
   }
 
+  private buildNearbyPostCursorFilter(cursor: NearbyPostCursor): {
+    OR: Array<
+      | { createdAt: { lt: Date } }
+      | { createdAt: Date; id: { lt: number } }
+    >;
+  } {
+    return {
+      OR: [
+        {
+          createdAt: {
+            lt: cursor.createdAt,
+          },
+        },
+        {
+          createdAt: cursor.createdAt,
+          id: {
+            lt: cursor.id,
+          },
+        },
+      ],
+    };
+  }
+
+  private async findNearbyPostCursor(
+    cursor?: string,
+  ): Promise<NearbyPostCursor | null | undefined> {
+    if (cursor === undefined) return undefined;
+
+    const cursorId = parseRouteId(cursor, 'cursor');
+
+    return await this.prismaService.post.findUnique({
+      select: {
+        createdAt: true,
+        id: true,
+      },
+      where: {
+        id: cursorId,
+      },
+    });
+  }
+
   async findPost(
     postId: number,
     userId?: string,
   ): Promise<PostWithLike | null> {
+    const parsedUserId = parseOptionalRouteId(userId, 'userId');
     const selectLikes =
-      userId !== undefined
+      parsedUserId !== undefined
         ? {
             where: {
-              userId: +userId,
+              userId: parsedUserId,
             },
           }
         : false;
@@ -265,7 +372,7 @@ export class PostsService {
     const post = await this.prismaService.post
       .findFirst({
         where: {
-          id: +postId,
+          id: postId,
           isActive: true,
         },
         select: {
@@ -284,7 +391,9 @@ export class PostsService {
           updatedAt: true,
           authorId: true,
           likes: selectLikes,
-          author: true,
+          author: {
+            select: USER_WITHOUT_PASSWORD_SELECT,
+          },
           commentsCount: true,
           location: true,
           poll: {

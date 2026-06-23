@@ -3,16 +3,16 @@ import {
   type ValidationArguments,
   type ValidatorConstraintInterface,
 } from 'class-validator';
+import { isAllowedDistanceMeters } from '@nearbyfeed/shared';
 
 @ValidatorConstraint({ name: 'distanceRange', async: false })
 export class ValidDistanceRangeValue implements ValidatorConstraintInterface {
   validate(distance: string | number, args: ValidationArguments): boolean {
     const numericDistance =
-      typeof distance === 'number' ? distance : parseInt(distance, 10);
+      typeof distance === 'number' ? distance : Number(distance);
     return (
-      numericDistance === 200 ||
-      numericDistance === 500 ||
-      numericDistance === 1000
+      Number.isInteger(numericDistance) &&
+      isAllowedDistanceMeters(numericDistance)
     );
   }
 

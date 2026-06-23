@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer';
 import {
   IsBoolean,
   IsNotEmpty,
@@ -16,6 +17,7 @@ export class UpdateUserDto {
   username: string;
 
   @IsOptional()
+  @Transform(({ value }) => value === true || value === 'true')
   @IsBoolean()
   shouldSetImageNull: boolean;
 }

@@ -1,11 +1,14 @@
+import { Type } from 'class-transformer';
 import {
+  IsInt,
+  IsIn,
   IsLatitude,
   IsLongitude,
-  IsNumberString,
   IsOptional,
   IsString,
   Validate,
 } from 'class-validator';
+import { TIME_WINDOW_VALUES, type TimeWindow } from '@nearbyfeed/shared';
 import {
   ValidDistanceRangeValue,
   ValidNumberRangeValue,
@@ -13,12 +16,15 @@ import {
 
 export class GetPostsDto {
   @IsLatitude()
+  @Type(() => Number)
   latitude: number;
 
   @IsLongitude()
+  @Type(() => Number)
   longitude: number;
 
-  @IsNumberString()
+  @Type(() => Number)
+  @IsInt()
   @Validate(ValidDistanceRangeValue)
   distance: number;
 
@@ -27,9 +33,14 @@ export class GetPostsDto {
   cursor?: string;
 
   @IsOptional()
-  @IsNumberString()
+  @Type(() => Number)
+  @IsInt()
   @Validate(ValidNumberRangeValue, [15, 25])
   take?: number;
+
+  @IsOptional()
+  @IsIn(TIME_WINDOW_VALUES)
+  timeWindow?: TimeWindow;
 
   userId?: string;
 }

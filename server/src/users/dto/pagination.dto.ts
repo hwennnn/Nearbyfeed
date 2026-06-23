@@ -1,5 +1,6 @@
+import { Type } from 'class-transformer';
 import {
-  IsNumberString,
+  IsInt,
   IsOptional,
   IsString,
   Validate,
@@ -12,7 +13,8 @@ export class PaginationDto {
   cursor?: string;
 
   @IsOptional()
-  @IsNumberString()
+  @Type(() => Number)
+  @IsInt()
   @Validate(ValidNumberRangeValue, [15, 25])
   take?: number;
 }

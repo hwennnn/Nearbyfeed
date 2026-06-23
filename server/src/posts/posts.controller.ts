@@ -13,6 +13,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
+import { resolveTimeWindow } from '@nearbyfeed/shared';
 import {
   type Comment as CommentEntity,
   type CommentLike,
@@ -30,6 +31,8 @@ import {
   PostActiveGuard,
   PostMutateGuard,
 } from 'src/posts/guards';
+import { CreatePostBodyPipe } from 'src/posts/pipes/create-post-body.pipe';
+import { parseRouteId } from 'src/utils/parse-route-id.util';
 import { CommentsService } from './comments.service';
 import {
   CreateCommentDto,
@@ -63,17 +66,22 @@ export class PostsController {
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FilesInterceptor('images', 5, imageUploadOptions)) // Allow up to 5 images
   async createPost(
-    @Body() createPostDto: CreatePostDto,
+    @Body(new CreatePostBodyPipe()) body: unknown,
     @GetUser('userId') userId: string,
     @UploadedFiles() files: Express.Multer.File[],
   ): Promise<PostEntity> {
+    const createPostDto = body as CreatePostDto;
     let images: string[] | undefined;
 
     if (files !== undefined) {
       images = await this.imagesService.uploadImages(files);
     }
 
-    return await this.postsService.createPost(createPostDto, +userId, images);
+    return await this.postsService.createPost(
+      createPostDto,
+      parseRouteId(userId, 'userId'),
+      images,
+    );
   }
 
   @Get()
@@ -89,6 +97,7 @@ export class PostsController {
       userId: user?.userId,
       cursor: getPostsDto.cursor,
       take: getPostsDto.take !== undefined ? +getPostsDto.take : undefined,
+      timeWindow: resolveTimeWindow(getPostsDto.timeWindow),
     };
 
     return await this.postsService.findNearbyPosts(parsedDto);
@@ -100,7 +109,10 @@ export class PostsController {
     @Param('postId') postId: string,
     @GetUser() user: TokenUser | null,
   ): Promise<PostWithLike | null> {
-    return await this.postsService.findPost(+postId, user?.userId);
+    return await this.postsService.findPost(
+      parseRouteId(postId, 'postId'),
+      user?.userId,
+    );
   }
 
   @Patch(':postId')
@@ -109,7 +121,10 @@ export class PostsController {
     @Param('postId') postId: string,
     @Body() updatePostDto: UpdatePostDto,
   ): Promise<PostEntity> {
-    return await this.postsService.updatePost(+postId, updatePostDto);
+    return await this.postsService.updatePost(
+      parseRouteId(postId, 'postId'),
+      updatePostDto,
+    );
   }
 
   @Put(':postId/vote')
@@ -122,13 +137,17 @@ export class PostsController {
     like: PostLike;
     post: PostEntity;
   }> {
-    return await this.postsService.votePost(+userId, +postId, likeDto.value);
+    return await this.postsService.votePost(
+      parseRouteId(userId, 'userId'),
+      parseRouteId(postId, 'postId'),
+      likeDto.value,
+    );
   }
 
   @Delete(':postId')
   @UseGuards(JwtAuthGuard, PostMutateGuard)
   async deletePost(@Param('postId') postId: string): Promise<void> {
-    await this.postsService.deletePost(+postId);
+    await this.postsService.deletePost(parseRouteId(postId, 'postId'));
   }
 
   @Post(':postId/comments/:parentCommentId?')
@@ -141,9 +160,11 @@ export class PostsController {
   ): Promise<CommentEntity> {
     return await this.commentsService.createComment(
       createCommentDto,
-      +postId,
-      +userId,
-      parentCommentId !== undefined ? +parentCommentId : undefined,
+      parseRouteId(postId, 'postId'),
+      parseRouteId(userId, 'userId'),
+      parentCommentId !== undefined
+        ? parseRouteId(parentCommentId, 'parentCommentId')
+        : undefined,
     );
   }
 
@@ -159,8 +180,8 @@ export class PostsController {
     @GetUser() user: TokenUser | null,
   ): Promise<CommentWithLike | null> {
     return await this.commentsService.findComment(
-      +postId,
-      +commentId,
+      parseRouteId(postId, 'postId'),
+      parseRouteId(commentId, 'commentId'),
       user?.userId,
     );
   }
@@ -179,7 +200,10 @@ export class PostsController {
       userId: user?.userId,
     };
 
-    return await this.commentsService.findComments(+postId, parsedDto);
+    return await this.commentsService.findComments(
+      parseRouteId(postId, 'postId'),
+      parsedDto,
+    );
   }
 
   @Get(':postId/comments/:commentId/replies')
@@ -204,8 +228,8 @@ export class PostsController {
     };
 
     return await this.commentsService.findChildComments(
-      +postId,
-      +commentId,
+      parseRouteId(postId, 'postId'),
+      parseRouteId(commentId, 'commentId'),
       parsedDto,
     );
   }
@@ -216,7 +240,10 @@ export class PostsController {
     @Param('postId') postId: string,
     @Param('commentId') commentId: string,
   ): Promise<PostEntity> {
-    return await this.commentsService.deleteComment(+postId, +commentId);
+    return await this.commentsService.deleteComment(
+      parseRouteId(postId, 'postId'),
+      parseRouteId(commentId, 'commentId'),
+    );
   }
 
   @Put(':postId/comments/:commentId/vote')
@@ -231,9 +258,9 @@ export class PostsController {
     comment: CommentEntity;
   }> {
     return await this.commentsService.voteComment(
-      +userId,
-      +postId,
-      +commentId,
+      parseRouteId(userId, 'userId'),
+      parseRouteId(postId, 'postId'),
+      parseRouteId(commentId, 'commentId'),
       likeDto.value,
     );
   }
@@ -245,7 +272,11 @@ export class PostsController {
     @Param('pollId') pollId: string,
     @GetUser() user: TokenUser | null,
   ): Promise<PollWithOptions | null> {
-    return await this.pollService.findPoll(+postId, +pollId, user?.userId);
+    return await this.pollService.findPoll(
+      parseRouteId(postId, 'postId'),
+      parseRouteId(pollId, 'pollId'),
+      user?.userId,
+    );
   }
 
   @Post(':postId/polls/:pollId/vote')
@@ -258,9 +289,9 @@ export class PostsController {
   ): Promise<VotePollResult> {
     return await this.pollService.votePoll(
       votePollDto,
-      +postId,
-      +pollId,
-      +userId,
+      parseRouteId(postId, 'postId'),
+      parseRouteId(pollId, 'pollId'),
+      parseRouteId(userId, 'userId'),
     );
   }
 }

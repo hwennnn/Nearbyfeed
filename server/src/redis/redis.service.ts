@@ -1,33 +1,44 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Redis from 'ioredis';
 
 @Injectable()
 export class RedisService {
   private readonly client: Redis;
+  private lastConnectionErrorLogAt = 0;
 
   constructor(
     private readonly configService: ConfigService,
     private readonly logger: Logger,
   ) {
+    const configuredPassword =
+      this.configService.get<string>('REDIS_PASSWORD') ??
+      this.configService.get<string>('REDIS_PASSOWRD');
+    const password =
+      configuredPassword !== undefined && configuredPassword.trim().length > 0
+        ? configuredPassword
+        : undefined;
+    const configuredPort = Number(this.configService.get<string>('REDIS_PORT'));
+
     this.client = new Redis({
       host: this.configService.get<string>('REDIS_HOST'),
-      port: this.configService.get<number>('REDIS_PORT'),
-      password: this.configService.get<string>('REDIS_PASSWORD'),
+      port: Number.isFinite(configuredPort) ? configuredPort : 6379,
+      password,
+      retryStrategy: (times) => Math.min(times * 100, 2000),
     });
 
     this.client.on('error', (e) => {
+      const now = Date.now();
+      if (now - this.lastConnectionErrorLogAt < 30000) {
+        return;
+      }
+      this.lastConnectionErrorLogAt = now;
+
       this.logger.error(
         'Failed to initialise redis',
         e instanceof Error ? e.stack : undefined,
         RedisService.name,
       );
-
-      throw new InternalServerErrorException();
     });
   }
 

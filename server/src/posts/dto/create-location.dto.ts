@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import { IsLatitude, IsLongitude, IsString } from 'class-validator';
 
 export class CreateLocationDto {
@@ -8,8 +9,10 @@ export class CreateLocationDto {
   formattedAddress: string;
 
   @IsLatitude()
+  @Type(() => Number)
   latitude: number;
 
   @IsLongitude()
+  @Type(() => Number)
   longitude: number;
 }

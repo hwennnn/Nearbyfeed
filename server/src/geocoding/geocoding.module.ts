@@ -1,10 +1,12 @@
 import { Logger, Module } from '@nestjs/common';
 import { ApiModule } from 'src/api/api.module';
 import { NOMINATIM_OPENSTREETMAP_ENDPOINT } from 'src/geocoding/config';
+import { GeocodingController } from './geocoding.controller';
 import { GeocodingService } from './geocoding.service';
 
 @Module({
   imports: [ApiModule.forRoot(NOMINATIM_OPENSTREETMAP_ENDPOINT)],
+  controllers: [GeocodingController],
   providers: [GeocodingService, Logger],
   exports: [GeocodingService],
 })

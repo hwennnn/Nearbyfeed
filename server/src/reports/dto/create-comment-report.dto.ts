@@ -1,8 +1,10 @@
 import { IsEnum, IsString } from 'class-validator';
-import { ReportReason } from 'src/reports/entities';
+import { ReportReason } from '@nearbyfeed/shared';
+import { IsReportId } from './report-id.decorator';
 
 export class CreateCommentReportDto {
   @IsString()
+  @IsReportId()
   commentId: string;
 
   @IsEnum(ReportReason, {

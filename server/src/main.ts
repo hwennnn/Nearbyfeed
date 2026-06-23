@@ -3,6 +3,8 @@ import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import helmet from 'helmet';
 
 import { PasswordSanitizerInterceptor } from 'src/common/interceptors';
+import { getCorsOptions, getPort } from 'src/config/env';
+import { ObservabilityService } from 'src/observability/observability.service';
 import { AllExceptionsFilter } from 'src/utils';
 import { AppModule } from './app.module';
 
@@ -11,18 +13,26 @@ async function bootstrap(): Promise<void> {
 
   app.use(helmet());
   app.useGlobalPipes(
-    new ValidationPipe({ whitelist: true, forbidUnknownValues: false }),
+    new ValidationPipe({
+      whitelist: true,
+      forbidUnknownValues: false,
+      transform: true,
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
+    }),
   );
   app.useGlobalInterceptors(new PasswordSanitizerInterceptor());
 
   const { httpAdapter } = app.get(HttpAdapterHost);
+  const observabilityService = app.get(ObservabilityService);
 
-  app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
-  app.enableCors();
+  app.useGlobalFilters(new AllExceptionsFilter(httpAdapter, observabilityService));
+  app.enableCors(getCorsOptions());
 
   app.enableShutdownHooks();
 
-  await app.listen(3000);
+  await app.listen(getPort());
 }
 
 bootstrap()

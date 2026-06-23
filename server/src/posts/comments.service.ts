@@ -1,14 +1,25 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-import { type Comment, type CommentLike, type Post } from '@prisma/client';
-import { FilterService } from 'src/filter/filter.service';
 import {
-  GetCommentsSort,
-  type CreateCommentDto,
-  type GetCommentDto,
-} from 'src/posts/dto';
+  COMMENT_SORT,
+  DEFAULT_COMMENT_SORT,
+  type CommentSort,
+} from '@nearbyfeed/shared';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import {
+  type Comment,
+  type CommentLike,
+  type Post,
+  type Prisma,
+} from '@prisma/client';
+import { FilterService } from 'src/filter/filter.service';
+import { type CreateCommentDto, type GetCommentDto } from 'src/posts/dto';
 import { type CommentWithLike } from 'src/posts/entities';
 
 import { PrismaService } from 'src/prisma/prisma.service';
+import { USER_WITHOUT_PASSWORD_SELECT } from 'src/users/entities';
+import {
+  parseOptionalRouteId,
+  parseRouteId,
+} from 'src/utils/parse-route-id.util';
 
 @Injectable()
 export class CommentsService {
@@ -26,9 +37,12 @@ export class CommentsService {
   ): Promise<CommentWithLike> {
     if (parentCommentId !== undefined) {
       const parentComment = await this.prismaService.comment
-        .findUnique({
+        .findFirst({
           where: {
             id: parentCommentId,
+            postId,
+            isActive: true,
+            parentCommentId: null,
           },
         })
         .catch((e) => {
@@ -40,14 +54,14 @@ export class CommentsService {
           throw new BadRequestException('Failed to find parent comment');
         });
 
-      if (parentComment?.parentCommentId !== null) {
+      if (parentComment === null) {
         this.logger.error(
-          'Only one level of comments is allowed',
+          'Parent comment not found',
           undefined,
           CommentsService.name,
         );
 
-        throw new BadRequestException('Only one level of comments is allowed');
+        throw new BadRequestException('Parent comment not found');
       }
     }
 
@@ -63,7 +77,9 @@ export class CommentsService {
       this.prismaService.comment.create({
         data,
         include: {
-          author: true,
+          author: {
+            select: USER_WITHOUT_PASSWORD_SELECT,
+          },
         },
       }),
       this.prismaService.post.update({
@@ -106,11 +122,12 @@ export class CommentsService {
     commentId: number,
     userId?: string,
   ): Promise<CommentWithLike | null> {
+    const parsedUserId = parseOptionalRouteId(userId, 'userId');
     const selectLikes =
-      userId !== undefined
+      parsedUserId !== undefined
         ? {
             where: {
-              userId: +userId,
+              userId: parsedUserId,
             },
           }
         : false;
@@ -119,6 +136,8 @@ export class CommentsService {
       .findFirst({
         where: {
           id: commentId,
+          postId,
+          isActive: true,
         },
         select: {
           id: true,
@@ -128,7 +147,9 @@ export class CommentsService {
           postId: true,
           points: true,
           authorId: true,
-          author: true,
+          author: {
+            select: USER_WITHOUT_PASSWORD_SELECT,
+          },
           isActive: true,
           parentCommentId: true,
           repliesCount: true,
@@ -173,40 +194,43 @@ export class CommentsService {
     let cursor: { id: number } | undefined;
     if (dto.cursor !== undefined) {
       cursor = {
-        id: +dto.cursor,
+        id: parseRouteId(dto.cursor, 'cursor'),
       };
     }
 
-    // default sort is latest if not specified
-    let orderBy: any = {
-      createdAt: 'desc',
-    };
+    const sort: CommentSort = dto.sort ?? DEFAULT_COMMENT_SORT;
 
-    if (dto.sort === GetCommentsSort.OLDEST) {
+    let orderBy:
+      | Prisma.CommentOrderByWithRelationInput
+      | Prisma.CommentOrderByWithRelationInput[] =
+      sort === COMMENT_SORT.TOP
+        ? [
+            {
+              points: 'desc',
+            },
+            {
+              createdAt: 'desc',
+            },
+          ]
+        : {
+            createdAt: 'desc',
+          };
+
+    if (sort === COMMENT_SORT.OLDEST) {
       orderBy = {
         createdAt: 'asc',
       };
     }
 
-    if (dto.sort === GetCommentsSort.TOP) {
-      orderBy = [
-        {
-          points: 'desc',
-        },
-        {
-          createdAt: 'desc',
-        },
-      ];
-    }
-
     // in order to skip the cursor
     const skip = cursor !== undefined ? 1 : undefined;
 
+    const userId = parseOptionalRouteId(dto.userId, 'userId');
     const selectLikes =
-      dto.userId !== undefined
+      userId !== undefined
         ? {
             where: {
-              userId: +dto.userId,
+              userId,
             },
           }
         : false;
@@ -230,12 +254,17 @@ export class CommentsService {
           postId: true,
           points: true,
           authorId: true,
-          author: true,
+          author: {
+            select: USER_WITHOUT_PASSWORD_SELECT,
+          },
           isActive: true,
           parentCommentId: true,
           repliesCount: true,
           likes: selectLikes,
           replies: {
+            where: {
+              isActive: true,
+            },
             orderBy: [
               {
                 points: 'desc',
@@ -253,7 +282,9 @@ export class CommentsService {
               postId: true,
               points: true,
               authorId: true,
-              author: true,
+              author: {
+                select: USER_WITHOUT_PASSWORD_SELECT,
+              },
               isActive: true,
               parentCommentId: true,
               repliesCount: true,
@@ -289,17 +320,26 @@ export class CommentsService {
 
       const { likes: _, ...parsedComment } = p;
 
-      parsedComment.replies = parsedComment.replies.map((reply) => {
-        return {
-          ...reply,
-          like:
-            reply.likes !== undefined && reply.likes.length > 0
-              ? reply.likes[0]
-              : undefined,
-        };
-      });
+      const replies = parsedComment.replies
+        .filter((reply) => reply.isActive)
+        .map((reply) => {
+          const parsedReply = {
+            ...reply,
+            like:
+              reply.likes !== undefined && reply.likes.length > 0
+                ? reply.likes[0]
+                : undefined,
+          };
 
-      return parsedComment;
+          const { likes: _replyLikes, ...replyResult } = parsedReply;
+
+          return replyResult;
+        });
+
+      return {
+        ...parsedComment,
+        replies,
+      };
     });
 
     return {
@@ -321,7 +361,7 @@ export class CommentsService {
     let cursor: { id: number } | undefined;
     if (dto.cursor !== undefined) {
       cursor = {
-        id: +dto.cursor,
+        id: parseRouteId(dto.cursor, 'cursor'),
       };
     }
 
@@ -337,11 +377,12 @@ export class CommentsService {
     // in order to skip the cursor
     const skip = cursor !== undefined ? 1 : undefined;
 
+    const userId = parseOptionalRouteId(dto.userId, 'userId');
     const selectLikes =
-      dto.userId !== undefined
+      userId !== undefined
         ? {
             where: {
-              userId: +dto.userId,
+              userId,
             },
           }
         : false;
@@ -349,6 +390,7 @@ export class CommentsService {
     const comments = await this.prismaService.comment
       .findMany({
         where: {
+          postId,
           isActive: true,
           parentCommentId: commentId,
         },
@@ -364,7 +406,9 @@ export class CommentsService {
           postId: true,
           points: true,
           authorId: true,
-          author: true,
+          author: {
+            select: USER_WITHOUT_PASSWORD_SELECT,
+          },
           isActive: true,
           parentCommentId: true,
           repliesCount: true,

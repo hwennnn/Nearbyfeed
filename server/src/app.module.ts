@@ -3,11 +3,13 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from 'src/auth/auth.module';
 
 import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
+import { getEnvFilePaths } from 'src/config/env';
 import { FilterModule } from 'src/filter/filter.module';
 import { GeocodingModule } from 'src/geocoding/geocoding.module';
-import { ImagesController } from 'src/images/images.controller';
 import { ImagesModule } from 'src/images/images.module';
+import { LiveModule } from 'src/live/live.module';
 import { MailModule } from 'src/mail/mail.module';
+import { ObservabilityModule } from 'src/observability/observability.module';
 import { PostsModule } from 'src/posts/posts.module';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { RedisModule } from 'src/redis/redis.module';
@@ -20,6 +22,7 @@ import { UsersModule } from 'src/users/users.module';
     UsersModule,
     AuthModule,
     ConfigModule.forRoot({
+      envFilePath: getEnvFilePaths(),
       isGlobal: true,
     }),
     RedisModule,
@@ -27,10 +30,11 @@ import { UsersModule } from 'src/users/users.module';
     PostsModule,
     CloudinaryModule,
     ImagesModule,
+    LiveModule,
     FilterModule,
     GeocodingModule,
     ReportsModule,
+    ObservabilityModule,
   ],
-  controllers: [ImagesController],
 })
 export class AppModule {}

@@ -18,8 +18,10 @@ import {
   type PendingUserWithoutPassword,
   type UserResult,
   type UserWithoutPassword,
+  USER_WITHOUT_PASSWORD_SELECT,
 } from 'src/users/entities';
 import { dayInMs, exclude, hashData } from 'src/utils';
+import { parseRouteId } from 'src/utils/parse-route-id.util';
 
 @Injectable()
 export class UsersService {
@@ -300,6 +302,30 @@ export class UsersService {
     return user !== null ? user : null;
   }
 
+  async findActiveStateById(
+    id: number,
+  ): Promise<{ id: number; isDeleted: boolean } | null> {
+    return await this.prismaService.user
+      .findUnique({
+        where: {
+          id,
+        },
+        select: {
+          id: true,
+          isDeleted: true,
+        },
+      })
+      .catch((e) => {
+        this.logger.error(
+          `Failed to find user active state with id ${id}`,
+          e instanceof Error ? e.stack : undefined,
+          UsersService.name,
+        );
+
+        throw new BadRequestException('Failed to find user active state');
+      });
+  }
+
   async isUserExistByEmail(email: string): Promise<boolean> {
     return (
       (await this.prismaService.user.findUnique({
@@ -404,7 +430,7 @@ export class UsersService {
     let postCursor: { id: number } | undefined;
     if (dto.cursor !== undefined) {
       postCursor = {
-        id: +dto.cursor,
+        id: parseRouteId(dto.cursor, 'cursor'),
       };
     }
 
@@ -436,7 +462,9 @@ export class UsersService {
           updatedAt: true,
           authorId: true,
           likes: selectLikes,
-          author: true,
+          author: {
+            select: USER_WITHOUT_PASSWORD_SELECT,
+          },
           commentsCount: true,
           location: true,
           poll: {
@@ -524,7 +552,7 @@ export class UsersService {
     let cursor: { id: number } | undefined;
     if (dto.cursor !== undefined) {
       cursor = {
-        id: +dto.cursor,
+        id: parseRouteId(dto.cursor, 'cursor'),
       };
     }
 

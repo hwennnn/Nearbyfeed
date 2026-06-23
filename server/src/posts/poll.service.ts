@@ -5,6 +5,7 @@ import { type PollWithOptions, type VotePollResult } from 'src/posts/entities';
 
 import { PrismaService } from 'src/prisma/prisma.service';
 import { isPollExpired } from 'src/utils';
+import { parseOptionalRouteId } from 'src/utils/parse-route-id.util';
 
 @Injectable()
 export class PollService {
@@ -19,11 +20,12 @@ export class PollService {
     pollId: number,
     userId?: string,
   ): Promise<PollWithOptions | null> {
+    const parsedUserId = parseOptionalRouteId(userId, 'userId');
     const selectVotes =
-      userId !== undefined
+      parsedUserId !== undefined
         ? {
             where: {
-              userId: +userId,
+              userId: parsedUserId,
             },
           }
         : false;
@@ -85,6 +87,7 @@ export class PollService {
       .findFirst({
         where: {
           id: pollId,
+          postId,
         },
       })
       .catch((e) => {
@@ -102,6 +105,58 @@ export class PollService {
       isPollExpired(poll.createdAt.getTime(), poll.votingLength)
     ) {
       throw new BadRequestException('Failed to vote the poll');
+    }
+
+    const pollOption = await this.prismaService.pollOption
+      .findFirst({
+        where: {
+          id: pollOptionId,
+          pollId,
+        },
+      })
+      .catch((e) => {
+        this.logger.error(
+          'Failed to vote the poll',
+          e instanceof Error ? e.stack : undefined,
+          PollService.name,
+        );
+
+        throw new BadRequestException('Failed to vote the poll');
+      });
+
+    if (pollOption === null) {
+      throw new BadRequestException('Failed to vote the poll');
+    }
+
+    const existingVote = await this.prismaService.pollVote
+      .findUnique({
+        where: {
+          pollId_userId: {
+            pollId,
+            userId,
+          },
+        },
+      })
+      .catch((e) => {
+        this.logger.error(
+          'Failed to vote the poll',
+          e instanceof Error ? e.stack : undefined,
+          PollService.name,
+        );
+
+        throw new BadRequestException('Failed to vote the poll');
+      });
+
+    if (existingVote !== null) {
+      if (existingVote.pollOptionId === pollOptionId) {
+        return {
+          vote: existingVote,
+          poll,
+          pollOption,
+        };
+      }
+
+      throw new BadRequestException('Poll already voted');
     }
 
     const [resultVote, resultPoll, resultPollOption] = await this.prismaService
@@ -132,7 +187,6 @@ export class PollService {
           },
           where: {
             id: pollOptionId,
-            pollId,
           },
         }),
       ])
