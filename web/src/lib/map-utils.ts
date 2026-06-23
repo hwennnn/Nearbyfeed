@@ -1,3 +1,4 @@
+import { getBoundingBox } from '@nearbyfeed/shared';
 import { type Coordinates } from '../types';
 
 type RadiusFieldFeature =
@@ -78,4 +79,64 @@ export const getNearbyRadiusZoom = (
   );
 
   return Math.max(11, Math.min(16, zoom));
+};
+
+export type NearbyMapPoint = Coordinates;
+
+export type NearbyMapBounds = [[number, number], [number, number]];
+
+export type NearbyMapFitPadding = {
+  bottom: number;
+  left: number;
+  right: number;
+  top: number;
+};
+
+export const getNearbyMapBounds = ({
+  center,
+  points = [],
+  radiusMeters,
+}: {
+  center: Coordinates;
+  points?: NearbyMapPoint[];
+  radiusMeters: number;
+}): NearbyMapBounds => {
+  const radiusBounds = getBoundingBox(center, radiusMeters);
+  const bounds = points.reduce(
+    (current, point) => ({
+      maxLatitude: Math.max(current.maxLatitude, point.latitude),
+      maxLongitude: Math.max(current.maxLongitude, point.longitude),
+      minLatitude: Math.min(current.minLatitude, point.latitude),
+      minLongitude: Math.min(current.minLongitude, point.longitude),
+    }),
+    radiusBounds,
+  );
+
+  return [
+    [bounds.minLongitude, bounds.minLatitude],
+    [bounds.maxLongitude, bounds.maxLatitude],
+  ];
+};
+
+export const getNearbyMapFitPadding = ({
+  width,
+}: {
+  height: number;
+  width: number;
+}): NearbyMapFitPadding => {
+  if (width <= 720) {
+    return {
+      bottom: 340,
+      left: 42,
+      right: 42,
+      top: 118,
+    };
+  }
+
+  return {
+    bottom: 110,
+    left: 72,
+    right: 440,
+    top: 134,
+  };
 };

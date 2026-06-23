@@ -15,7 +15,7 @@ export const FeedSignalTicker = ({
   if (tickerPosts.length === 0) return null;
 
   return (
-    <div className="feed-signal-ticker" aria-label="Nearby pulse">
+    <div className="feed-signal-ticker" aria-label="Nearby posts">
       <div className="ticker-label">
         <Activity />
         <span>live nearby</span>

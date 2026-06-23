@@ -42,10 +42,12 @@ describe('FeedSceneBoard', () => {
       />,
     );
 
-    expect(screen.getByRole('heading', { name: 'The block is online' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'People are posting nearby' }),
+    ).toBeInTheDocument();
     expect(screen.getByText('People are posting about the night market')).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: 'Open hottest drop' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Open top post' }));
     fireEvent.click(screen.getByRole('button', { name: 'Open map' }));
 
     expect(onOpenPost).toHaveBeenCalledWith(44);
@@ -67,7 +69,7 @@ describe('FeedSceneBoard', () => {
     );
 
     expect(screen.getByText('Preview')).toBeInTheDocument();
-    expect(screen.getByText('local pulse')).toBeInTheDocument();
+    expect(screen.getByText('demo posts')).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Check live' }));
 
@@ -84,8 +86,8 @@ describe('FeedSceneBoard', () => {
       />,
     );
 
-    expect(screen.getByRole('heading', { name: 'No nearby signal yet' })).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Start the pulse' })).not.toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Nothing nearby yet' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Post first' })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Open map' })).toBeEnabled();
   });
 });

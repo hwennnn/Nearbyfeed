@@ -23,7 +23,7 @@ export const FeedSceneStats = ({
     value: string;
   }>;
 }) => (
-  <div className="scene-board-stats" aria-label="Nearby scene stats">
+  <div className="scene-board-stats" aria-label="Nearby activity stats">
     {stats.map((stat) => {
       const Icon = STAT_ICONS[stat.tone];
 

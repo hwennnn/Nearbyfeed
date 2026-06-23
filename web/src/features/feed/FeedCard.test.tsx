@@ -124,4 +124,24 @@ describe('FeedCard', () => {
       'Tiny ramen line outside the car wash\nhttps://app.nearbyfeed.com/?post=88',
     );
   });
+
+  it('renders post locations as maps links', () => {
+    renderFeedCard(
+      makePost({
+        location: {
+          formattedAddress: '5100 N Francisco Ave, Chicago, IL',
+          latitude: 41.9742,
+          longitude: -87.7019,
+          name: 'River Park',
+        },
+      }),
+    );
+
+    expect(
+      screen.getByRole('link', { name: 'Open River Park in maps' }),
+    ).toHaveAttribute(
+      'href',
+      'https://www.google.com/maps/search/?api=1&query=41.9742%2C-87.7019',
+    );
+  });
 });

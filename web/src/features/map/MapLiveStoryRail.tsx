@@ -1,27 +1,36 @@
 import { MessageCircle, RadioTower, SatelliteDish } from 'lucide-react';
 import { type LiveUpdate, type Post } from '../../types';
 import { getMapLiveStory } from './map-presentation';
+import { type MapLiveStory } from './map-types';
 
-const metricIcons = {
+type MetricLabel = MapLiveStory['metrics'][number]['label'];
+
+const metricIcons: Record<MetricLabel, typeof RadioTower> = {
+  'X live': SatelliteDish,
   drops: RadioTower,
-  outside: SatelliteDish,
   replies: MessageCircle,
-} as const;
+};
 
-const metricLabels = {
+const metricLabels: Record<
+  MetricLabel,
+  {
+    plural: string;
+    singular: string;
+  }
+> = {
+  'X live': {
+    plural: 'X live',
+    singular: 'X live',
+  },
   drops: {
     plural: 'drops',
     singular: 'drop',
-  },
-  outside: {
-    plural: 'outside',
-    singular: 'outside',
   },
   replies: {
     plural: 'replies',
     singular: 'reply',
   },
-} as const;
+};
 
 export const MapLiveStoryRail = ({
   liveUpdates,

@@ -244,11 +244,11 @@ describe('feed presentation helpers', () => {
     );
 
     expect(scene.status).toBe('surging');
-    expect(scene.headline).toBe('The block is online');
+    expect(scene.headline).toBe('People are posting nearby');
     expect(scene.primaryPostId).toBe(2);
-    expect(scene.primaryActionLabel).toBe('Open hottest drop');
+    expect(scene.primaryActionLabel).toBe('Open top post');
     expect(scene.stats).toContainEqual({
-      label: 'outside signals',
+      label: 'X live',
       tone: 'live',
       value: '1',
     });
@@ -263,9 +263,9 @@ describe('feed presentation helpers', () => {
     const scene = getFeedSceneBoard([], [], now.getTime());
 
     expect(scene).toMatchObject({
-      headline: 'No nearby signal yet',
+      headline: 'Nothing nearby yet',
       moments: [],
-      primaryActionLabel: 'Start the pulse',
+      primaryActionLabel: 'Post first',
       primaryPostId: undefined,
       status: 'quiet',
     });

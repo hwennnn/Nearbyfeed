@@ -72,24 +72,24 @@ export const getMapLiveStory = (
   const metrics = getMapPulseMetrics(posts, liveUpdates);
   const storyMetrics = [
     { label: 'drops' as const, value: metrics.postCount.toString() },
-    { label: 'outside' as const, value: metrics.liveCount.toString() },
+    { label: 'X live' as const, value: metrics.liveCount.toString() },
     { label: 'replies' as const, value: metrics.replyCount.toString() },
   ];
 
   if (metrics.postCount === 0 && metrics.liveCount === 0) {
     return {
-      detail: 'Open the radius or post the first signal people nearby can see.',
-      headline: 'No pulse on this block yet',
+      detail: 'Open the radius or post what people nearby should know.',
+      headline: 'Nothing nearby yet',
       metrics: storyMetrics,
-      kicker: 'quiet zone',
+      kicker: 'quiet nearby',
       tone: 'quiet',
     };
   }
 
   const headline =
     metrics.liveCount > 0
-      ? `${formatCount(metrics.liveCount, 'outside signal', 'outside signals')} nearby`
-      : getFeaturedMapPost(posts)?.title ?? 'Nearby pulse is forming';
+      ? `${formatCount(metrics.liveCount, 'X mention', 'X mentions')} nearby`
+      : getFeaturedMapPost(posts)?.title ?? 'Nearby posts are warming up';
   const detailParts = [
     metrics.postCount > 0
       ? formatCount(metrics.postCount, 'drop', 'drops')
@@ -106,9 +106,9 @@ export const getMapLiveStory = (
         } already in range.`
       : `${formatCount(
           metrics.liveCount,
-          'outside signal',
-          'outside signals',
-        )} surfaced from X in range.`;
+          'X mention',
+          'X mentions',
+        )} surfaced in range.`;
 
   return {
     detail,
@@ -127,24 +127,24 @@ export const getMapVibeSnapshot = (
   const drops = formatCount(metrics.postCount, 'nearby drop', 'nearby drops');
   const threadDrops = formatCount(metrics.postCount, 'drop', 'drops');
   const replies = formatCount(metrics.replyCount, 'reply', 'replies');
-  const xSignals = formatCount(metrics.liveCount, 'X signal', 'X signals');
+  const xMentions = formatCount(metrics.liveCount, 'X mention', 'X mentions');
 
   if (metrics.postCount === 0 && metrics.liveCount === 0) {
     return {
-      action: 'Start the pulse',
-      body: 'No drops yet. Open the radius or start the first nearby signal.',
+      action: 'Post first',
+      body: 'No drops yet. Open the radius or post what is happening.',
       eyebrow: 'vibe check',
-      title: 'Quiet grid',
+      title: 'Quiet nearby',
       tone: 'quiet',
     };
   }
 
   if (metrics.liveCount > 0 && metrics.liveCount >= metrics.postCount) {
     return {
-      action: 'Scan live stack',
-      body: `${xSignals} ${metrics.liveCount === 1 ? 'is' : 'are'} moving around ${drops}.`,
+      action: 'Scan X',
+      body: `${xMentions} ${metrics.liveCount === 1 ? 'is' : 'are'} moving around ${drops}.`,
       eyebrow: 'vibe check',
-      title: 'Outside chatter is spiking',
+      title: 'X is moving nearby',
       tone:
         metrics.level === 'quiet' || metrics.level === 'warming'
           ? 'rising'
@@ -154,10 +154,10 @@ export const getMapVibeSnapshot = (
 
   if (metrics.replyCount >= 8) {
     return {
-      action: 'Open the hottest thread',
-      body: `${replies} across ${threadDrops}. Jump in before the block moves on.`,
+      action: 'Open top thread',
+      body: `${replies} across ${threadDrops}. Jump in while it is active.`,
       eyebrow: 'vibe check',
-      title: 'The block chat is awake',
+      title: 'People are talking nearby',
       tone: metrics.level,
     };
   }
@@ -178,7 +178,7 @@ export const getMapVibeSnapshot = (
     action: 'Catch up fast',
     body: `${drops} ${metrics.postCount === 1 ? 'is' : 'are'} warming up nearby.`,
     eyebrow: 'vibe check',
-    title: 'Fresh signals nearby',
+    title: 'Fresh posts nearby',
     tone: metrics.level,
   };
 };
@@ -197,10 +197,10 @@ export const getMapLiveSheetSummary = (
 
   if (metrics.postCount === 0 && metrics.liveCount === 0) {
     return {
-      action: 'Start the pulse',
-      detail: `No drops or outside signals inside ${locationName}. Widen the radius or start the first pulse.`,
-      headline: 'Quiet grid',
-      kicker: 'live sheet',
+      action: 'Post first',
+      detail: `No drops or X mentions inside ${locationName}. Widen the radius or post first.`,
+      headline: 'Quiet nearby',
+      kicker: 'nearby now',
       statChips,
       tone: 'quiet',
     };
@@ -208,7 +208,7 @@ export const getMapLiveSheetSummary = (
 
   const activeParts = [
     metrics.liveCount > 0
-      ? formatCount(metrics.liveCount, 'X signal', 'X signals')
+      ? formatCount(metrics.liveCount, 'X mention', 'X mentions')
       : null,
     metrics.postCount > 0
       ? formatCount(metrics.postCount, 'drop', 'drops')
@@ -219,18 +219,18 @@ export const getMapLiveSheetSummary = (
   ].filter((part): part is string => part !== null);
   const headline =
     metrics.liveCount > 0 && metrics.liveCount >= metrics.postCount
-      ? 'Outside chatter is leading'
+      ? 'X is moving nearby'
       : metrics.replyCount >= 8
-        ? 'Block chat is moving'
+        ? 'People are talking nearby'
         : metrics.pollCount > 0
           ? 'A local vote is shaping the room'
-          : 'Fresh nearby pulse';
+          : 'Fresh posts nearby';
 
   const action =
     metrics.liveCount > 0 && metrics.liveCount >= metrics.postCount
-      ? 'Scan X signals'
+      ? 'Scan X'
       : metrics.replyCount >= 8
-        ? 'Open hottest thread'
+        ? 'Open top thread'
         : metrics.pollCount > 0
           ? 'Vote before it flips'
           : 'Catch up fast';
@@ -241,7 +241,7 @@ export const getMapLiveSheetSummary = (
       activeParts.length === 1 ? 'is' : 'are'
     } active around ${locationName}.`,
     headline,
-    kicker: 'live sheet',
+    kicker: 'nearby now',
     statChips,
     tone: metrics.level,
   };

@@ -127,14 +127,14 @@ describe('map presentation helpers', () => {
 
   it('builds a quiet live story for empty map states', () => {
     expect(getMapLiveStory([], [])).toEqual({
-      detail: 'Open the radius or post the first signal people nearby can see.',
-      headline: 'No pulse on this block yet',
+      detail: 'Open the radius or post what people nearby should know.',
+      headline: 'Nothing nearby yet',
       metrics: [
         { label: 'drops', value: '0' },
-        { label: 'outside', value: '0' },
+        { label: 'X live', value: '0' },
         { label: 'replies', value: '0' },
       ],
-      kicker: 'quiet zone',
+      kicker: 'quiet nearby',
       tone: 'quiet',
     });
   });
@@ -166,10 +166,10 @@ describe('map presentation helpers', () => {
 
     expect(story).toEqual({
       detail: '1 drop, 2 replies, and 1 poll are already in range.',
-      headline: '2 outside signals nearby',
+      headline: '2 X mentions nearby',
       metrics: [
         { label: 'drops', value: '1' },
-        { label: 'outside', value: '2' },
+        { label: 'X live', value: '2' },
         { label: 'replies', value: '2' },
       ],
       kicker: 'rising nearby',
@@ -198,10 +198,10 @@ describe('map presentation helpers', () => {
 
   it('turns quiet map states into a clear first-action vibe', () => {
     expect(getMapVibeSnapshot([], [])).toEqual({
-      action: 'Start the pulse',
-      body: 'No drops yet. Open the radius or start the first nearby signal.',
+      action: 'Post first',
+      body: 'No drops yet. Open the radius or post what is happening.',
       eyebrow: 'vibe check',
-      title: 'Quiet grid',
+      title: 'Quiet nearby',
       tone: 'quiet',
     });
   });
@@ -221,11 +221,11 @@ describe('map presentation helpers', () => {
     );
 
     expect(summary).toEqual({
-      action: 'Scan X signals',
+      action: 'Scan X',
       detail:
-        '2 X signals, 1 drop, and 4 replies are active around Cupertino Car Wash, 10002.',
-      headline: 'Outside chatter is leading',
-      kicker: 'live sheet',
+        '2 X mentions, 1 drop, and 4 replies are active around Cupertino Car Wash, 10002.',
+      headline: 'X is moving nearby',
+      kicker: 'nearby now',
       statChips: [
         { label: 'drops', value: '1' },
         { label: 'X live', value: '2' },
@@ -237,11 +237,11 @@ describe('map presentation helpers', () => {
 
   it('keeps empty live sheet states directional', () => {
     expect(getMapLiveSheetSummary('Cupertino', [], [])).toEqual({
-      action: 'Start the pulse',
+      action: 'Post first',
       detail:
-        'No drops or outside signals inside Cupertino. Widen the radius or start the first pulse.',
-      headline: 'Quiet grid',
-      kicker: 'live sheet',
+        'No drops or X mentions inside Cupertino. Widen the radius or post first.',
+      headline: 'Quiet nearby',
+      kicker: 'nearby now',
       statChips: [
         { label: 'drops', value: '0' },
         { label: 'X live', value: '0' },
@@ -262,10 +262,10 @@ describe('map presentation helpers', () => {
         },
       ]),
     ).toEqual({
-      action: 'Scan live stack',
-      body: '2 X signals are moving around 1 nearby drop.',
+      action: 'Scan X',
+      body: '2 X mentions are moving around 1 nearby drop.',
       eyebrow: 'vibe check',
-      title: 'Outside chatter is spiking',
+      title: 'X is moving nearby',
       tone: 'rising',
     });
   });
@@ -280,10 +280,10 @@ describe('map presentation helpers', () => {
         [],
       ),
     ).toEqual({
-      action: 'Open the hottest thread',
-      body: '12 replies across 2 drops. Jump in before the block moves on.',
+      action: 'Open top thread',
+      body: '12 replies across 2 drops. Jump in while it is active.',
       eyebrow: 'vibe check',
-      title: 'The block chat is awake',
+      title: 'People are talking nearby',
       tone: 'rising',
     });
   });

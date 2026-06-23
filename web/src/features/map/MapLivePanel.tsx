@@ -8,6 +8,9 @@ import { MapPulseStats } from './MapPulseStats';
 import { MapSpotlightCard } from './MapSpotlightCard';
 import { MapVibeCard } from './MapVibeCard';
 
+const shouldStartCollapsed = () =>
+  typeof window !== 'undefined' && window.innerWidth <= 720;
+
 export const MapLivePanel = ({
   featuredPost,
   isLiveFallback,
@@ -31,7 +34,7 @@ export const MapLivePanel = ({
   selectedPost?: Post;
   selectedPostId: number | null;
 }) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(shouldStartCollapsed);
 
   return (
     <aside

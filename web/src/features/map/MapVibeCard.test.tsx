@@ -31,10 +31,10 @@ describe('MapVibeCard', () => {
     render(<MapVibeCard liveUpdates={[liveUpdate]} posts={[post]} />);
 
     expect(screen.getByText('vibe check')).toBeInTheDocument();
-    expect(screen.getByText('Outside chatter is spiking')).toBeInTheDocument();
+    expect(screen.getByText('X is moving nearby')).toBeInTheDocument();
     expect(
-      screen.getByText('1 X signal is moving around 1 nearby drop.'),
+      screen.getByText('1 X mention is moving around 1 nearby drop.'),
     ).toBeInTheDocument();
-    expect(screen.getByText('Scan live stack')).toBeInTheDocument();
+    expect(screen.getByText('Scan X')).toBeInTheDocument();
   });
 });

@@ -205,7 +205,7 @@ const getLiveUpdateTime = (update: LiveUpdate): number => {
 const getLiveUpdateMeta = (update: LiveUpdate): string => {
   const source = update.source.toUpperCase();
   if (update.tags.length > 0) return `${source} · ${update.tags.slice(0, 2).join(' / ')}`;
-  return `${source} outside signal`;
+  return `${source} nearby`;
 };
 
 const getSceneStatus = (score: number): FeedSceneStatus => {
@@ -227,9 +227,9 @@ const getSceneHeadline = (
   posts: Post[],
   liveUpdates: LiveUpdate[],
 ): string => {
-  if (posts.length === 0 && liveUpdates.length === 0) return 'No nearby signal yet';
-  if (status === 'surging' || status === 'moving') return 'The block is online';
-  if (liveUpdates.length > 0) return 'Outside signals are nearby';
+  if (posts.length === 0 && liveUpdates.length === 0) return 'Nothing nearby yet';
+  if (status === 'surging' || status === 'moving') return 'People are posting nearby';
+  if (liveUpdates.length > 0) return 'X is talking nearby';
   return 'Something is starting nearby';
 };
 
@@ -238,14 +238,14 @@ const getSceneSubline = (
   liveUpdates: LiveUpdate[],
 ): string => {
   if (metrics.total === 0 && liveUpdates.length === 0) {
-    return 'Drop the first post or scan the map for movement.';
+    return 'Post first or open the map to see what is close.';
   }
 
   return `${pluralize(metrics.total, 'drop')}, ${pluralize(
     metrics.comments,
     'reply',
     'replies',
-  )}, and ${pluralize(liveUpdates.length, 'outside signal')} in range.`;
+  )}, and ${pluralize(liveUpdates.length, 'X mention')} nearby.`;
 };
 
 export const getFeedSceneBoard = (
@@ -288,11 +288,11 @@ export const getFeedSceneBoard = (
       ...liveMoments.slice(1),
     ].slice(0, 4),
     primaryActionLabel:
-      featuredPost === undefined ? 'Start the pulse' : 'Open hottest drop',
+      featuredPost === undefined ? 'Post first' : 'Open top post',
     primaryPostId: featuredPost?.id,
     stats: [
       {
-        label: 'pulse',
+        label: 'activity',
         tone: 'pulse',
         value: sceneScore.toString(),
       },
@@ -302,12 +302,12 @@ export const getFeedSceneBoard = (
         value: metrics.comments.toString(),
       },
       {
-        label: 'outside signals',
+        label: 'X live',
         tone: 'live',
         value: liveUpdates.length.toString(),
       },
       {
-        label: 'media drops',
+        label: 'photos',
         tone: 'media',
         value: metrics.photos.toString(),
       },

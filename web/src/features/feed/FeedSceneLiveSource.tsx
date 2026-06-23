@@ -11,10 +11,10 @@ export const FeedSceneLiveSource = ({
 }) => {
   const liveSourceLabel = isLiveFallback ? 'Preview' : 'Live';
   const liveSourceStatus = isLiveLoading
-    ? 'checking nearby signals'
+    ? 'checking nearby'
     : isLiveFallback
-      ? 'local pulse'
-      : 'X pulse synced';
+      ? 'demo posts'
+      : 'X is synced';
 
   return (
     <div className={`scene-live-source ${isLiveFallback ? 'is-preview' : 'is-live'}`}>

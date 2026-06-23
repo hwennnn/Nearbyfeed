@@ -1,8 +1,8 @@
-import { MapPin } from 'lucide-react';
 import { Avatar } from '../../components/Avatar';
 import { timeAgo } from '../../lib/format';
 import { type Post, type Session } from '../../types';
 import { FeedCardActions } from './FeedCardActions';
+import { FeedLocationCard } from './FeedLocationCard';
 import { getPostSignal } from './feed-presentation';
 import { type FeedAuthIntent } from './feed-auth';
 import { type SharePostTarget } from './post-share';
@@ -57,13 +57,7 @@ export const FeedCard = ({
       )}
       {post.poll !== null && post.poll !== undefined && <PollPreview poll={post.poll} />}
       {post.location !== null && post.location !== undefined && (
-        <div className="location-card">
-          <MapPin />
-          <span>
-            <strong>{post.location.name}</strong>
-            {post.location.formattedAddress}
-          </span>
-        </div>
+        <FeedLocationCard location={post.location} />
       )}
       <FeedCardActions
         onBlock={onBlock}

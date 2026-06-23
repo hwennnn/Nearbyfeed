@@ -20,7 +20,7 @@ export type MapLiveStory = {
   headline: string;
   kicker: string;
   metrics: Array<{
-    label: 'drops' | 'outside' | 'replies';
+    label: 'drops' | 'X live' | 'replies';
     value: string;
   }>;
   tone: MapPulseLevel;

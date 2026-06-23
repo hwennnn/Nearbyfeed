@@ -702,6 +702,309 @@
   }
 }
 
+/* Product correction pass: pull the web UI back toward the RN social feed. */
+.feed-card {
+  border-color: rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(180deg, rgba(31, 31, 32, 0.98), rgba(24, 24, 25, 0.98)),
+    #1e1e1e;
+  color: #f8fafc;
+  padding: 22px;
+  box-shadow: none;
+}
+
+.feed-card::before {
+  height: 0;
+}
+
+.feed-card:hover {
+  border-color: rgba(255, 137, 51, 0.34);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.24);
+}
+
+.feed-card h2,
+.feed-card .post-title-button,
+.location-card strong {
+  color: #f8fafc;
+}
+
+.feed-card h2 {
+  margin-top: 18px;
+  font-size: clamp(25px, 2.4vw, 34px);
+  line-height: 1.12;
+}
+
+.card-author-row span,
+.post-copy,
+.card-actions button {
+  color: #c9ced6;
+}
+
+.post-copy {
+  font-size: 17px;
+}
+
+.post-signal-chip {
+  background: rgba(255, 255, 255, 0.08);
+  color: #d7dce4;
+  text-transform: none;
+}
+
+.post-image-wrap {
+  border-radius: 8px;
+  background: #2e2e2e;
+  box-shadow: none;
+}
+
+.poll-card,
+.location-card {
+  border: 0;
+  background: #2e2e2e;
+  color: #f8fafc;
+}
+
+.poll-card {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+}
+
+.poll-heading {
+  margin: 0;
+}
+
+.poll-heading svg,
+.location-card svg {
+  color: #a9aaad;
+}
+
+.poll-heading strong {
+  color: #f8fafc;
+}
+
+.poll-heading span {
+  color: #d4d7dc;
+}
+
+.poll-option {
+  min-height: 46px;
+  border-radius: 8px;
+  background: #252526;
+  color: #f8fafc;
+}
+
+.poll-option span {
+  background: #ff8933;
+  opacity: 1;
+}
+
+.poll-option strong {
+  overflow: hidden;
+  font-size: 15px;
+  font-weight: 850;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.poll-option em {
+  color: #f8fafc;
+  font-weight: 950;
+}
+
+.location-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 14px;
+  text-decoration: none;
+  transition:
+    background 160ms ease,
+    transform 160ms ease;
+}
+
+.location-card:hover,
+.location-card:focus-visible {
+  background: #363636;
+  outline: 0;
+  transform: translateY(-1px);
+}
+
+.location-card-icon {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.location-card-copy {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.location-card-copy strong,
+.location-card-copy em {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.location-card-copy em {
+  color: #c7cbd1;
+  font-style: normal;
+}
+
+.location-card-arrow {
+  width: 16px;
+  height: 16px;
+}
+
+.card-actions {
+  border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+.map-title-pill {
+  gap: 9px;
+  border: 1px solid rgba(17, 19, 24, 0.12);
+  background: rgba(255, 255, 255, 0.9);
+  padding: 9px 12px;
+}
+
+.map-title-pill strong {
+  color: #111318;
+  font-size: 14px;
+}
+
+.map-title-pill em {
+  background: #111318;
+  text-transform: none;
+}
+
+.map-controls {
+  top: 72px;
+}
+
+.map-panel {
+  top: 96px;
+  width: min(390px, calc(100vw - 36px));
+  border-radius: 18px;
+  background:
+    linear-gradient(180deg, rgba(31, 31, 32, 0.9), rgba(19, 19, 20, 0.94)),
+    rgba(17, 17, 18, 0.92);
+  padding: 12px;
+}
+
+.map-live-sheet-head,
+.map-vibe-card,
+.map-live-story,
+.selected-map-post,
+.live-stack a {
+  border-radius: 14px;
+}
+
+.feed-scene-board {
+  grid-template-columns: minmax(0, 0.92fr) minmax(280px, 1.08fr);
+  gap: 10px;
+}
+
+.scene-board-copy {
+  grid-column: 1;
+  min-height: 0;
+}
+
+.scene-board-copy h2 {
+  font-size: clamp(34px, 3.4vw, 46px);
+}
+
+.scene-board-stats {
+  grid-column: 1;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.scene-stat {
+  min-height: 72px;
+}
+
+.scene-stat strong {
+  font-size: 27px;
+}
+
+.scene-board-moments {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-content: start;
+  max-height: 298px;
+  overflow: auto;
+}
+
+.scene-moment {
+  min-height: 62px;
+  padding: 9px;
+}
+
+@media (max-width: 720px) {
+  .feed-scene-board {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .scene-board-copy,
+  .scene-board-stats,
+  .scene-board-moments {
+    grid-column: auto;
+    grid-row: auto;
+  }
+
+  .scene-board-moments {
+    max-height: none;
+  }
+
+  .feed-card {
+    border-right: 0;
+    border-left: 0;
+    border-radius: 0;
+    padding: 18px 16px;
+  }
+
+  .feed-card h2 {
+    font-size: 28px;
+  }
+
+  .post-copy {
+    font-size: 18px;
+    line-height: 1.45;
+  }
+
+  .post-image-wrap {
+    aspect-ratio: 1 / 0.78;
+  }
+
+  .card-author-row {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .post-signal-chip {
+    display: none;
+  }
+
+  .map-title-pill span {
+    display: none;
+  }
+
+  .map-controls {
+    top: 58px;
+  }
+
+  .map-panel {
+    right: 10px;
+    bottom: 82px;
+    left: 10px;
+    border-radius: 24px;
+  }
+}
+
 @media (max-width: 720px) {
   .top-bar {
     align-items: stretch;

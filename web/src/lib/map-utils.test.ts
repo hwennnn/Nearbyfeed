@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { createRadiusFieldGeoJson, getNearbyRadiusZoom } from './map-utils';
+import {
+  createRadiusFieldGeoJson,
+  getNearbyMapBounds,
+  getNearbyMapFitPadding,
+  getNearbyRadiusZoom,
+} from './map-utils';
 
 const distanceBetween = (
   left: { latitude: number; longitude: number },
@@ -74,5 +79,48 @@ describe('map utils', () => {
     expect(getNearbyRadiusZoom(center, 500)).toBeGreaterThan(
       getNearbyRadiusZoom(center, 1000),
     );
+  });
+
+  it('builds map bounds from the nearby radius when no posts exist', () => {
+    const center = { latitude: 37.323, longitude: -122.0322 };
+    const bounds = getNearbyMapBounds({
+      center,
+      points: [],
+      radiusMeters: 500,
+    });
+
+    expect(bounds[0][0]).toBeLessThan(center.longitude);
+    expect(bounds[0][1]).toBeLessThan(center.latitude);
+    expect(bounds[1][0]).toBeGreaterThan(center.longitude);
+    expect(bounds[1][1]).toBeGreaterThan(center.latitude);
+  });
+
+  it('expands map bounds to include nearby posts outside the radius edge', () => {
+    const center = { latitude: 37.323, longitude: -122.0322 };
+    const post = { latitude: 37.34, longitude: -122.01 };
+    const bounds = getNearbyMapBounds({
+      center,
+      points: [post],
+      radiusMeters: 200,
+    });
+
+    expect(bounds[1][0]).toBe(post.longitude);
+    expect(bounds[1][1]).toBe(post.latitude);
+  });
+
+  it('uses side-panel padding on desktop and bottom-sheet padding on mobile', () => {
+    expect(getNearbyMapFitPadding({ height: 900, width: 1280 })).toEqual({
+      bottom: 110,
+      left: 72,
+      right: 440,
+      top: 134,
+    });
+
+    expect(getNearbyMapFitPadding({ height: 760, width: 390 })).toEqual({
+      bottom: 340,
+      left: 42,
+      right: 42,
+      top: 118,
+    });
   });
 });

@@ -39,7 +39,7 @@ export const FeedHero = ({
         <div className="feed-hero-actions">
           <button className="primary-button" onClick={refreshPosts} type="button">
             <RefreshCw />
-            Refresh pulse
+            Refresh feed
           </button>
           {featuredPost !== undefined && (
             <button
@@ -47,7 +47,7 @@ export const FeedHero = ({
               onClick={() => onOpenPost(featuredPost.id)}
               type="button"
             >
-              Open hottest
+              Open top post
               <ArrowUpRight />
             </button>
           )}
@@ -67,7 +67,7 @@ export const FeedHero = ({
           <Sparkles />
           {featuredSignal?.label ?? 'ready'}
         </span>
-        <strong>{featuredPost?.title ?? 'No pulse yet'}</strong>
+        <strong>{featuredPost?.title ?? 'No posts nearby yet'}</strong>
         <em>
           {featuredPost === undefined
             ? 'Waiting for the first nearby post.'

@@ -16,7 +16,7 @@ export const MapTitlePill = ({
   <div className="map-top-left">
     <div className="map-title-pill">
       <RadioTower />
-      <strong>Nearby pulse</strong>
+      <strong>Live nearby</strong>
       <em>{pulseLevel}</em>
       <span>{postCount}</span>
     </div>

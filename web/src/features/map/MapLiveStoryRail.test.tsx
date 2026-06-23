@@ -32,12 +32,12 @@ describe('MapLiveStoryRail', () => {
     render(<MapLiveStoryRail liveUpdates={[liveUpdate]} posts={[post]} />);
 
     expect(screen.getByText('rising nearby')).toBeInTheDocument();
-    expect(screen.getByText('1 outside signal nearby')).toBeInTheDocument();
+    expect(screen.getByText('1 X mention nearby')).toBeInTheDocument();
     expect(
       screen.getByText('1 drop and 4 replies are already in range.'),
     ).toBeInTheDocument();
     expect(screen.getByLabelText('Map live story metrics')).toHaveTextContent(
-      '1drop1outside4replies',
+      '1drop1X live4replies',
     );
   });
 });

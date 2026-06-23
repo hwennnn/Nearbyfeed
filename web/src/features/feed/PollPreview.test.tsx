@@ -49,4 +49,34 @@ describe('PollPreview', () => {
 
     expect(screen.getByText('0 votes')).toBeInTheDocument();
   });
+
+  it('uses participant count as the percentage denominator', () => {
+    render(
+      <PollPreview
+        poll={{
+          ...makePoll(4),
+          options: [
+            {
+              id: 1,
+              order: 0,
+              pollId: 8,
+              text: 'go now',
+              voteCount: 1,
+            },
+            {
+              id: 2,
+              order: 1,
+              pollId: 8,
+              text: 'wait',
+              voteCount: 3,
+            },
+          ],
+        }}
+      />,
+    );
+
+    expect(screen.getByText('go now')).toBeInTheDocument();
+    expect(screen.getByText('25%')).toBeInTheDocument();
+    expect(screen.getByText('75%')).toBeInTheDocument();
+  });
 });

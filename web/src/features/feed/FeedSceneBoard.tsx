@@ -27,13 +27,13 @@ export const FeedSceneBoard = ({
 
   return (
     <section
-      aria-label="Nearby scene board"
+      aria-label="Nearby live board"
       className={`feed-scene-board is-${scene.status}`}
     >
       <div className="scene-board-copy">
         <span className="scene-board-kicker">
           <Radio />
-          scene board
+          nearby now
           <em>{scene.statusLabel}</em>
         </span>
         <h2>{scene.headline}</h2>
@@ -57,7 +57,7 @@ export const FeedSceneBoard = ({
         {scene.moments.length === 0 ? (
           <div className="scene-board-empty">
             <strong>Quiet block</strong>
-            <span>Open the map and find the first pocket of movement.</span>
+            <span>Open the map or post what people should know.</span>
           </div>
         ) : (
           scene.moments.map((moment) => (

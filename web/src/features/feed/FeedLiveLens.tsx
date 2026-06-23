@@ -27,10 +27,10 @@ export const FeedLiveLens = ({
       <div className="lens-score-card">
         <span className="lens-kicker">
           <Sparkles />
-          live lens
+          live rank
         </span>
         <strong>{metrics.score}</strong>
-        <p>{metrics.energyLabel} pulse near you</p>
+        <p>{metrics.energyLabel} around you</p>
         <span className="lens-heat-track" aria-hidden="true">
           <span style={{ width: `${heatPercent}%` }} />
         </span>
@@ -38,14 +38,14 @@ export const FeedLiveLens = ({
 
       <div className="lens-story-stage">
         <div className="lens-story-head">
-          <span>nearby live-time</span>
+          <span>what's hot now</span>
           <strong>{getFeedLiveLensHeading({ total: metrics.total })}</strong>
         </div>
         <div className="lens-story-grid">
           {items.length === 0 ? (
             <div className="lens-empty-state">
-              <strong>No nearby pulse yet</strong>
-              <span>Be the first signal people see around here.</span>
+              <strong>No posts nearby yet</strong>
+              <span>Be first to show what is happening here.</span>
             </div>
           ) : (
             items.map((item, index) => (

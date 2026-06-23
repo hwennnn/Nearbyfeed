@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 import { MAPBOX_ACCESS_TOKEN } from '../../lib/constants';
 import {
   createRadiusFieldGeoJson,
+  getNearbyMapBounds,
+  getNearbyMapFitPadding,
   getNearbyRadiusZoom,
 } from '../../lib/map-utils';
 import { type Coordinates, type LiveUpdate, type Post } from '../../types';
@@ -14,6 +16,12 @@ import {
 import {
   getLiveMapSignals,
 } from './map-presentation';
+
+const getPostMapPoints = (posts: Post[]) =>
+  posts.map((post) => ({
+    latitude: post.latitude,
+    longitude: post.longitude,
+  }));
 
 export const useMapboxNearbyMap = ({
   coordinates,
@@ -65,13 +73,32 @@ export const useMapboxNearbyMap = ({
   useEffect(() => {
     const map = mapRef.current;
     if (map === null || !mapReady) return;
+    if (selectedPostId !== null) return;
 
-    map.flyTo({
-      center: [coordinates.longitude, coordinates.latitude],
-      essential: true,
-      zoom: getNearbyRadiusZoom(coordinates, distance),
-    });
-  }, [coordinates, distance, mapReady]);
+    const liveSignalPoints = getLiveMapSignals(
+      liveUpdates,
+      coordinates,
+      distance,
+    ).map((signal) => signal.coordinates);
+    const rect = containerRef.current?.getBoundingClientRect();
+
+    map.fitBounds(
+      getNearbyMapBounds({
+        center: coordinates,
+        points: [...getPostMapPoints(posts), ...liveSignalPoints],
+        radiusMeters: distance,
+      }),
+      {
+        duration: 900,
+        essential: true,
+        maxZoom: 16,
+        padding: getNearbyMapFitPadding({
+          height: rect?.height ?? 900,
+          width: rect?.width ?? 1280,
+        }),
+      },
+    );
+  }, [coordinates, distance, liveUpdates, mapReady, posts, selectedPostId]);
 
   useEffect(() => {
     const map = mapRef.current;

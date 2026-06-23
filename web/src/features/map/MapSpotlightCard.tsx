@@ -20,7 +20,7 @@ export const MapSpotlightCard = ({
       <div className="map-empty-spotlight">
         <MousePointer2 />
         <strong>No nearby drops yet</strong>
-        <span>Widen the radius or post the first signal on this block.</span>
+        <span>Widen the radius or post what people should know.</span>
       </div>
     );
   }
@@ -34,7 +34,7 @@ export const MapSpotlightCard = ({
       type="button"
     >
       <span className="spotlight-kicker">
-        {mode === 'selected' ? 'selected pulse' : 'hottest nearby'}
+        {mode === 'selected' ? 'selected post' : 'hottest nearby'}
       </span>
       <strong>{post.title}</strong>
       <span>

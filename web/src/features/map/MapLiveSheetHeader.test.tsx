@@ -40,7 +40,7 @@ describe('MapLiveSheetHeader', () => {
     expect(screen.getByLabelText('Nearby live sheet')).toHaveTextContent(
       'Cupertino Car Wash, 10002',
     );
-    expect(screen.getByText('Outside chatter is leading')).toBeInTheDocument();
+    expect(screen.getByText('X is moving nearby')).toBeInTheDocument();
     expect(screen.getByLabelText('Live sheet quick stats')).toHaveTextContent(
       '1drops1X live4replies',
     );
