@@ -1,6 +1,6 @@
 import { type DistanceMeters } from '@nearbyfeed/shared';
 import mapboxgl from 'mapbox-gl';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   HAS_MAPBOX_ACCESS_TOKEN,
   MAPBOX_ACCESS_TOKEN,
@@ -46,6 +46,34 @@ export const useMapboxNearbyMap = ({
   const markersRef = useRef<mapboxgl.Marker[]>([]);
   const liveMarkersRef = useRef<mapboxgl.Marker[]>([]);
   const [mapReady, setMapReady] = useState(false);
+  const fitNearbyActivity = useCallback(
+    (map: mapboxgl.Map) => {
+      const liveSignalPoints = getLiveMapSignals(
+        liveUpdates,
+        coordinates,
+        distance,
+      ).map((signal) => signal.coordinates);
+      const rect = containerRef.current?.getBoundingClientRect();
+
+      map.fitBounds(
+        getNearbyMapBounds({
+          center: coordinates,
+          points: [...getPostMapPoints(posts), ...liveSignalPoints],
+          radiusMeters: distance,
+        }),
+        {
+          duration: 900,
+          essential: true,
+          maxZoom: 16,
+          padding: getNearbyMapFitPadding({
+            height: rect?.height ?? 900,
+            width: rect?.width ?? 1280,
+          }),
+        },
+      );
+    },
+    [coordinates, distance, liveUpdates, posts],
+  );
 
   useEffect(() => {
     if (containerRef.current === null || mapRef.current !== null) return;
@@ -78,30 +106,35 @@ export const useMapboxNearbyMap = ({
     if (map === null || !mapReady) return;
     if (selectedPostId !== null) return;
 
-    const liveSignalPoints = getLiveMapSignals(
-      liveUpdates,
-      coordinates,
-      distance,
-    ).map((signal) => signal.coordinates);
-    const rect = containerRef.current?.getBoundingClientRect();
+    fitNearbyActivity(map);
+  }, [fitNearbyActivity, mapReady, selectedPostId]);
 
-    map.fitBounds(
-      getNearbyMapBounds({
-        center: coordinates,
-        points: [...getPostMapPoints(posts), ...liveSignalPoints],
-        radiusMeters: distance,
-      }),
-      {
-        duration: 900,
-        essential: true,
-        maxZoom: 16,
-        padding: getNearbyMapFitPadding({
-          height: rect?.height ?? 900,
-          width: rect?.width ?? 1280,
-        }),
-      },
-    );
-  }, [coordinates, distance, liveUpdates, mapReady, posts, selectedPostId]);
+  useEffect(() => {
+    const map = mapRef.current;
+    const container = containerRef.current;
+
+    if (
+      map === null ||
+      container === null ||
+      typeof window === 'undefined' ||
+      window.ResizeObserver === undefined
+    ) {
+      return;
+    }
+
+    const resizeObserver = new window.ResizeObserver(() => {
+      map.resize();
+      if (selectedPostId === null) {
+        fitNearbyActivity(map);
+      }
+    });
+
+    resizeObserver.observe(container);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [fitNearbyActivity, mapReady, selectedPostId]);
 
   useEffect(() => {
     const map = mapRef.current;
