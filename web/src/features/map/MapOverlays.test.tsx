@@ -7,6 +7,7 @@ describe('MapControls', () => {
     render(
       <MapControls
         distance={200}
+        onFrameNearby={vi.fn()}
         setDistance={vi.fn()}
         setTimeWindow={vi.fn()}
         timeWindow="24h"
@@ -17,5 +18,8 @@ describe('MapControls', () => {
 
     expect(within(filters).getByLabelText('Time window')).toBeInTheDocument();
     expect(within(filters).getByLabelText('Distance')).toBeInTheDocument();
+    expect(
+      within(filters).getByRole('button', { name: 'Frame live area' }),
+    ).toBeInTheDocument();
   });
 });

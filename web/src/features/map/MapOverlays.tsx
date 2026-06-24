@@ -2,7 +2,7 @@ import {
   type DistanceMeters,
   type TimeWindow,
 } from '@nearbyfeed/shared';
-import { RadioTower } from 'lucide-react';
+import { Crosshair, RadioTower } from 'lucide-react';
 import { SegmentedDistance, SegmentedTime } from '../../components/SegmentedControls';
 import { type MapPulseLevel } from './map-presentation';
 
@@ -25,11 +25,13 @@ export const MapTitlePill = ({
 
 export const MapControls = ({
   distance,
+  onFrameNearby,
   setDistance,
   setTimeWindow,
   timeWindow,
 }: {
   distance: DistanceMeters;
+  onFrameNearby: () => void;
   setDistance: (distance: DistanceMeters) => void;
   setTimeWindow: (window: TimeWindow) => void;
   timeWindow: TimeWindow;
@@ -37,5 +39,15 @@ export const MapControls = ({
   <div className="map-controls" aria-label="Map filters">
     <SegmentedTime value={timeWindow} onChange={setTimeWindow} />
     <SegmentedDistance value={distance} onChange={setDistance} />
+    <button
+      aria-label="Frame live area"
+      className="map-frame-button"
+      onClick={onFrameNearby}
+      title="Frame live area"
+      type="button"
+    >
+      <Crosshair />
+      <span>Frame</span>
+    </button>
   </div>
 );

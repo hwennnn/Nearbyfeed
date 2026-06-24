@@ -1578,6 +1578,12 @@
     padding: 0 8px;
   }
 
+  .map-frame-button {
+    justify-self: start;
+    min-height: 34px;
+    padding: 0 11px;
+  }
+
   .map-panel {
     top: auto;
     right: 10px;

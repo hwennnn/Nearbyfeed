@@ -41,7 +41,7 @@ export const MapView = ({
   setTimeWindow,
   timeWindow,
 }: MapViewProps) => {
-  const { containerRef } = useMapboxNearbyMap({
+  const { containerRef, frameNearbyActivity } = useMapboxNearbyMap({
     coordinates,
     distance,
     liveUpdates,
@@ -64,6 +64,7 @@ export const MapView = ({
       <MapTitlePill postCount={posts.length} pulseLevel={pulseMetrics.level} />
       <MapControls
         distance={distance}
+        onFrameNearby={frameNearbyActivity}
         setDistance={setDistance}
         setTimeWindow={setTimeWindow}
         timeWindow={timeWindow}

@@ -7,8 +7,6 @@ import {
 } from '../../lib/constants';
 import {
   createRadiusFieldGeoJson,
-  getNearbyMapBounds,
-  getNearbyMapFitPadding,
   getNearbyRadiusZoom,
 } from '../../lib/map-utils';
 import { type Coordinates, type LiveUpdate, type Post } from '../../types';
@@ -19,6 +17,10 @@ import {
 import {
   getLiveMapSignals,
 } from './map-presentation';
+import {
+  getNearbyActivityCamera,
+  getSelectedPostCamera,
+} from './map-camera';
 
 const getPostMapPoints = (posts: Post[]) =>
   posts.map((post) => ({
@@ -46,6 +48,14 @@ export const useMapboxNearbyMap = ({
   const markersRef = useRef<mapboxgl.Marker[]>([]);
   const liveMarkersRef = useRef<mapboxgl.Marker[]>([]);
   const [mapReady, setMapReady] = useState(false);
+  const getViewportSize = useCallback(() => {
+    const rect = containerRef.current?.getBoundingClientRect();
+
+    return {
+      height: rect?.height ?? 900,
+      width: rect?.width ?? 1280,
+    };
+  }, []);
   const fitNearbyActivity = useCallback(
     (map: mapboxgl.Map) => {
       const liveSignalPoints = getLiveMapSignals(
@@ -53,26 +63,38 @@ export const useMapboxNearbyMap = ({
         coordinates,
         distance,
       ).map((signal) => signal.coordinates);
-      const rect = containerRef.current?.getBoundingClientRect();
+      const camera = getNearbyActivityCamera({
+        center: coordinates,
+        distance,
+        liveSignalPoints,
+        postPoints: getPostMapPoints(posts),
+        ...getViewportSize(),
+      });
 
-      map.fitBounds(
-        getNearbyMapBounds({
+      map.fitBounds(camera.bounds, camera.options);
+    },
+    [coordinates, distance, getViewportSize, liveUpdates, posts],
+  );
+  const frameNearbyActivity = useCallback(() => {
+    const map = mapRef.current;
+    if (map === null || !mapReady) return;
+
+    setSelectedPostId(null);
+    fitNearbyActivity(map);
+  }, [fitNearbyActivity, mapReady, setSelectedPostId]);
+
+  const flyToSelectedPost = useCallback(
+    (map: mapboxgl.Map, post: Post) => {
+      map.flyTo(
+        getSelectedPostCamera({
           center: coordinates,
-          points: [...getPostMapPoints(posts), ...liveSignalPoints],
-          radiusMeters: distance,
+          distance,
+          post,
+          ...getViewportSize(),
         }),
-        {
-          duration: 900,
-          essential: true,
-          maxZoom: 16,
-          padding: getNearbyMapFitPadding({
-            height: rect?.height ?? 900,
-            width: rect?.width ?? 1280,
-          }),
-        },
       );
     },
-    [coordinates, distance, liveUpdates, posts],
+    [coordinates, distance, getViewportSize],
   );
 
   useEffect(() => {
@@ -252,18 +274,8 @@ export const useMapboxNearbyMap = ({
     const selectedPost = posts.find((post) => post.id === selectedPostId);
     if (selectedPost === undefined) return;
 
-    const rect = containerRef.current?.getBoundingClientRect();
-
-    map.flyTo({
-      center: [selectedPost.longitude, selectedPost.latitude],
-      essential: true,
-      padding: getNearbyMapFitPadding({
-        height: rect?.height ?? 900,
-        width: rect?.width ?? 1280,
-      }),
-      zoom: Math.max(15, getNearbyRadiusZoom(coordinates, distance)),
-    });
-  }, [coordinates, distance, mapReady, posts, selectedPostId]);
+    flyToSelectedPost(map, selectedPost);
+  }, [flyToSelectedPost, mapReady, posts, selectedPostId]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -305,5 +317,5 @@ export const useMapboxNearbyMap = ({
     });
   }, [coordinates, distance, liveUpdates, mapReady]);
 
-  return { containerRef };
+  return { containerRef, frameNearbyActivity };
 };

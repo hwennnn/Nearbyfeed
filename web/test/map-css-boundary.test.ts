@@ -6,6 +6,10 @@ const mapCoreCss = readFileSync(
   path.resolve(process.cwd(), 'src/styles/map-core.css'),
   'utf8',
 );
+const liveSocialCss = readFileSync(
+  path.resolve(process.cwd(), 'src/styles/live-social.css'),
+  'utf8',
+);
 
 describe('map canvas CSS boundary', () => {
   it('keeps the Mapbox container full-bleed after lazy Mapbox CSS loads', () => {
@@ -25,5 +29,11 @@ describe('map canvas CSS boundary', () => {
     expect(mapCoreCss).toContain('flex: 0 0 auto;');
     expect(mapCoreCss).toContain('width: 34px;');
     expect(mapCoreCss).toContain('min-width: 34px;');
+  });
+
+  it('keeps the mobile frame action compact inside stacked map controls', () => {
+    expect(liveSocialCss).toContain('.map-frame-button {');
+    expect(liveSocialCss).toContain('justify-self: start;');
+    expect(liveSocialCss).toContain('min-height: 34px;');
   });
 });

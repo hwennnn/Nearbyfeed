@@ -1,4 +1,4 @@
-import { render, waitFor } from '@testing-library/react';
+import { fireEvent, render, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { type Post } from '../../types';
 import { useMapboxNearbyMap } from './useMapboxNearbyMap';
@@ -93,6 +93,34 @@ const NearbyMapProbe = ({
   });
 
   return <div data-testid="map-canvas" ref={containerRef} />;
+};
+
+const NearbyMapFrameProbe = ({
+  posts = [selectedPost],
+  selectedPostId = selectedPost.id,
+  setSelectedPostId = vi.fn(),
+}: {
+  posts?: Post[];
+  selectedPostId?: number | null;
+  setSelectedPostId?: (postId: number | null) => void;
+}) => {
+  const { containerRef, frameNearbyActivity } = useMapboxNearbyMap({
+    coordinates: { latitude: 37.323, longitude: -122.0322 },
+    distance: 500,
+    liveUpdates: [],
+    posts,
+    selectedPostId,
+    setSelectedPostId,
+  });
+
+  return (
+    <>
+      <div data-testid="map-canvas" ref={containerRef} />
+      <button onClick={frameNearbyActivity} type="button">
+        frame
+      </button>
+    </>
+  );
 };
 
 describe('useMapboxNearbyMap', () => {
@@ -246,5 +274,39 @@ describe('useMapboxNearbyMap', () => {
       );
     });
     expect(flyToMock).not.toHaveBeenCalled();
+  });
+
+  it('exposes a frame action that clears selection and fits nearby activity', async () => {
+    const setSelectedPostId = vi.fn();
+    isStyleLoadedMock.mockReturnValue(true);
+    mapConstructorMock.mockReturnValue(mapInstance);
+    mapOnMock.mockImplementation((event: string, handler: () => void) => {
+      if (event === 'load') handler();
+    });
+    markerConstructorMock.mockImplementation(() => ({
+      addTo: vi.fn().mockReturnThis(),
+      remove: vi.fn(),
+      setLngLat: vi.fn().mockReturnThis(),
+    }));
+
+    const { getByRole } = render(
+      <NearbyMapFrameProbe setSelectedPostId={setSelectedPostId} />,
+    );
+
+    await waitFor(() => {
+      expect(flyToMock).toHaveBeenCalled();
+    });
+
+    fitBoundsMock.mockClear();
+    fireEvent.click(getByRole('button', { name: 'frame' }));
+
+    expect(setSelectedPostId).toHaveBeenCalledWith(null);
+    expect(fitBoundsMock).toHaveBeenCalledWith(
+      expect.any(Array),
+      expect.objectContaining({
+        duration: 900,
+        essential: true,
+      }),
+    );
   });
 });
