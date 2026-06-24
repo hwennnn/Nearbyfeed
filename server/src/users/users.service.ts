@@ -655,19 +655,24 @@ export class UsersService {
       });
   }
 
-  async findBlockedUsersIds(blockerId: number): Promise<number[]> {
-    const result = (
-      await this.prismaService.blockedUser.findMany({
-        where: {
-          blockerId,
-        },
-        select: {
-          blockedId: true,
-        },
-      })
-    ).map((result) => result.blockedId);
+  async findBlockedUserIds(userId: number): Promise<number[]> {
+    const blocks = await this.prismaService.blockedUser.findMany({
+      where: {
+        OR: [{ blockerId: userId }, { blockedId: userId }],
+      },
+      select: {
+        blockedId: true,
+        blockerId: true,
+      },
+    });
 
-    return result;
+    return [
+      ...new Set(
+        blocks.map((block) =>
+          block.blockerId === userId ? block.blockedId : block.blockerId,
+        ),
+      ),
+    ];
   }
 
   async connectProvider(id: number, providerName: ProviderType): Promise<void> {

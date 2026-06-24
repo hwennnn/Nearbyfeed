@@ -145,7 +145,7 @@ export class PostsService {
     const userId = parseOptionalRouteId(dto.userId, 'userId');
     const blockedIds =
       userId !== undefined
-        ? await this.usersService.findBlockedUsersIds(userId)
+        ? await this.usersService.findBlockedUserIds(userId)
         : [];
 
     const limit = dto.take ?? PAGE_SIZE.default;

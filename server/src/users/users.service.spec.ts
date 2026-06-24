@@ -85,4 +85,29 @@ describe('UsersService', () => {
     ).rejects.toThrow('cursor must be a positive safe integer');
     expect(prismaService.comment.findMany).not.toHaveBeenCalled();
   });
+
+  it('returns both blocked and blocker ids for feed exclusion', async () => {
+    const prismaService = {
+      blockedUser: {
+        findMany: jest.fn().mockResolvedValue([
+          { blockerId: 42, blockedId: 7 },
+          { blockerId: 9, blockedId: 42 },
+          { blockerId: 42, blockedId: 7 },
+        ]),
+      },
+    };
+    const service = createService(prismaService);
+
+    await expect(service.findBlockedUserIds(42)).resolves.toEqual([7, 9]);
+
+    expect(prismaService.blockedUser.findMany).toHaveBeenCalledWith({
+      where: {
+        OR: [{ blockerId: 42 }, { blockedId: 42 }],
+      },
+      select: {
+        blockedId: true,
+        blockerId: true,
+      },
+    });
+  });
 });

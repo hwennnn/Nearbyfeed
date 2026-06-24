@@ -5,7 +5,7 @@ describe('PostsService', () => {
   const filterService = { filterText: jest.fn((value: string) => value) };
   const geocodingService = { getLocationName: jest.fn() };
   const usersService = {
-    findBlockedUsersIds: jest.fn().mockResolvedValue([]),
+    findBlockedUserIds: jest.fn().mockResolvedValue([]),
   };
 
   const createService = (prismaService: unknown): PostsService =>
@@ -255,8 +255,36 @@ describe('PostsService', () => {
       }),
     ).rejects.toThrow('userId must be a positive integer');
 
-    expect(usersService.findBlockedUsersIds).not.toHaveBeenCalled();
+    expect(usersService.findBlockedUserIds).not.toHaveBeenCalled();
     expect(prismaService.post.findMany).not.toHaveBeenCalled();
+  });
+
+  it('excludes both blocked and blocker authors from nearby posts', async () => {
+    usersService.findBlockedUserIds.mockResolvedValueOnce([8, 9]);
+    const prismaService = {
+      post: {
+        findMany: jest.fn().mockResolvedValue([]),
+      },
+    };
+    const service = createService(prismaService);
+
+    await service.findNearbyPosts({
+      latitude: 0,
+      longitude: 0,
+      distance: 200,
+      userId: '7',
+    });
+
+    expect(usersService.findBlockedUserIds).toHaveBeenCalledWith(7);
+    expect(prismaService.post.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          authorId: {
+            notIn: [8, 9],
+          },
+        }),
+      }),
+    );
   });
 
   it('rejects malformed optional user ids before querying a single post', async () => {
