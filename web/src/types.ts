@@ -1,4 +1,7 @@
-import { type CommentSort } from '@nearbyfeed/shared';
+import {
+  type CommentSort,
+  type NormalizedLiveUpdate,
+} from '@nearbyfeed/shared';
 
 export type { CommentSort };
 
@@ -101,15 +104,7 @@ export type CommentWithPost = Comment & {
   post: Post;
 };
 
-export type LiveUpdate = {
-  id: string;
-  title: string;
-  summary: string;
-  url: string;
-  source: 'x';
-  occurredAt: string | null;
-  tags: string[];
-};
+export type LiveUpdate = NormalizedLiveUpdate;
 
 export type AuthToken = {
   accessToken: string;

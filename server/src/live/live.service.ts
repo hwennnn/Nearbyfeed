@@ -7,20 +7,16 @@ import { type LiveNearbyDto } from './dto/live-nearby.dto';
 import { type LiveUpdate } from './entities/live-update.entity';
 import {
   DEFAULT_DISTANCE_METERS,
-  normalizeXStatusUrl,
+  normalizeLiveUpdates,
   resolveTimeWindow as resolveSharedTimeWindow,
   type DistanceMeters,
+  type NormalizedLiveUpdate,
   type TimeWindow,
 } from '@nearbyfeed/shared';
 
 const TINYFISH_RUN_SSE_URL = 'https://agent.tinyfish.ai/v1/automation/run-sse';
 const DEFAULT_LIVE_CACHE_TTL_SECONDS = 120;
 const DEFAULT_TINYFISH_TIMEOUT_MS = 20000;
-const MAX_LIVE_UPDATE_COUNT = 8;
-const MAX_LIVE_TITLE_LENGTH = 90;
-const MAX_LIVE_SUMMARY_LENGTH = 240;
-const MAX_LIVE_TAG_COUNT = 6;
-const MAX_LIVE_TAG_LENGTH = 24;
 const LIVE_UPDATE_OUTPUT_SCHEMA = {
   type: 'object',
   properties: {
@@ -280,111 +276,8 @@ export class LiveService {
     }
   }
 
-  private normalizeUpdates(resultJson: unknown): LiveUpdate[] {
-    const parsedResult = this.parseJsonResult(resultJson);
-    const rawUpdates =
-      Array.isArray(parsedResult)
-        ? parsedResult
-        : Array.isArray((parsedResult as { updates?: unknown }).updates)
-        ? (parsedResult as { updates: unknown[] }).updates
-        : [];
-
-    const seenUrls = new Set<string>();
-    const updates: LiveUpdate[] = [];
-
-    for (const rawUpdate of rawUpdates) {
-      if (updates.length >= MAX_LIVE_UPDATE_COUNT) break;
-
-      const update = this.normalizeUpdate(rawUpdate, updates.length);
-      if (update === null || seenUrls.has(update.url)) continue;
-
-      seenUrls.add(update.url);
-      updates.push(update);
-    }
-
-    return updates;
-  }
-
-  private parseJsonResult(resultJson: unknown): unknown {
-    if (typeof resultJson !== 'string') return resultJson;
-
-    try {
-      return JSON.parse(resultJson);
-    } catch {
-      return resultJson;
-    }
-  }
-
-  private normalizeUpdate(rawUpdate: unknown, index: number): LiveUpdate | null {
-    if (rawUpdate === null || typeof rawUpdate !== 'object') {
-      return null;
-    }
-
-    const update = rawUpdate as Partial<LiveUpdate>;
-    const title = this.sanitizeText(update.title, MAX_LIVE_TITLE_LENGTH);
-    const summary = this.sanitizeText(update.summary, MAX_LIVE_SUMMARY_LENGTH);
-    const url = this.normalizeXUrl(update.url);
-
-    if (title === null || summary === null || url === null) {
-      return null;
-    }
-
-    return {
-      id: `x-${index}-${Buffer.from(url).toString('base64url')}`,
-      title,
-      summary,
-      url,
-      source: 'x',
-      occurredAt: this.normalizeOccurredAt(update.occurredAt),
-      tags: this.normalizeTags(update.tags),
-    };
-  }
-
-  private normalizeXUrl(value: unknown): string | null {
-    return normalizeXStatusUrl(value);
-  }
-
-  private normalizeOccurredAt(value: unknown): string | null {
-    if (typeof value !== 'string') return null;
-
-    const date = new Date(value);
-    return Number.isNaN(date.getTime()) ? null : date.toISOString();
-  }
-
-  private normalizeTags(value: unknown): string[] {
-    if (!Array.isArray(value)) return [];
-
-    const tags: string[] = [];
-    const seenTags = new Set<string>();
-
-    for (const rawTag of value) {
-      if (tags.length >= MAX_LIVE_TAG_COUNT) break;
-
-      const tag = this.sanitizeText(rawTag, MAX_LIVE_TAG_LENGTH);
-      if (tag === null || seenTags.has(tag)) continue;
-
-      seenTags.add(tag);
-      tags.push(tag);
-    }
-
-    return tags;
-  }
-
-  private sanitizeText(value: unknown, maxLength: number): string | null {
-    if (typeof value !== 'string') return null;
-
-    const normalized = value
-      .replace(/[\u0000-\u001F\u007F]+/g, ' ')
-      .replace(/\s+/g, ' ')
-      .trim();
-    if (normalized.length === 0) return null;
-
-    return this.truncate(normalized, maxLength);
-  }
-
-  private truncate(value: string, maxLength: number): string {
-    if (value.length <= maxLength) return value;
-    return `${value.slice(0, maxLength - 3)}...`;
+  private normalizeUpdates(resultJson: unknown): NormalizedLiveUpdate[] {
+    return normalizeLiveUpdates(resultJson);
   }
 
   private async readCachedUpdates(cacheKey: string): Promise<LiveUpdate[] | null> {

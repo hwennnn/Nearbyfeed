@@ -2,7 +2,7 @@ import {
   DEFAULT_DISTANCE_METERS,
   DEFAULT_COMMENT_SORT,
   DEFAULT_TIME_WINDOW,
-  normalizeXStatusUrl,
+  normalizeLiveUpdates,
   type ReportReason,
   type DistanceMeters,
   type TimeWindow,
@@ -121,15 +121,7 @@ export const fetchLiveUpdates = async (
   const response = await request<{ updates: LiveUpdate[] }>(
     `/live/nearby?${searchParams.toString()}`,
   );
-  const seenUrls = new Set<string>();
-
-  return response.updates.flatMap((update) => {
-    const url = normalizeXStatusUrl(update.url);
-    if (url === null || seenUrls.has(url)) return [];
-
-    seenUrls.add(url);
-    return [{ ...update, url }];
-  });
+  return normalizeLiveUpdates(response.updates);
 };
 
 export const login = async (email: string, password: string): Promise<Session> =>

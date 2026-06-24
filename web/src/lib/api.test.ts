@@ -115,7 +115,7 @@ describe('live updates API', () => {
       }),
     ).resolves.toEqual([
       expect.objectContaining({
-        id: 'source-post',
+        id: 'x-0-aHR0cHM6Ly94LmNvbS9leGFtcGxlL3N0YXR1cy80Mg',
         title: 'Cafe line is moving',
         url: 'https://x.com/example/status/42',
       }),
