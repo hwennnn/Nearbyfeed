@@ -1,5 +1,5 @@
 import {
-  getPollExpirationDate,
+  getPollPreviewStatus,
   isPollExpired as isSharedPollExpired,
 } from '@nearbyfeed/shared';
 import { useNavigation } from '@react-navigation/native';
@@ -12,7 +12,6 @@ import { LoadingButton, Pressable, Text, View } from '@/ui';
 import { FontAwesome5, Ionicons } from '@/ui/icons/vector-icons';
 import { promptSignIn } from '@/utils/auth-utils';
 import { stringUtils } from '@/utils/string-utils';
-import { timeUtils } from '@/utils/time-utils';
 import { getMobilePollResults } from './poll-results';
 
 type Props = {
@@ -35,15 +34,14 @@ export const PollCard = ({
   const { mutate, isLoading } = useVotePoll();
   const pollResults = getMobilePollResults(poll);
 
-  const pollExpirationDate = getPollExpirationDate(
-    poll.createdAt,
-    poll.votingLength
-  );
-
   const isPollVoted =
     poll.vote !== undefined &&
     poll.vote !== null &&
     poll.vote?.userId === useUser.getState().user?.id;
+  const pollStatus = getPollPreviewStatus({
+    ...poll,
+    vote: isPollVoted ? poll.vote : null,
+  });
 
   const isPollExpired = isSharedPollExpired(
     poll.createdAt,
@@ -196,9 +194,7 @@ export const PollCard = ({
 
           {!isPollExpired && (
             <Text variant="sm" className="text-center text-primary-400">
-              {`Closes in ${timeUtils.formatCreatedTimeInFull(
-                pollExpirationDate
-              )}`}
+              {pollStatus.statusLabel}
             </Text>
           )}
         </View>

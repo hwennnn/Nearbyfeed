@@ -1,10 +1,10 @@
 import {
   getPollExpirationDate,
+  getPollPreviewModel,
   isPollExpired,
 } from '@nearbyfeed/shared';
 import { describe, expect, it } from 'vitest';
 import { type Post } from '../../types';
-import { getPollPreviewModel } from './poll-preview-presentation';
 
 const makePoll = (
   overrides: Partial<NonNullable<Post['poll']>> = {},
