@@ -52,7 +52,7 @@ export const createLiveSignalMarkerElement = (
   element.target = '_blank';
   element.setAttribute(
     'aria-label',
-    `Approximate ${signal.sourceLabel} signal: ${signal.title}, ${signal.label}`,
+    `Approximate ${signal.sourceLabel}: ${signal.title}, ${signal.label}`,
   );
   element.addEventListener('click', (event) => event.stopPropagation());
 

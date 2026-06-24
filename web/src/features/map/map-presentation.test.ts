@@ -27,7 +27,7 @@ const liveUpdate: LiveUpdate = {
   id: 'live-1',
   title: 'Queue forming',
   summary: 'People are posting about a short line.',
-  url: 'https://x.com/search?q=queue',
+  url: 'https://x.com/example/status/42002',
   source: 'x',
   occurredAt: new Date('2026-06-23T08:02:00Z').toISOString(),
   tags: ['nearby'],
@@ -308,7 +308,7 @@ describe('map presentation helpers', () => {
     expect(signals[0]).toMatchObject({
       id: 'live-1',
       label: 'nearby',
-      sourceLabel: 'X live',
+      sourceLabel: 'X post',
       tone: 'social',
     });
     expect(signals[1]).toMatchObject({
@@ -346,7 +346,7 @@ describe('map presentation helpers', () => {
       Array.from({ length: 8 }, (_, index) => ({
         ...liveUpdate,
         id: `live-${index}`,
-        url: `https://x.com/search?q=${index}`,
+        url: `https://x.com/example/status/${42010 + index}`,
       })),
       { latitude: 37.323, longitude: -122.0322 },
       1000,
@@ -363,14 +363,14 @@ describe('map presentation helpers', () => {
           ...liveUpdate,
           id: 'demo-live-1',
           tags: ['music', 'nearby'],
-          url: 'https://x.com/search?q=cupertino%20open%20mic',
+          url: 'https://x.com/example/status/42005',
         },
         {
           ...liveUpdate,
           id: 'demo-live-2',
           title: 'Traffic bunching near the market',
           tags: ['heads-up'],
-          url: 'https://x.com/search?q=cupertino%20traffic',
+          url: 'https://x.com/example/status/42006',
         },
       ],
       center,

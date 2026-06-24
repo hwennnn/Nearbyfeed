@@ -115,7 +115,7 @@ export const getLiveMapSignals = (
       coordinates: getOffsetCoordinates(center, distanceMeters, bearing),
       id: update.id,
       label: getLiveSignalLabel(update),
-      sourceLabel: 'X live',
+      sourceLabel: 'X post',
       summary: update.summary,
       title: update.title,
       tone: getLiveSignalTone(update),

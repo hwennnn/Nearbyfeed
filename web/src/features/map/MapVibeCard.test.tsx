@@ -16,7 +16,7 @@ const liveUpdate: LiveUpdate = {
   id: 'x-live-91',
   title: 'DJ set outside the plaza',
   summary: 'People nearby are posting about a small outdoor set.',
-  url: 'https://x.com/search?q=plaza%20dj',
+  url: 'https://x.com/example/status/42004',
   source: 'x',
   occurredAt: new Date('2026-06-23T08:06:00Z').toISOString(),
   tags: ['music'],

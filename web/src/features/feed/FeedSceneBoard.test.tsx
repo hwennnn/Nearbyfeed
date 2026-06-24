@@ -18,7 +18,7 @@ const liveUpdate: LiveUpdate = {
   id: 'x-live-1',
   title: 'People are posting about the night market',
   summary: 'Outside signals match the nearby feed.',
-  url: 'https://x.com/search?q=night%20market',
+  url: 'https://x.com/example/status/42003',
   source: 'x',
   occurredAt: new Date('2026-06-23T08:36:00Z').toISOString(),
   tags: ['food'],

@@ -18,7 +18,7 @@ const liveUpdate: LiveUpdate = {
   id: 'x-live-map-panel-1',
   title: 'Open mic queue is moving fast',
   summary: 'Local posts say the cafe stage has plenty of room outside.',
-  url: 'https://x.com/search?q=cupertino%20open%20mic',
+  url: 'https://x.com/example/status/42005',
   source: 'x',
   occurredAt: new Date('2026-06-23T08:08:00Z').toISOString(),
   tags: ['music'],

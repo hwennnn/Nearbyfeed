@@ -28,7 +28,7 @@ const makeLiveUpdate = (overrides: Partial<LiveUpdate> = {}): LiveUpdate => ({
   id: 'live-1',
   title: 'Open mic queue is moving fast',
   summary: 'People nearby are posting about short sets and room outside.',
-  url: 'https://x.com/search?q=open%20mic',
+  url: 'https://x.com/example/status/42001',
   source: 'x',
   occurredAt: new Date('2026-06-23T08:42:00Z').toISOString(),
   tags: ['music', 'nearby'],

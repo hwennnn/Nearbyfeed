@@ -18,7 +18,7 @@ const makeLiveUpdate = (id: string): LiveUpdate => ({
   id,
   title: 'Queue forming nearby',
   summary: 'People are posting about a short line.',
-  url: `https://x.com/search?q=${id}`,
+  url: `https://x.com/example/status/${id.replace(/\D/g, '')}`,
   source: 'x',
   occurredAt: new Date('2026-06-23T08:02:00Z').toISOString(),
   tags: ['nearby'],

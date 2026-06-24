@@ -20,8 +20,8 @@ const signal: LiveMapSignal = {
   id: 'live-1',
   title: 'Open mic queue is moving fast',
   summary: 'People are talking about it nearby.',
-  url: 'https://x.com/search?q=open%20mic',
-  sourceLabel: 'X live',
+  url: 'https://x.com/example/status/42',
+  sourceLabel: 'X post',
   label: 'music',
   tone: 'scene',
   coordinates: {
@@ -54,11 +54,11 @@ describe('map marker elements', () => {
 
     expect(element.tagName).toBe('A');
     expect(element.className).toContain('is-scene');
-    expect(element.href).toBe('https://x.com/search?q=open%20mic');
+    expect(element.href).toBe('https://x.com/example/status/42');
     expect(element.rel).toBe('noreferrer');
     expect(element.target).toBe('_blank');
     expect(element.getAttribute('aria-label')).toContain(
-      'Approximate X live signal',
+      'Approximate X post',
     );
     expect(element.textContent).toContain('XmusicOpen mic queue is moving fast');
   });

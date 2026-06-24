@@ -17,7 +17,7 @@ const liveUpdate: LiveUpdate = {
   id: 'x-live-1',
   title: 'Open mic queue is moving',
   summary: 'People are posting about the line.',
-  url: 'https://x.com/search?q=open%20mic',
+  url: 'https://x.com/example/status/42001',
   source: 'x',
   occurredAt: new Date('2026-06-23T08:06:00Z').toISOString(),
   tags: ['music'],
