@@ -21,9 +21,10 @@ describe('FeedLocationCard', () => {
       'href',
       'https://www.google.com/maps/search/?api=1&query=41.9742%2C-87.7019',
     );
-    expect(screen.getByText('Pinned place')).toBeInTheDocument();
+    expect(screen.getByText('Place tag')).toBeInTheDocument();
+    expect(screen.getByText('Precise pin')).toBeInTheDocument();
     expect(screen.getByText('5100 N Francisco Ave, Chicago, IL')).toBeInTheDocument();
     expect(screen.getByText('41.9742, -87.7019')).toBeInTheDocument();
-    expect(screen.getByText('Maps')).toBeInTheDocument();
+    expect(screen.getByText('Open')).toBeInTheDocument();
   });
 });

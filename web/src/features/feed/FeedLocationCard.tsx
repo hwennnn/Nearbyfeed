@@ -24,14 +24,17 @@ export const FeedLocationCard = ({
         <span />
       </span>
       <span className="location-card-copy">
-        <span className="location-card-kicker">{model.microLabel}</span>
+        <span className="location-card-kicker">
+          {model.microLabel}
+          <em>{model.privacyLabel}</em>
+        </span>
         <strong>{location.name}</strong>
         <em>{location.formattedAddress}</em>
         <small>{model.coordinateLabel}</small>
       </span>
       <span className="location-card-action">
         <Navigation className="location-card-arrow" />
-        <span>Maps</span>
+        <span>{model.actionLabel}</span>
       </span>
     </a>
   );

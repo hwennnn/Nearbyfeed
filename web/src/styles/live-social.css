@@ -926,13 +926,14 @@
 
 .location-card {
   display: grid;
-  grid-template-columns: auto 50px minmax(0, 1fr) auto;
-  gap: 10px;
+  grid-template-columns: 64px minmax(0, 1fr) auto;
+  gap: 12px;
   align-items: center;
-  padding: 10px;
+  padding: 10px 12px 10px 10px;
   text-decoration: none;
   transition:
     background 160ms ease,
+    border-color 160ms ease,
     transform 160ms ease;
 }
 
@@ -946,25 +947,20 @@
   transform: translateY(-1px);
 }
 
-.location-card-icon {
-  display: grid;
-  width: 34px;
-  height: 34px;
-  place-items: center;
-  border-radius: 8px;
-  background: rgba(159, 255, 224, 0.13);
-  color: #9fffe0;
+.location-card .location-card-icon {
+  display: none;
 }
 
-.location-card-map-strip {
+.location-card .location-card-map-strip {
   position: relative;
   display: block;
-  width: 50px;
-  height: 44px;
+  width: 64px;
+  height: 58px;
   overflow: hidden;
   border: 1px solid rgba(159, 255, 224, 0.14);
   border-radius: 8px;
   background:
+    linear-gradient(135deg, transparent 44%, rgba(255, 137, 51, 0.34) 45%, transparent 49%),
     linear-gradient(rgba(159, 255, 224, 0.16) 1px, transparent 1px),
     linear-gradient(90deg, rgba(159, 255, 224, 0.16) 1px, transparent 1px),
     #151719;
@@ -973,17 +969,19 @@
 
 .location-card-map-strip span {
   position: absolute;
-  top: 17px;
-  left: 20px;
-  width: 10px;
-  height: 10px;
+  top: 22px;
+  left: 27px;
+  width: 12px;
+  height: 12px;
   border: 2px solid #151719;
   border-radius: 999px;
   background: #ff8933;
-  box-shadow: 0 0 0 6px rgba(255, 137, 51, 0.15);
+  box-shadow:
+    0 0 0 6px rgba(255, 137, 51, 0.15),
+    0 0 24px rgba(255, 137, 51, 0.48);
 }
 
-.location-card-copy {
+.location-card .location-card-copy {
   display: grid;
   min-width: 0;
   gap: 3px;
@@ -997,10 +995,21 @@
 }
 
 .location-card-kicker {
+  display: flex;
   width: fit-content;
+  max-width: 100%;
+  align-items: center;
+  gap: 6px;
   border-radius: 999px;
   background: transparent;
   color: #9fffe0;
+}
+
+.location-card-kicker em {
+  border-left: 1px solid rgba(159, 255, 224, 0.28);
+  color: #aeb5c0;
+  font-style: normal;
+  padding-left: 6px;
 }
 
 .location-card-copy strong {
@@ -1015,19 +1024,19 @@
 
 .location-card-copy small {
   color: #8f98a7;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 850;
 }
 
-.location-card-action {
+.location-card .location-card-action {
   display: inline-flex;
   min-height: 32px;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(159, 255, 224, 0.22);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(159, 255, 224, 0.1);
   color: #f8fafc;
   padding: 0 10px;
 }
@@ -1154,6 +1163,36 @@
 
   .post-image-wrap {
     aspect-ratio: 1 / 0.78;
+  }
+
+  .location-card {
+    grid-template-columns: 54px minmax(0, 1fr) 38px;
+    gap: 10px;
+    padding: 9px;
+  }
+
+  .location-card .location-card-map-strip {
+    width: 54px;
+    height: 52px;
+  }
+
+  .location-card-map-strip span {
+    top: 19px;
+    left: 22px;
+  }
+
+  .location-card .location-card-action {
+    width: 38px;
+    padding: 0;
+  }
+
+  .location-card .location-card-action span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
   }
 
   .card-author-row {

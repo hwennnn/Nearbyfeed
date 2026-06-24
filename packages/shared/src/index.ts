@@ -305,6 +305,48 @@ export const getBoundingBox = (
 export const formatDistanceMeters = (distance: DistanceMeters): string =>
   distance === 1000 ? '1km' : `${distance}m`;
 
+export type LocationCardInput = Coordinates & {
+  formattedAddress: string;
+  name: string;
+};
+
+export type LocationMapTarget = Coordinates & {
+  query: string;
+};
+
+export type LocationCardModel = {
+  actionLabel: string;
+  coordinateLabel: string;
+  mapSearchUrl: string;
+  mapTarget: LocationMapTarget;
+  microLabel: string;
+  privacyLabel: string;
+};
+
+export const getLocationMapTarget = (
+  location: LocationCardInput,
+): LocationMapTarget => ({
+  latitude: location.latitude,
+  longitude: location.longitude,
+  query: location.formattedAddress.trim() || location.name,
+});
+
+export const getLocationCardModel = (
+  location: LocationCardInput,
+): LocationCardModel => {
+  const coordinateLabel = `${location.latitude.toFixed(4)}, ${location.longitude.toFixed(4)}`;
+  const query = encodeURIComponent(`${location.latitude},${location.longitude}`);
+
+  return {
+    actionLabel: 'Open',
+    coordinateLabel,
+    mapSearchUrl: `https://www.google.com/maps/search/?api=1&query=${query}`,
+    mapTarget: getLocationMapTarget(location),
+    microLabel: 'Place tag',
+    privacyLabel: 'Precise pin',
+  };
+};
+
 const X_STATUS_HOSTS = new Set([
   'mobile.twitter.com',
   'twitter.com',

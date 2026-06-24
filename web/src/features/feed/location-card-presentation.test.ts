@@ -11,10 +11,17 @@ describe('location card presentation', () => {
         name: 'River Park',
       }),
     ).toEqual({
+      actionLabel: 'Open',
       coordinateLabel: '41.9742, -87.7019',
+      mapTarget: {
+        latitude: 41.9742,
+        longitude: -87.7019,
+        query: '5100 N Francisco Ave, Chicago, IL',
+      },
       mapSearchUrl:
         'https://www.google.com/maps/search/?api=1&query=41.9742%2C-87.7019',
-      microLabel: 'Pinned place',
+      microLabel: 'Place tag',
+      privacyLabel: 'Precise pin',
     });
   });
 });

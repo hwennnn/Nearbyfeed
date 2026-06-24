@@ -5,6 +5,7 @@ import openMap from 'react-native-open-maps';
 import type { PostLocation } from '@/api';
 import { SMapView, Text, TouchableOpacity, View } from '@/ui';
 import { Ionicons } from '@/ui/icons/vector-icons';
+import { getOpenMapsPayload } from './location-card-presentation';
 
 type Props = {
   location: PostLocation;
@@ -15,11 +16,7 @@ export const LocationCard = ({ location, isFullView = false }: Props) => {
   const { latitude, longitude, name, formattedAddress } = location;
 
   const openLocationInMap = () => {
-    openMap({
-      latitude: 1.44191,
-      longitude: 103.77436,
-      query: formattedAddress,
-    });
+    openMap(getOpenMapsPayload(location));
   };
 
   return (
