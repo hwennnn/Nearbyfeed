@@ -3,6 +3,8 @@ export type Coordinates = {
   longitude: number;
 };
 
+export * from './feed-presentation';
+
 export const DISTANCE_OPTIONS_METERS = [200, 500, 1000] as const;
 export type DistanceMeters = (typeof DISTANCE_OPTIONS_METERS)[number];
 export const DEFAULT_DISTANCE_METERS: DistanceMeters = 200;
