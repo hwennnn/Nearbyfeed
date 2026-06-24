@@ -20,6 +20,22 @@ describe('Grafana observability provisioning', () => {
     );
   });
 
+  it('keeps the self-hosted ClickHouse database configurable across the stack', () => {
+    const compose = readServerFile('docker-compose.yml');
+    const initScript = readServerFile('observability/clickhouse/init/001_events.sh');
+
+    expect(compose).toContain(
+      'CLICKHOUSE_DB: ${CLICKHOUSE_DATABASE:-nearbyfeed_observability}',
+    );
+    expect(compose).toContain(
+      'CLICKHOUSE_DATABASE: ${CLICKHOUSE_DATABASE:-nearbyfeed_observability}',
+    );
+    expect(initScript).toContain(
+      'DATABASE="${CLICKHOUSE_DB:-nearbyfeed_observability}"',
+    );
+    expect(initScript).not.toContain('nearbyfeed_observability.nearbyfeed_events');
+  });
+
   it('provisions a reusable ClickHouse datasource for the self-hosted stack', () => {
     const datasource = readServerFile(
       'observability/grafana/provisioning/datasources/clickhouse.yml',
@@ -59,5 +75,9 @@ describe('Grafana observability provisioning', () => {
         ),
       ),
     ).toBe(true);
+
+    const rawSql = JSON.stringify(dashboard);
+    expect(rawSql).toContain('FROM nearbyfeed_events');
+    expect(rawSql).not.toContain('nearbyfeed_observability.nearbyfeed_events');
   });
 });

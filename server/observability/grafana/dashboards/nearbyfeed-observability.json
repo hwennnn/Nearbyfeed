@@ -68,7 +68,7 @@
             "uid": "nearbyfeed-clickhouse"
           },
           "format": "time_series",
-          "rawSql": "SELECT toStartOfMinute(event_time) AS time, concat('HTTP ', toString(JSONExtractInt(properties, 'statusCode'))) AS metric, count() AS value FROM nearbyfeed_observability.nearbyfeed_events WHERE $__timeFilter(event_time) AND event_name = 'api.request' GROUP BY time, metric ORDER BY time",
+          "rawSql": "SELECT toStartOfMinute(event_time) AS time, concat('HTTP ', toString(JSONExtractInt(properties, 'statusCode'))) AS metric, count() AS value FROM nearbyfeed_events WHERE $__timeFilter(event_time) AND event_name = 'api.request' GROUP BY time, metric ORDER BY time",
           "refId": "A"
         }
       ],
@@ -110,7 +110,7 @@
             "uid": "nearbyfeed-clickhouse"
           },
           "format": "time_series",
-          "rawSql": "SELECT toStartOfMinute(event_time) AS time, 'avg' AS metric, avg(JSONExtractFloat(properties, 'durationMs')) AS value FROM nearbyfeed_observability.nearbyfeed_events WHERE $__timeFilter(event_time) AND event_name = 'api.request' GROUP BY time UNION ALL SELECT toStartOfMinute(event_time) AS time, 'p95' AS metric, quantile(0.95)(JSONExtractFloat(properties, 'durationMs')) AS value FROM nearbyfeed_observability.nearbyfeed_events WHERE $__timeFilter(event_time) AND event_name = 'api.request' GROUP BY time ORDER BY time",
+          "rawSql": "SELECT toStartOfMinute(event_time) AS time, 'avg' AS metric, avg(JSONExtractFloat(properties, 'durationMs')) AS value FROM nearbyfeed_events WHERE $__timeFilter(event_time) AND event_name = 'api.request' GROUP BY time UNION ALL SELECT toStartOfMinute(event_time) AS time, 'p95' AS metric, quantile(0.95)(JSONExtractFloat(properties, 'durationMs')) AS value FROM nearbyfeed_events WHERE $__timeFilter(event_time) AND event_name = 'api.request' GROUP BY time ORDER BY time",
           "refId": "A"
         }
       ],
@@ -156,7 +156,7 @@
             "uid": "nearbyfeed-clickhouse"
           },
           "format": "table",
-          "rawSql": "SELECT count() AS value FROM nearbyfeed_observability.nearbyfeed_events WHERE $__timeFilter(event_time) AND event_name = 'live.enrichment'",
+          "rawSql": "SELECT count() AS value FROM nearbyfeed_events WHERE $__timeFilter(event_time) AND event_name = 'live.enrichment'",
           "refId": "A"
         }
       ],
@@ -202,7 +202,7 @@
             "uid": "nearbyfeed-clickhouse"
           },
           "format": "table",
-          "rawSql": "SELECT countIf(JSONExtractString(properties, 'status') = 'failed') AS value FROM nearbyfeed_observability.nearbyfeed_events WHERE $__timeFilter(event_time) AND event_name = 'live.enrichment'",
+          "rawSql": "SELECT countIf(JSONExtractString(properties, 'status') = 'failed') AS value FROM nearbyfeed_events WHERE $__timeFilter(event_time) AND event_name = 'live.enrichment'",
           "refId": "A"
         }
       ],
@@ -235,7 +235,7 @@
             "uid": "nearbyfeed-clickhouse"
           },
           "format": "table",
-          "rawSql": "SELECT event_time, event_name, route, properties FROM nearbyfeed_observability.nearbyfeed_events WHERE $__timeFilter(event_time) ORDER BY event_time DESC LIMIT 50",
+          "rawSql": "SELECT event_time, event_name, route, properties FROM nearbyfeed_events WHERE $__timeFilter(event_time) ORDER BY event_time DESC LIMIT 50",
           "refId": "A"
         }
       ],

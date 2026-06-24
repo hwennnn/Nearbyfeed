@@ -29,7 +29,7 @@ The compose stack now includes:
 - ClickHouse HTTP on `8123` and native TCP on `9000`
 - Grafana on `3001`
 
-Grafana installs the ClickHouse datasource plugin, provisions a `NearbyFeed ClickHouse` datasource, and loads the `NearbyFeed Observability` dashboard. The local ClickHouse database defaults to `nearbyfeed_observability`.
+Grafana installs the ClickHouse datasource plugin, provisions a `NearbyFeed ClickHouse` datasource, and loads the `NearbyFeed Observability` dashboard. The local ClickHouse database defaults to `nearbyfeed_observability`; set `CLICKHOUSE_DATABASE` once to point ClickHouse init, Grafana, and the API at a different database.
 
 If another local project already owns those ports, override the host ports without editing the file:
 

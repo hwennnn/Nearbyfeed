@@ -24,7 +24,7 @@ services:
     image: clickhouse/clickhouse-server:24.8
     restart: always
     environment:
-      CLICKHOUSE_DB: nearbyfeed_observability
+      CLICKHOUSE_DB: ${CLICKHOUSE_DATABASE:-nearbyfeed_observability}
       CLICKHOUSE_USER: ${CLICKHOUSE_USER:-nearbyfeed}
       CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-nearbyfeed}
     ports:
@@ -40,7 +40,7 @@ services:
     environment:
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-nearbyfeed}
       GF_INSTALL_PLUGINS: grafana-clickhouse-datasource
-      CLICKHOUSE_DATABASE: nearbyfeed_observability
+      CLICKHOUSE_DATABASE: ${CLICKHOUSE_DATABASE:-nearbyfeed_observability}
       CLICKHOUSE_USER: ${CLICKHOUSE_USER:-nearbyfeed}
       CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-nearbyfeed}
     ports:
