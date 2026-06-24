@@ -128,7 +128,7 @@ describe('LiveService', () => {
     jest.spyOn(globalThis, 'fetch').mockResolvedValue({
       ok: true,
       text: async () =>
-        'data: {"type":"COMPLETE","status":"COMPLETED","result":{"updates":[null,{"title":"Night market line","summary":"People are queueing near the corner.","url":"https://x.com/example/status/valid","source":"x","occurredAt":null,"tags":["food"]}]}}',
+        'data: {"type":"COMPLETE","status":"COMPLETED","result":{"updates":[null,{"title":"Night market line","summary":"People are queueing near the corner.","url":"https://x.com/example/status/1001","source":"x","occurredAt":null,"tags":["food"]}]}}',
     } as Response);
     const service = new LiveService(
       {
@@ -154,7 +154,7 @@ describe('LiveService', () => {
       expect.objectContaining({
         source: 'x',
         title: 'Night market line',
-        url: 'https://x.com/example/status/valid',
+        url: 'https://x.com/example/status/1001',
       }),
     ]);
   });
@@ -411,7 +411,7 @@ describe('LiveService', () => {
     jest.spyOn(globalThis, 'fetch').mockResolvedValue({
       ok: true,
       text: async () =>
-        'data: {"type":"COMPLETE","status":"COMPLETED","result":{"updates":[{"title":"Night market line","summary":"People are queueing nearby.","url":"https://x.com/example/status/ttl","source":"x","occurredAt":null,"tags":[]}]}}',
+        'data: {"type":"COMPLETE","status":"COMPLETED","result":{"updates":[{"title":"Night market line","summary":"People are queueing nearby.","url":"https://x.com/example/status/1002","source":"x","occurredAt":null,"tags":[]}]}}',
     } as Response);
     const service = new LiveService(
       {
@@ -482,7 +482,7 @@ describe('LiveService', () => {
         id: 'cached-update',
         title: 'Cached block party',
         summary: 'Already fetched.',
-        url: 'https://x.com/example/status/cached',
+        url: 'https://x.com/example/status/1003',
         source: 'x',
         occurredAt: null,
         tags: [],
@@ -543,7 +543,7 @@ describe('LiveService', () => {
         id: 'cached-update',
         title: 'Cached block party',
         summary: 'Already fetched.',
-        url: 'https://x.com/example/status/cached',
+        url: 'https://x.com/example/status/1003',
         source: 'x',
         occurredAt: null,
         tags: [],
@@ -596,7 +596,7 @@ describe('LiveService', () => {
         id: 'unsafe-cached-update',
         title: '  Cafe line\u0000moving '.repeat(8),
         summary: 'A nearby cafe has a shorter line now.',
-        url: 'https://x.com/example/status/safe-cached',
+        url: 'https://x.com/example/status/1004',
         source: 'x',
         occurredAt: null,
         tags: ['food', 'food', 'night'],
@@ -636,7 +636,7 @@ describe('LiveService', () => {
         source: 'x',
         summary: 'A nearby cafe has a shorter line now.',
         tags: ['food', 'night'],
-        url: 'https://x.com/example/status/safe-cached',
+        url: 'https://x.com/example/status/1004',
       }),
     ]);
     const [update] = updates;
@@ -650,7 +650,7 @@ describe('LiveService', () => {
     jest.spyOn(globalThis, 'fetch').mockResolvedValue({
       ok: true,
       text: async () =>
-        'data: {"type":"COMPLETE","status":"COMPLETED","resultJson":{"updates":[{"title":"Legacy nearby alert","summary":"Old result shape still works.","url":"https://x.com/example/status/legacy","source":"x","occurredAt":null,"tags":[]}]}}',
+        'data: {"type":"COMPLETE","status":"COMPLETED","resultJson":{"updates":[{"title":"Legacy nearby alert","summary":"Old result shape still works.","url":"https://x.com/example/status/1005","source":"x","occurredAt":null,"tags":[]}]}}',
     } as Response);
     const service = new LiveService(
       {
@@ -681,7 +681,7 @@ describe('LiveService', () => {
     jest.spyOn(globalThis, 'fetch').mockResolvedValue({
       ok: true,
       text: async () =>
-        'data: {"type":"COMPLETE","status":"COMPLETED","resultJson":"{\\"updates\\":[{\\"title\\":\\"Cafe line is moving\\",\\"summary\\":\\"People say the late-night cafe line cleared up.\\",\\"url\\":\\"https://x.com/example/status/string-json\\",\\"source\\":\\"x\\",\\"occurredAt\\":null,\\"tags\\":[\\"food\\"]}]}"}',
+        'data: {"type":"COMPLETE","status":"COMPLETED","resultJson":"{\\"updates\\":[{\\"title\\":\\"Cafe line is moving\\",\\"summary\\":\\"People say the late-night cafe line cleared up.\\",\\"url\\":\\"https://x.com/example/status/1006\\",\\"source\\":\\"x\\",\\"occurredAt\\":null,\\"tags\\":[\\"food\\"]}]}"}',
     } as Response);
     const service = new LiveService(
       {
@@ -706,7 +706,7 @@ describe('LiveService', () => {
     ).resolves.toEqual([
       expect.objectContaining({
         title: 'Cafe line is moving',
-        url: 'https://x.com/example/status/string-json',
+        url: 'https://x.com/example/status/1006',
       }),
     ]);
   });
@@ -716,7 +716,7 @@ describe('LiveService', () => {
     jest.spyOn(globalThis, 'fetch').mockResolvedValue({
       ok: true,
       text: async () =>
-        'data: {"type":"COMPLETE","status":"COMPLETED","result":{"updates":[{"title":"Night market line","summary":"People are queueing nearby.","url":"https://x.com/example/status/fetched","source":"x","occurredAt":null,"tags":[]}]}}',
+        'data: {"type":"COMPLETE","status":"COMPLETED","result":{"updates":[{"title":"Night market line","summary":"People are queueing nearby.","url":"https://x.com/example/status/1007","source":"x","occurredAt":null,"tags":[]}]}}',
     } as Response);
     const service = new LiveService(
       {
@@ -812,7 +812,7 @@ describe('LiveService', () => {
               {
                 title: longTitle,
                 summary: longSummary,
-                url: 'https://x.com/example/status/safe',
+                url: 'https://x.com/example/status/1008',
                 source: 'x',
                 occurredAt: 'not-a-date',
                 tags: [
@@ -869,7 +869,7 @@ describe('LiveService', () => {
       expect.objectContaining({
         occurredAt: null,
         source: 'x',
-        url: 'https://x.com/example/status/safe',
+        url: 'https://x.com/example/status/1008',
       }),
     ]);
     expect(updates[0].title).toHaveLength(90);
@@ -891,6 +891,71 @@ describe('LiveService', () => {
     );
   });
 
+  it('keeps only canonical X status URLs from live enrichment', async () => {
+    redisService.get.mockResolvedValueOnce(null);
+    jest.spyOn(globalThis, 'fetch').mockResolvedValue({
+      ok: true,
+      text: async () =>
+        `data: ${JSON.stringify({
+          type: 'COMPLETE',
+          status: 'COMPLETED',
+          result: {
+            updates: [
+              {
+                title: 'Search result page',
+                summary: 'This should not become a live card.',
+                url: 'https://x.com/search?q=cupertino',
+              },
+              {
+                title: 'Real nearby post',
+                summary: 'People say the corner is getting busy.',
+                url: 'https://x.com/example/status/42?s=20#noise',
+              },
+              {
+                title: 'Tracking duplicate',
+                summary: 'Same post with a different tracking suffix.',
+                url: 'https://x.com/example/status/42?utm_source=copy',
+              },
+              {
+                title: 'Web status route',
+                summary: 'X sometimes emits its internal status route.',
+                url: 'https://x.com/i/web/status/99?ref=nearby',
+              },
+            ],
+          },
+        })}`,
+    } as Response);
+    const service = new LiveService(
+      {
+        get: jest.fn((key: string) => {
+          if (key === 'TINYFISH_API_KEY') return 'tinyfish-key';
+          if (key === 'TINYFISH_TIMEOUT_MS') return '1000';
+          if (key === 'TINYFISH_CACHE_TTL_SECONDS') return '120';
+          return undefined;
+        }),
+      } as any,
+      { error: jest.fn(), warn: jest.fn() } as any,
+      redisService as any,
+    );
+
+    const updates = await service.findNearbyUpdates({
+      latitude: 37.323,
+      longitude: -122.0322,
+      locationName: 'Cupertino',
+      timeWindow: '24h',
+    });
+
+    expect(updates.map((update) => update.url)).toEqual([
+      'https://x.com/example/status/42',
+      'https://x.com/i/web/status/99',
+    ]);
+    expect(redisService.set).toHaveBeenCalledWith(
+      expect.stringMatching(/^live:nearby:24h:200m:loc_[a-f0-9]{16}$/),
+      updates,
+      120,
+    );
+  });
+
   it('deduplicates and caps live enrichment updates before caching', async () => {
     redisService.get.mockResolvedValueOnce(null);
     jest.spyOn(globalThis, 'fetch').mockResolvedValue({
@@ -904,12 +969,12 @@ describe('LiveService', () => {
               {
                 title: 'Duplicate line',
                 summary: 'First one wins.',
-                url: 'https://x.com/example/status/dup',
+                url: 'https://x.com/example/status/1009',
               },
               {
                 title: 'Duplicate line again',
                 summary: 'Should be dropped.',
-                url: 'https://x.com/example/status/dup',
+                url: 'https://x.com/example/status/1009',
               },
               ...Array.from({ length: 12 }, (_, index) => ({
                 title: `Signal ${index}`,
@@ -942,7 +1007,7 @@ describe('LiveService', () => {
 
     expect(updates).toHaveLength(8);
     expect(updates.map((update) => update.url)).toEqual([
-      'https://x.com/example/status/dup',
+      'https://x.com/example/status/1009',
       'https://twitter.com/example/status/0',
       'https://twitter.com/example/status/1',
       'https://twitter.com/example/status/2',

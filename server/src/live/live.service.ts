@@ -355,6 +355,19 @@ export class LiveService {
         return null;
       }
 
+      const pathSegments = url.pathname.split('/').filter(Boolean);
+      const hasStatusRoute =
+        pathSegments.length >= 3 &&
+        pathSegments[pathSegments.length - 2] === 'status' &&
+        /^\d+$/.test(pathSegments[pathSegments.length - 1]);
+
+      if (!hasStatusRoute) {
+        return null;
+      }
+
+      url.search = '';
+      url.hash = '';
+
       return url.toString();
     } catch {
       return null;
