@@ -7,6 +7,7 @@ import { type LiveNearbyDto } from './dto/live-nearby.dto';
 import { type LiveUpdate } from './entities/live-update.entity';
 import {
   DEFAULT_DISTANCE_METERS,
+  normalizeXStatusUrl,
   resolveTimeWindow as resolveSharedTimeWindow,
   type DistanceMeters,
   type TimeWindow,
@@ -20,13 +21,6 @@ const MAX_LIVE_TITLE_LENGTH = 90;
 const MAX_LIVE_SUMMARY_LENGTH = 240;
 const MAX_LIVE_TAG_COUNT = 6;
 const MAX_LIVE_TAG_LENGTH = 24;
-const X_HOSTS = new Set([
-  'mobile.twitter.com',
-  'twitter.com',
-  'www.twitter.com',
-  'www.x.com',
-  'x.com',
-]);
 const LIVE_UPDATE_OUTPUT_SCHEMA = {
   type: 'object',
   properties: {
@@ -347,31 +341,7 @@ export class LiveService {
   }
 
   private normalizeXUrl(value: unknown): string | null {
-    if (typeof value !== 'string') return null;
-
-    try {
-      const url = new URL(value);
-      if (url.protocol !== 'https:' || !X_HOSTS.has(url.hostname.toLowerCase())) {
-        return null;
-      }
-
-      const pathSegments = url.pathname.split('/').filter(Boolean);
-      const hasStatusRoute =
-        pathSegments.length >= 3 &&
-        pathSegments[pathSegments.length - 2] === 'status' &&
-        /^\d+$/.test(pathSegments[pathSegments.length - 1]);
-
-      if (!hasStatusRoute) {
-        return null;
-      }
-
-      url.search = '';
-      url.hash = '';
-
-      return url.toString();
-    } catch {
-      return null;
-    }
+    return normalizeXStatusUrl(value);
   }
 
   private normalizeOccurredAt(value: unknown): string | null {

@@ -104,7 +104,7 @@ export const demoLiveUpdates: LiveUpdate[] = [
     title: 'Open mic queue is moving fast',
     summary:
       'Local posts say the cafe stage has short sets and plenty of room outside.',
-    url: 'https://x.com/search?q=cupertino%20open%20mic',
+    url: 'https://x.com/nearbyfeed/status/91001',
     source: 'x',
     occurredAt: new Date(now.getTime() - 18 * 60 * 1000).toISOString(),
     tags: ['music', 'nearby'],
@@ -114,7 +114,7 @@ export const demoLiveUpdates: LiveUpdate[] = [
     title: 'Traffic bunching near the market',
     summary:
       'Several people are reporting a slow turn lane near the plaza entrance.',
-    url: 'https://x.com/search?q=cupertino%20traffic',
+    url: 'https://x.com/nearbyfeed/status/91002',
     source: 'x',
     occurredAt: new Date(now.getTime() - 34 * 60 * 1000).toISOString(),
     tags: ['heads-up'],

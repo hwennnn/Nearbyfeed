@@ -7,7 +7,7 @@ const liveUpdate: LiveUpdate = {
   id: 'x-live-map-1',
   title: 'Outdoor stage is filling up',
   summary: 'People nearby are posting that the plaza set is starting.',
-  url: 'https://x.com/search?q=plaza%20stage',
+  url: 'https://x.com/example/status/42',
   source: 'x',
   occurredAt: new Date('2026-06-23T08:15:00Z').toISOString(),
   tags: ['music'],
@@ -31,6 +31,10 @@ describe('MapLiveUpdateList', () => {
     );
 
     expect(screen.getByText('preview enrichment')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Open X post/i })).toHaveAttribute(
+      'href',
+      'https://x.com/example/status/42',
+    );
 
     fireEvent.click(screen.getByRole('button', { name: 'Check live again' }));
 

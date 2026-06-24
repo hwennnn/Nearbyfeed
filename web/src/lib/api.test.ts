@@ -69,6 +69,58 @@ describe('live updates API', () => {
       'Cupertino Car Wash, 10002',
     );
   });
+
+  it('normalizes live enrichment links before rendering them', async () => {
+    const fetch = vi.fn(async () =>
+      Response.json({
+        updates: [
+          {
+            id: 'search-page',
+            title: 'Search page',
+            summary: 'Not a source post.',
+            url: 'https://x.com/search?q=cupertino',
+            source: 'x',
+            occurredAt: null,
+            tags: [],
+          },
+          {
+            id: 'source-post',
+            title: 'Cafe line is moving',
+            summary: 'People nearby say the queue is short.',
+            url: 'https://x.com/example/status/42?s=20#noise',
+            source: 'x',
+            occurredAt: null,
+            tags: ['food'],
+          },
+          {
+            id: 'tracking-duplicate',
+            title: 'Duplicate link',
+            summary: 'Same status with a different tracking suffix.',
+            url: 'https://x.com/example/status/42?utm_source=copy',
+            source: 'x',
+            occurredAt: null,
+            tags: [],
+          },
+        ],
+      }),
+    );
+    vi.stubGlobal('fetch', fetch);
+
+    await expect(
+      fetchLiveUpdates({
+        latitude: 37.323,
+        longitude: -122.0322,
+        distance: 200,
+        timeWindow: '24h',
+      }),
+    ).resolves.toEqual([
+      expect.objectContaining({
+        id: 'source-post',
+        title: 'Cafe line is moving',
+        url: 'https://x.com/example/status/42',
+      }),
+    ]);
+  });
 });
 
 describe('comments API', () => {

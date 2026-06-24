@@ -40,7 +40,7 @@ export const MapLiveUpdateList = ({
         <strong>{update.title}</strong>
         <p>{update.summary}</p>
         <em>
-          Open source
+          Open X post
           <ExternalLink />
         </em>
       </a>
