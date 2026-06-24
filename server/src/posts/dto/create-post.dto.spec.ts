@@ -72,6 +72,30 @@ describe('CreatePostDto', () => {
     ).rejects.toThrow();
   });
 
+  it.each([
+    ['latitude', ''],
+    ['longitude', ''],
+    ['location[latitude]', ''],
+    ['location[longitude]', ''],
+    ['poll[votingLength]', ''],
+  ])('rejects blank numeric create-post field %s', async (field, value) => {
+    await expect(
+      transformBody({
+        title: 'Library steps are buzzing',
+        content: 'Tiny projector night is drawing a crowd by the steps.',
+        latitude: '37.323',
+        longitude: '-122.0322',
+        'location[name]': 'Library steps',
+        'location[formattedAddress]': 'Cupertino Library, CA',
+        'location[latitude]': '37.323',
+        'location[longitude]': '-122.0322',
+        'poll[options][]': ['pull up', 'too packed'],
+        'poll[votingLength]': '1',
+        [field]: value,
+      }),
+    ).rejects.toThrow();
+  });
+
   it('rejects poll options that are blank after trimming', async () => {
     await expect(
       transformBody({

@@ -1,4 +1,4 @@
-import { Type } from 'class-transformer';
+import { Transform } from 'class-transformer';
 import {
   IsInt,
   IsIn,
@@ -18,18 +18,19 @@ import {
   type TimeWindow,
 } from '@nearbyfeed/shared';
 import { ValidDistanceRangeValue } from 'src/posts/decorators';
+import { strictNumberTransform } from 'src/posts/dto/strict-number.transform';
 
 export class LiveNearbyDto {
   @IsLatitude()
-  @Type(() => Number)
+  @Transform(strictNumberTransform)
   latitude: number;
 
   @IsLongitude()
-  @Type(() => Number)
+  @Transform(strictNumberTransform)
   longitude: number;
 
   @IsOptional()
-  @Type(() => Number)
+  @Transform(strictNumberTransform)
   @IsInt()
   @Validate(ValidDistanceRangeValue)
   distance?: DistanceMeters = DEFAULT_DISTANCE_METERS;

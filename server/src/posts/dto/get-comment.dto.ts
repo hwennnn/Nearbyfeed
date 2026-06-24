@@ -1,5 +1,5 @@
 import { COMMENT_SORT_VALUES, type CommentSort } from '@nearbyfeed/shared';
-import { Type } from 'class-transformer';
+import { Transform } from 'class-transformer';
 import {
   IsIn,
   IsInt,
@@ -8,6 +8,7 @@ import {
   Validate,
 } from 'class-validator';
 import { ValidNumberRangeValue } from 'src/posts/decorators';
+import { strictNumberTransform } from './strict-number.transform';
 
 export class GetCommentDto {
   @IsOptional()
@@ -15,7 +16,7 @@ export class GetCommentDto {
   cursor?: string;
 
   @IsOptional()
-  @Type(() => Number)
+  @Transform(strictNumberTransform)
   @IsInt()
   @Validate(ValidNumberRangeValue, [15, 25])
   take?: number;
@@ -34,7 +35,7 @@ export class GetChildCommentDto {
   cursor?: string;
 
   @IsOptional()
-  @Type(() => Number)
+  @Transform(strictNumberTransform)
   @IsInt()
   @Validate(ValidNumberRangeValue, [15, 25])
   take?: number;

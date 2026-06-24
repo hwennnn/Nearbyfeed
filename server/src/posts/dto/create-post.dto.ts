@@ -1,4 +1,4 @@
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { POST_LIMITS } from '@nearbyfeed/shared';
 import {
   IsLatitude,
@@ -12,6 +12,7 @@ import {
 } from 'class-validator';
 import { CreateLocationDto } from './create-location.dto';
 import { CreatePollDto } from './create-poll.dto';
+import { strictNumberTransform } from './strict-number.transform';
 
 export class CreatePostDto {
   @IsString()
@@ -26,11 +27,11 @@ export class CreatePostDto {
   content: string;
 
   @IsLatitude()
-  @Type(() => Number)
+  @Transform(strictNumberTransform)
   latitude: number;
 
   @IsLongitude()
-  @Type(() => Number)
+  @Transform(strictNumberTransform)
   longitude: number;
 
   @IsOptional()

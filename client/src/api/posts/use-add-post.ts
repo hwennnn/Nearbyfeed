@@ -9,6 +9,7 @@ import type { GooglePlaceLocation } from '@/utils/geolocation-utils';
 
 import { client, queryClient } from '../common';
 import type { Post, User } from '../types';
+import { buildOptimisticPost } from './post-optimistic';
 import type { InfinitePosts } from './types';
 
 type Variables = {
@@ -99,19 +100,11 @@ export const useAddPost = createMutation<
     const optimisticPostId = new Date().getTime();
     const currentUser = useUser.getState().user as User;
 
-    const optimisticPost: Post = {
-      id: optimisticPostId,
-      title: variables.title,
-      content: variables.content,
-      longitude: variables.longitude,
-      latitude: variables.longitude,
-      points: 0,
-      isOptimistic: true,
-      commentsCount: 0,
+    const optimisticPost = buildOptimisticPost({
       author: currentUser,
-      authorId: currentUser.id,
-      poll: null,
-    };
+      id: optimisticPostId,
+      input: variables,
+    });
 
     // Update the cache optimistically by adding the new post to the existing list
     queryClient.setQueryData<InfinitePosts>(postsQueryKey, (oldData) => {
@@ -138,7 +131,6 @@ export const useAddPost = createMutation<
     );
   },
   onSuccess: (data, _variables, context) => {
-    console.log('🚀 ~ data:', data);
     const postsQueryKey = ['posts', usePostKeys.getState().postsQueryKey];
     const optimisticPostId = context?.optimisticPostId;
 

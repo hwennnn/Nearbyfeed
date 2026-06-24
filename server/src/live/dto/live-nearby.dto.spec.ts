@@ -52,6 +52,21 @@ describe('LiveNearbyDto', () => {
     expect(errors[0].property).toBe('distance');
   });
 
+  it.each(['latitude', 'longitude', 'distance'])(
+    'rejects blank numeric live enrichment field %s',
+    async (field) => {
+      const { errors } = await validateDto({
+        latitude: '37.323',
+        longitude: '-122.0322',
+        distance: '200',
+        timeWindow: '24h',
+        [field]: '',
+      });
+
+      expect(errors.map((error) => error.property)).toContain(field);
+    },
+  );
+
   it('rejects oversized live enrichment location names', async () => {
     const { errors } = await validateDto({
       latitude: '37.323',

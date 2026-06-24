@@ -1,4 +1,4 @@
-import { Type } from 'class-transformer';
+import { Transform } from 'class-transformer';
 import {
   IsInt,
   IsOptional,
@@ -6,6 +6,7 @@ import {
   Validate,
 } from 'class-validator';
 import { ValidNumberRangeValue } from 'src/posts/decorators';
+import { strictNumberTransform } from 'src/posts/dto/strict-number.transform';
 
 export class PaginationDto {
   @IsOptional()
@@ -13,7 +14,7 @@ export class PaginationDto {
   cursor?: string;
 
   @IsOptional()
-  @Type(() => Number)
+  @Transform(strictNumberTransform)
   @IsInt()
   @Validate(ValidNumberRangeValue, [15, 25])
   take?: number;

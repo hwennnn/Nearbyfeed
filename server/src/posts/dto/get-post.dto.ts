@@ -1,4 +1,4 @@
-import { Type } from 'class-transformer';
+import { Transform } from 'class-transformer';
 import {
   IsInt,
   IsIn,
@@ -13,17 +13,18 @@ import {
   ValidDistanceRangeValue,
   ValidNumberRangeValue,
 } from 'src/posts/decorators';
+import { strictNumberTransform } from './strict-number.transform';
 
 export class GetPostsDto {
   @IsLatitude()
-  @Type(() => Number)
+  @Transform(strictNumberTransform)
   latitude: number;
 
   @IsLongitude()
-  @Type(() => Number)
+  @Transform(strictNumberTransform)
   longitude: number;
 
-  @Type(() => Number)
+  @Transform(strictNumberTransform)
   @IsInt()
   @Validate(ValidDistanceRangeValue)
   distance: number;
@@ -33,7 +34,7 @@ export class GetPostsDto {
   cursor?: string;
 
   @IsOptional()
-  @Type(() => Number)
+  @Transform(strictNumberTransform)
   @IsInt()
   @Validate(ValidNumberRangeValue, [15, 25])
   take?: number;

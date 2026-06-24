@@ -1,12 +1,13 @@
-import { Type } from 'class-transformer';
+import { Transform } from 'class-transformer';
 import { IsLatitude, IsLongitude } from 'class-validator';
+import { strictNumberTransform } from 'src/posts/dto/strict-number.transform';
 
 export class GetLocationNameDto {
   @IsLatitude()
-  @Type(() => Number)
+  @Transform(strictNumberTransform)
   latitude: number;
 
   @IsLongitude()
-  @Type(() => Number)
+  @Transform(strictNumberTransform)
   longitude: number;
 }
