@@ -460,21 +460,24 @@ export class CommentsService {
       throw new BadRequestException(`Failed to find comment ${commentId}`);
     }
 
-    const count = 1 + comment.repliesCount;
+    const activeCommentFilter = {
+      isActive: true,
+      OR: [
+        {
+          id: commentId,
+        },
+        {
+          parentCommentId: commentId,
+        },
+      ],
+    };
+    const count = await this.prismaService.comment.count({
+      where: activeCommentFilter,
+    });
 
     const transactionItems: any = [
       this.prismaService.comment.updateMany({
-        where: {
-          isActive: true,
-          OR: [
-            {
-              id: commentId,
-            },
-            {
-              parentCommentId: commentId,
-            },
-          ],
-        },
+        where: activeCommentFilter,
         data: {
           isActive: false,
         },

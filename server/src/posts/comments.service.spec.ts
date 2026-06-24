@@ -275,6 +275,7 @@ describe('CommentsService', () => {
     const post = { id: 10, commentsCount: 8 };
     const prismaService = {
       comment: {
+        count: jest.fn().mockResolvedValue(3),
         delete: jest.fn(),
         findFirst: jest.fn().mockResolvedValue(parent),
         updateMany: jest.fn().mockResolvedValue({ count: 3 }),
@@ -305,10 +306,55 @@ describe('CommentsService', () => {
       },
     });
     expect(prismaService.comment.delete).not.toHaveBeenCalled();
+    expect(prismaService.comment.count).toHaveBeenCalledWith({
+      where: {
+        isActive: true,
+        OR: [
+          {
+            id: 7,
+          },
+          {
+            parentCommentId: 7,
+          },
+        ],
+      },
+    });
     expect(prismaService.post.update).toHaveBeenCalledWith({
       data: {
         commentsCount: {
           increment: -3,
+        },
+      },
+      where: {
+        id: 10,
+      },
+    });
+  });
+
+  it('decrements post comment counts by active deleted comments, not stale reply counters', async () => {
+    const parent = createComment(7, {
+      repliesCount: 99,
+    });
+    const post = { id: 10, commentsCount: 8 };
+    const prismaService = {
+      comment: {
+        count: jest.fn().mockResolvedValue(2),
+        findFirst: jest.fn().mockResolvedValue(parent),
+        updateMany: jest.fn().mockResolvedValue({ count: 2 }),
+      },
+      post: {
+        update: jest.fn().mockResolvedValue(post),
+      },
+      $transaction: jest.fn().mockResolvedValue([{ count: 2 }, post]),
+    };
+    const service = createService(prismaService);
+
+    await expect(service.deleteComment(10, 7)).resolves.toBe(post);
+
+    expect(prismaService.post.update).toHaveBeenCalledWith({
+      data: {
+        commentsCount: {
+          increment: -2,
         },
       },
       where: {
