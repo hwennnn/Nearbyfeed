@@ -13,13 +13,18 @@ export class ReportsService {
     private readonly logger: Logger,
   ) {}
 
-  async reportPost(dto: CreatePostReportDto): Promise<void> {
+  async reportPost(
+    dto: CreatePostReportDto,
+    reporterUserId: string,
+  ): Promise<void> {
     const postId = parseRouteId(dto.postId, 'postId');
+    const reporterId = parseRouteId(reporterUserId, 'userId');
 
     await this.prismaService.postReport
       .create({
         data: {
           postId,
+          reporterId,
           reason: dto.reason,
         },
       })
@@ -34,13 +39,18 @@ export class ReportsService {
       });
   }
 
-  async reportComment(dto: CreateCommentReportDto): Promise<void> {
+  async reportComment(
+    dto: CreateCommentReportDto,
+    reporterUserId: string,
+  ): Promise<void> {
     const commentId = parseRouteId(dto.commentId, 'commentId');
+    const reporterId = parseRouteId(reporterUserId, 'userId');
 
     await this.prismaService.commentReport
       .create({
         data: {
           commentId,
+          reporterId,
           reason: dto.reason,
         },
       })

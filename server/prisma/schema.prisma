@@ -19,20 +19,22 @@ model PendingUser {
 }
 
 model User {
-  id            Int           @id @default(autoincrement())
-  username      String
-  email         String        @unique
-  password      String?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  isDeleted     Boolean       @default(false)
-  image         String?
-  posts         Post[]
-  comments      Comment[]
-  likedPosts    PostLike[]
-  likedComments CommentLike[]
-  votedPolls    PollVote[]
-  providers     Provider[]
+  id             Int             @id @default(autoincrement())
+  username       String
+  email          String          @unique
+  password       String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  isDeleted      Boolean         @default(false)
+  image          String?
+  posts          Post[]
+  comments       Comment[]
+  likedPosts     PostLike[]
+  likedComments  CommentLike[]
+  votedPolls     PollVote[]
+  providers      Provider[]
+  postReports    PostReport[]    @relation("PostReportReporter")
+  commentReports CommentReport[] @relation("CommentReportReporter")
 
   blockedUsers   BlockedUser[] @relation("Blocker")
   blockedByUsers BlockedUser[] @relation("Blocked")
@@ -196,21 +198,29 @@ enum ReportReason {
 }
 
 model PostReport {
-  id        Int          @id @default(autoincrement())
-  postId    Int
-  reason    ReportReason
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
+  id         Int          @id @default(autoincrement())
+  postId     Int
+  reporterId Int?
+  reason     ReportReason
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
 
-  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  post     Post  @relation(fields: [postId], references: [id], onDelete: Cascade)
+  reporter User? @relation("PostReportReporter", fields: [reporterId], references: [id], onDelete: SetNull)
+
+  @@unique([postId, reporterId])
 }
 
 model CommentReport {
-  id        Int          @id @default(autoincrement())
-  commentId Int
-  reason    ReportReason
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
+  id         Int          @id @default(autoincrement())
+  commentId  Int
+  reporterId Int?
+  reason     ReportReason
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
 
-  comment Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  comment  Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  reporter User?   @relation("CommentReportReporter", fields: [reporterId], references: [id], onDelete: SetNull)
+
+  @@unique([commentId, reporterId])
 }

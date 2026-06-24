@@ -1,4 +1,5 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { GetUser } from 'src/auth/decorators';
 import { JwtAuthGuard } from 'src/auth/guards';
 import { CreateCommentReportDto, CreatePostReportDto } from 'src/reports/dto';
 
@@ -11,13 +12,19 @@ export class ReportsController {
 
   @Post('posts')
   @UseGuards(JwtAuthGuard, UserActiveGuard)
-  async reportPost(@Body() dto: CreatePostReportDto): Promise<void> {
-    await this.reportsService.reportPost(dto);
+  async reportPost(
+    @Body() dto: CreatePostReportDto,
+    @GetUser('userId') userId: string,
+  ): Promise<void> {
+    await this.reportsService.reportPost(dto, userId);
   }
 
   @Post('comments')
   @UseGuards(JwtAuthGuard, UserActiveGuard)
-  async reportComment(@Body() dto: CreateCommentReportDto): Promise<void> {
-    await this.reportsService.reportComment(dto);
+  async reportComment(
+    @Body() dto: CreateCommentReportDto,
+    @GetUser('userId') userId: string,
+  ): Promise<void> {
+    await this.reportsService.reportComment(dto, userId);
   }
 }
