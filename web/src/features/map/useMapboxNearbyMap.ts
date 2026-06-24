@@ -111,6 +111,23 @@ export const useMapboxNearbyMap = ({
 
   useEffect(() => {
     const map = mapRef.current;
+    if (map === null || !mapReady || selectedPostId === null) return;
+
+    const selectedPostExists = posts.some((post) => post.id === selectedPostId);
+    if (selectedPostExists) return;
+
+    setSelectedPostId(null);
+    fitNearbyActivity(map);
+  }, [
+    fitNearbyActivity,
+    mapReady,
+    posts,
+    selectedPostId,
+    setSelectedPostId,
+  ]);
+
+  useEffect(() => {
+    const map = mapRef.current;
     const container = containerRef.current;
 
     if (

@@ -77,9 +77,11 @@ const selectedPost: Post = {
 const NearbyMapProbe = ({
   posts = [],
   selectedPostId = null,
+  setSelectedPostId = vi.fn(),
 }: {
   posts?: Post[];
   selectedPostId?: number | null;
+  setSelectedPostId?: (postId: number | null) => void;
 }) => {
   const { containerRef } = useMapboxNearbyMap({
     coordinates: { latitude: 37.323, longitude: -122.0322 },
@@ -87,7 +89,7 @@ const NearbyMapProbe = ({
     liveUpdates: [],
     posts,
     selectedPostId,
-    setSelectedPostId: vi.fn(),
+    setSelectedPostId,
   });
 
   return <div data-testid="map-canvas" ref={containerRef} />;
@@ -193,5 +195,56 @@ describe('useMapboxNearbyMap', () => {
         }),
       );
     });
+  });
+
+  it('clears stale selected posts and re-fits nearby activity after filters change', async () => {
+    const setSelectedPostId = vi.fn();
+    getBoundingClientRectSpy = vi
+      .spyOn(HTMLElement.prototype, 'getBoundingClientRect')
+      .mockReturnValue({
+        bottom: 760,
+        height: 760,
+        left: 0,
+        right: 390,
+        toJSON: vi.fn(),
+        top: 0,
+        width: 390,
+        x: 0,
+        y: 0,
+      });
+    isStyleLoadedMock.mockReturnValue(true);
+    mapConstructorMock.mockReturnValue(mapInstance);
+    mapOnMock.mockImplementation((event: string, handler: () => void) => {
+      if (event === 'load') handler();
+    });
+    markerConstructorMock.mockImplementation(() => ({
+      addTo: vi.fn().mockReturnThis(),
+      remove: vi.fn(),
+      setLngLat: vi.fn().mockReturnThis(),
+    }));
+
+    render(
+      <NearbyMapProbe
+        posts={[]}
+        selectedPostId={selectedPost.id}
+        setSelectedPostId={setSelectedPostId}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(setSelectedPostId).toHaveBeenCalledWith(null);
+      expect(fitBoundsMock).toHaveBeenCalledWith(
+        expect.any(Array),
+        expect.objectContaining({
+          padding: {
+            bottom: 340,
+            left: 42,
+            right: 42,
+            top: 118,
+          },
+        }),
+      );
+    });
+    expect(flyToMock).not.toHaveBeenCalled();
   });
 });
