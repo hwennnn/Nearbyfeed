@@ -17,7 +17,7 @@ export type OversizedChunk = {
 };
 
 const APP_CHUNK_BUDGET_BYTES = 500 * 1024;
-const LARGE_LAZY_CHUNK_NAMES = new Set(['mapbox']);
+const LARGE_LAZY_CHUNK_NAMES = new Set(['mapbox', 'maplibre']);
 
 export const getOversizedAppChunks = (
   bundle: BuildBundle,

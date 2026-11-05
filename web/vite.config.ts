@@ -31,6 +31,9 @@ export default defineConfig({
   },
   server: {
     port: 5173,
+    proxy: {
+      '/v1': 'http://127.0.0.1:8080',
+    },
   },
   build: {
     chunkSizeWarningLimit: 2048,
@@ -38,6 +41,7 @@ export default defineConfig({
       output: {
         manualChunks: {
           mapbox: ['mapbox-gl'],
+          maplibre: ['maplibre-gl'],
         },
       },
     },
