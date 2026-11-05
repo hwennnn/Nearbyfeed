@@ -1,0 +1,81 @@
+name: nearbyfeed
+
+services:
+  postgres:
+    # postgis/postgis publishes no arm64 image; this is the multi-arch build.
+    image: imresamu/postgis:17-3.5
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: nearbyfeed
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-nearbyfeed}
+      POSTGRES_DB: nearbyfeed
+    command: postgres -c shared_buffers=512MB -c max_connections=200
+    # Docker's 64 MB default fails parallel queries with "No space left on device".
+    shm_size: 1g
+    ports:
+      - '127.0.0.1:${POSTGRES_HOST_PORT:-54329}:5432'
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U nearbyfeed]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --requirepass ${REDIS_PASSWORD:-nearbyfeed}
+    ports:
+      - '127.0.0.1:${REDIS_HOST_PORT:-63799}:6379'
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: [CMD, redis-cli, -a, '${REDIS_PASSWORD:-nearbyfeed}', --no-auth-warning, ping]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:24.8
+    restart: unless-stopped
+    environment:
+      CLICKHOUSE_DB: nearbyfeed_observability
+      CLICKHOUSE_USER: nearbyfeed
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-nearbyfeed}
+    ports:
+      - '127.0.0.1:${CLICKHOUSE_HTTP_HOST_PORT:-18123}:8123'
+      - '127.0.0.1:${CLICKHOUSE_NATIVE_HOST_PORT:-19000}:9000'
+    volumes:
+      - clickhouse-data:/var/lib/clickhouse
+      - ./clickhouse/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: [CMD-SHELL, 'wget -qO- http://127.0.0.1:8123/ping | grep Ok']
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  grafana:
+    image: grafana/grafana-oss:11.1.0
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-nearbyfeed}
+      GF_INSTALL_PLUGINS: grafana-clickhouse-datasource
+      CLICKHOUSE_DATABASE: nearbyfeed_observability
+      CLICKHOUSE_USER: nearbyfeed
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-nearbyfeed}
+    ports:
+      - '127.0.0.1:${GRAFANA_HOST_PORT:-3001}:3000'
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards/nearbyfeed:ro
+    depends_on:
+      - clickhouse
+
+volumes:
+  postgres-data:
+  redis-data:
+  clickhouse-data:
+  grafana-data:
